@@ -9,14 +9,14 @@
 #import <playing/yas_playing_signal_file.h>
 #import <processing/processing.h>
 #import <fstream>
+#import "yas_playing_test_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::timeline_exporter_test {
 struct cpp {
-    std::string const root_path =
-        system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
+    std::string const root_path = test_utils::root_path();
     task_queue queue{queue_priority_count};
 };
 }

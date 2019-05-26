@@ -8,14 +8,14 @@
 #import <cpp_utils/yas_file_path.h>
 #import <cpp_utils/yas_system_path_utils.h>
 #import <playing/yas_playing_numbers_file.h>
+#import "yas_playing_test_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::numbers_file_test {
 struct cpp {
-    std::string const root_path =
-        system_path_utils::directory_url(system_path_utils::dir::document).appending("root").path();
+    std::string const root_path = test_utils::root_path();
 };
 }
 

@@ -16,7 +16,6 @@ struct cpp {
     sample_rate_t const sample_rate = 3;
     channel_index_t const ch_idx = 0;
     std::size_t const ch_count = 1;
-    url const root_url = system_path_utils::directory_url(system_path_utils::dir::document).appending("root");
     audio::format const format{audio::format::args{.sample_rate = static_cast<double>(this->sample_rate),
                                                    .channel_count = 1,
                                                    .pcm_format = audio::pcm_format::int16,
@@ -33,7 +32,7 @@ struct cpp {
 }
 
 - (void)setUp {
-    test_utils::remove_all_document_files();
+    file_manager::remove_content(test_utils::root_path());
 
     self->_cpp.queue = task_queue{queue_priority_count};
 }
@@ -41,7 +40,7 @@ struct cpp {
 - (void)tearDown {
     self->_cpp.queue = nullptr;
 
-    test_utils::remove_all_document_files();
+    file_manager::remove_content(test_utils::root_path());
 }
 
 - (void)test_states_chain {

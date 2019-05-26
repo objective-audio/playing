@@ -14,8 +14,7 @@ using namespace yas::playing;
 
 namespace yas::playing::audio_player_test {
 struct cpp {
-    std::string const root_path =
-        file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("root").string();
+    std::string const root_path = test_utils::root_path();
     uint32_t const ch_count = 2;
     proc::sample_rate_t const sample_rate = 3;
     audio::format format = audio::format{audio::format::args{.sample_rate = static_cast<double>(this->sample_rate),
@@ -37,7 +36,7 @@ struct cpp {
 }
 
 - (void)setUp {
-    test_utils::remove_all_document_files();
+    file_manager::remove_content(self->_cpp.root_path);
 
     self->_cpp.queue = task_queue{queue_priority_count};
 
@@ -57,7 +56,7 @@ struct cpp {
     self->_cpp.exporter = nullptr;
     self->_cpp.renderer = nullptr;
 
-    test_utils::remove_all_document_files();
+    file_manager::remove_content(self->_cpp.root_path);
 }
 
 - (void)test_initial {

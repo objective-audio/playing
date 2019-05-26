@@ -8,9 +8,9 @@
 using namespace yas;
 using namespace yas::playing;
 
-void test_utils::remove_all_document_files() {
-    auto document_url = system_path_utils::directory_url(system_path_utils::dir::document);
-    file_manager::remove_contents_in_directory(document_url.path());
+std::string test_utils::root_path() {
+    auto path = system_path_utils::directory_path(system_path_utils::dir::temporary);
+    return file_path{path}.appending("test_root").string();
 }
 
 proc::timeline test_utils::test_timeline(int64_t const offset, uint32_t const ch_count) {
