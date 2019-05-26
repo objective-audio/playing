@@ -10,3 +10,6 @@
 [submodule "submodules/processing"]
 	path = submodules/processing
 	url = https://github.com/objective-audio/processing.git
+[submodule "submodules/audio_engine"]
+	path = submodules/audio_engine
+	url = https://github.com/objective-audio/audio_engine.git
