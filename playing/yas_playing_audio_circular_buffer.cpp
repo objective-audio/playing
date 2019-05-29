@@ -14,9 +14,11 @@ using namespace yas;
 using namespace yas::playing;
 
 audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::size_t const count, task_queue &&queue,
+                                             task_priority_t const priority,
                                              audio_buffer_container::load_f &&load_handler)
     : _frag_length(static_cast<length_t>(format.sample_rate())),
       _queue(std::move(queue)),
+      _priority(priority),
       _container_count(count),
       _load_handler_ptr(std::make_shared<audio_buffer_container::load_f>(std::move(load_handler))) {
     auto each = make_fast_each(count);
@@ -82,8 +84,7 @@ void audio_circular_buffer::_load_container(audio_buffer_container::ptr containe
                       }
                   }
               },
-              task_option_t{.push_cancel_id = container_ptr->identifier,
-                            .priority = static_cast<std::size_t>(queue_priority::playing)}};
+              task_option_t{.push_cancel_id = container_ptr->identifier, .priority = this->_priority}};
 
     this->_queue.push_back(std::move(task));
 }
@@ -136,15 +137,16 @@ audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states
 namespace yas::playing {
 struct audio_circular_buffer_factory : audio_circular_buffer {
     audio_circular_buffer_factory(audio::format const &format, std::size_t const container_count, task_queue &&queue,
-                                  audio_buffer_container::load_f &&handler)
-        : audio_circular_buffer(format, container_count, std::move(queue), std::move(handler)) {
+                                  task_priority_t const priority, audio_buffer_container::load_f &&handler)
+        : audio_circular_buffer(format, container_count, std::move(queue), priority, std::move(handler)) {
     }
 };
 }  // namespace yas::playing
 
 audio_circular_buffer::ptr playing::make_audio_circular_buffer(audio::format const &format,
                                                                std::size_t const container_count, task_queue queue,
+                                                               task_priority_t const priority,
                                                                audio_buffer_container::load_f handler) {
-    return std::make_shared<audio_circular_buffer_factory>(format, container_count, std::move(queue),
+    return std::make_shared<audio_circular_buffer_factory>(format, container_count, std::move(queue), priority,
                                                            std::move(handler));
 }

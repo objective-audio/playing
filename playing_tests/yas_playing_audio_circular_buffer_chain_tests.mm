@@ -34,7 +34,7 @@ struct cpp {
 - (void)setUp {
     file_manager::remove_content(test_utils::root_path());
 
-    self->_cpp.queue = task_queue{queue_priority_count};
+    self->_cpp.queue = task_queue{};
 }
 
 - (void)tearDown {
@@ -48,7 +48,7 @@ struct cpp {
     task_queue &queue = cpp.queue;
 
     auto circular_buffer =
-        make_audio_circular_buffer(cpp.format, 2, queue, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+        make_audio_circular_buffer(cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
             int64_t const top_frame_idx = frag_idx * 3;
             int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
             data_ptr[0] = top_frame_idx;
