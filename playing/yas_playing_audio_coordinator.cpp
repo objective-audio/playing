@@ -17,7 +17,7 @@ struct audio_coordinator::impl : base::impl {
     std::string _root_path;
     task_queue _queue{queue_priority_count};
     audio_renderer _renderer;
-    audio_player _player{this->_renderer.renderable(), this->_root_path, this->_queue};
+    audio_player _player{this->_renderer.renderable(), this->_root_path, this->_queue, 0};
 
     chaining::observer_pool _pool;
 

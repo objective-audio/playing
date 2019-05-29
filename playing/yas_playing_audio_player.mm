@@ -28,8 +28,9 @@ struct audio_player::impl : base::impl {
     std::atomic<bool> _is_playing = false;
     // ロックここまで
 
-    impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue)
-        : _root_path(root_path), _renderable(std::move(renderable)), _queue(std::move(queue)) {
+    impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue,
+         task_priority_t const priority)
+        : _root_path(root_path), _renderable(std::move(renderable)), _queue(std::move(queue)), _priority(priority) {
     }
 
     void prepare(audio_player &player) {
@@ -93,7 +94,8 @@ struct audio_player::impl : base::impl {
    private:
     chaining::observer_pool _pool;
 
-    task_queue _queue;
+    task_queue const _queue;
+    task_priority_t const _priority;
     audio_renderable _renderable;
     chaining::value::holder<std::size_t> _ch_count{std::size_t(0)};
     chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
@@ -346,8 +348,9 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue)
-    : base(std::make_shared<impl>(std::move(renderable), root_path, std::move(queue))) {
+audio_player::audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue,
+                           task_priority_t const priority)
+    : base(std::make_shared<impl>(std::move(renderable), root_path, std::move(queue), priority)) {
     impl_ptr<impl>()->prepare(*this);
 }
 

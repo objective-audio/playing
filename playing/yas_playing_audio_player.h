@@ -13,7 +13,8 @@ namespace yas::playing {
 struct audio_player : base {
     class impl;
 
-    audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue);
+    audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue,
+                 task_priority_t const priority);
     audio_player(std::nullptr_t);
 
     void set_ch_mapping(std::vector<int64_t>);

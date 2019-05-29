@@ -21,7 +21,8 @@ struct cpp {
                                                              .channel_count = 2,
                                                              .pcm_format = audio::pcm_format::int16,
                                                              .interleaved = false}};
-    task_queue queue{nullptr};
+    task_queue playing_queue{nullptr};
+    task_queue exporting_queue{nullptr};
     timeline_exporter exporter{nullptr};
     test_utils::test_audio_renderer renderer{nullptr};
 };
@@ -38,9 +39,10 @@ struct cpp {
 - (void)setUp {
     file_manager::remove_content(self->_cpp.root_path);
 
-    self->_cpp.queue = task_queue{queue_priority_count};
+    self->_cpp.playing_queue = task_queue{};
+    self->_cpp.exporting_queue = task_queue{queue_priority_count};
 
-    self->_cpp.exporter = timeline_exporter{self->_cpp.root_path, self->_cpp.queue, self->_cpp.sample_rate};
+    self->_cpp.exporter = timeline_exporter{self->_cpp.root_path, self->_cpp.exporting_queue, self->_cpp.sample_rate};
 
     self->_cpp.renderer = test_utils::test_audio_renderer{};
     self->_cpp.renderer.set_pcm_format(audio::pcm_format::int16);
@@ -49,10 +51,13 @@ struct cpp {
 }
 
 - (void)tearDown {
-    self->_cpp.queue.cancel_all();
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.exporting_queue.cancel_all();
+    self->_cpp.playing_queue.cancel_all();
+    self->_cpp.exporting_queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
-    self->_cpp.queue = nullptr;
+    self->_cpp.exporting_queue = nullptr;
+    self->_cpp.playing_queue = nullptr;
     self->_cpp.exporter = nullptr;
     self->_cpp.renderer = nullptr;
 
@@ -61,7 +66,7 @@ struct cpp {
 
 - (void)test_initial {
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
     XCTAssertFalse(player.is_playing());
     XCTAssertEqual(player.play_frame(), 0);
@@ -70,7 +75,7 @@ struct cpp {
 
 - (void)test_is_playing {
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
     XCTAssertFalse(player.is_playing());
 
@@ -85,7 +90,7 @@ struct cpp {
 
 - (void)test_seek_without_format {
     test_utils::test_audio_renderer renderer{};
-    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
     XCTAssertEqual(player.play_frame(), 0);
 
@@ -105,9 +110,9 @@ struct cpp {
 - (void)test_render {
     [self setup_files];
 
-    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
@@ -162,9 +167,9 @@ struct cpp {
 - (void)test_seek {
     [self setup_files];
 
-    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
@@ -184,7 +189,7 @@ struct cpp {
 
     player.seek(6);
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 
@@ -197,9 +202,9 @@ struct cpp {
 - (void)test_reload {
     [self setup_files];
 
-    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.queue};
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, self->_cpp.playing_queue, 0};
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
     audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
@@ -220,12 +225,12 @@ struct cpp {
     self->_cpp.exporter.set_timeline_container(
         {"0", self->_cpp.sample_rate, test_utils::test_timeline(100, self->_cpp.ch_count)});
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.exporting_queue.wait_until_all_tasks_are_finished();
 
     player.reload(0, 0);
     player.reload(1, 0);
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 
     [self render:render_buffer];
 
@@ -240,7 +245,7 @@ struct cpp {
 - (void)setup_files {
     self->_cpp.exporter.set_timeline_container(
         {"0", self->_cpp.sample_rate, test_utils::test_timeline(0, self->_cpp.ch_count)});
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.exporting_queue.wait_until_all_tasks_are_finished();
 }
 
 - (void)render:(audio::pcm_buffer &)render_buffer {
@@ -258,7 +263,7 @@ struct cpp {
 
     future.get();
 
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 }
 
 @end
