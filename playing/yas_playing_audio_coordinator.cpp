@@ -15,7 +15,7 @@ using namespace yas::playing;
 
 struct audio_coordinator::impl : base::impl {
     std::string _root_path;
-    task_queue _queue{queue_priority_count};
+    task_queue _queue;
     audio_renderer _renderer;
     audio_player _player{this->_renderer.renderable(), this->_root_path, this->_queue, 0};
 

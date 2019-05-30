@@ -23,6 +23,7 @@ struct cpp {
                                                              .interleaved = false}};
     task_queue playing_queue{nullptr};
     task_queue exporting_queue{nullptr};
+    timeline_exporter::task_priority priority{.timeline = 0, .fragment = 1};
     timeline_exporter exporter{nullptr};
     test_utils::test_audio_renderer renderer{nullptr};
 };
@@ -40,9 +41,10 @@ struct cpp {
     file_manager::remove_content(self->_cpp.root_path);
 
     self->_cpp.playing_queue = task_queue{};
-    self->_cpp.exporting_queue = task_queue{queue_priority_count};
+    self->_cpp.exporting_queue = task_queue{2};
 
-    self->_cpp.exporter = timeline_exporter{self->_cpp.root_path, self->_cpp.exporting_queue, self->_cpp.sample_rate};
+    self->_cpp.exporter = timeline_exporter{self->_cpp.root_path, self->_cpp.exporting_queue, self->_cpp.priority,
+                                            self->_cpp.sample_rate};
 
     self->_cpp.renderer = test_utils::test_audio_renderer{};
     self->_cpp.renderer.set_pcm_format(audio::pcm_format::int16);

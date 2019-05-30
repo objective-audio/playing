@@ -36,7 +36,12 @@ struct timeline_exporter : base {
         std::optional<proc::time::range> const range;
     };
 
-    timeline_exporter(std::string const &root_path, task_queue, proc::sample_rate_t const);
+    struct task_priority {
+        task_priority_t const timeline;
+        task_priority_t const fragment;
+    };
+
+    timeline_exporter(std::string const &root_path, task_queue, task_priority, proc::sample_rate_t const);
     timeline_exporter(std::nullptr_t);
 
     void set_timeline_container(timeline_container);

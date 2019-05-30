@@ -26,10 +26,15 @@ using namespace yas::playing;
 struct timeline_exporter::impl : base::impl {
     std::string const _root_path;
     task_queue _queue;
+    task_priority _priority;
     chaining::notifier<event> _event_notifier;
 
-    impl(std::string const &root_path, task_queue &&queue, proc::sample_rate_t const sample_rate)
-        : _root_path(root_path), _queue(std::move(queue)), _src_container(timeline_container{sample_rate}) {
+    impl(std::string const &root_path, task_queue &&queue, task_priority &&priority,
+         proc::sample_rate_t const sample_rate)
+        : _root_path(root_path),
+          _queue(std::move(queue)),
+          _priority(std::move(priority)),
+          _src_container(timeline_container{sample_rate}) {
     }
 
     void prepare(timeline_exporter &exporter) {
@@ -174,7 +179,7 @@ struct timeline_exporter::impl : base::impl {
                     exporter_impl->_export_fragments(frags_range, task, weak_exporter);
                 }
             },
-            {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+            {.priority = this->_priority.timeline}};
 
         this->_queue.push_back(std::move(task));
     }
@@ -193,7 +198,7 @@ struct timeline_exporter::impl : base::impl {
                                    exporter.impl_ptr<impl>()->_bg.timeline.insert_track(trk_idx, std::move(track));
                                }
                            },
-                           {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                           {.priority = this->_priority.timeline}};
 
             this->_queue.push_back(std::move(insert_op));
         }
@@ -217,7 +222,7 @@ struct timeline_exporter::impl : base::impl {
                                   exporter.impl_ptr<impl>()->_bg.timeline.erase_track(trk_idx);
                               }
                           },
-                          {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                          {.priority = this->_priority.timeline}};
 
             this->_queue.push_back(std::move(erase_op));
         }
@@ -245,7 +250,7 @@ struct timeline_exporter::impl : base::impl {
                               }
                           }
                       },
-                      {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                      {.priority = this->_priority.timeline}};
 
             this->_queue.push_back(std::move(task));
         }
@@ -273,7 +278,7 @@ struct timeline_exporter::impl : base::impl {
                               track.erase_modules_for_range(range);
                           }
                       },
-                      {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                      {.priority = this->_priority.timeline}};
 
             this->_queue.push_back(std::move(task));
         }
@@ -296,7 +301,7 @@ struct timeline_exporter::impl : base::impl {
                           track.insert_module(std::move(module), module_idx, range);
                       }
                   },
-                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                  {.priority = this->_priority.timeline}};
 
         this->_queue.push_back(std::move(task));
 
@@ -314,7 +319,7 @@ struct timeline_exporter::impl : base::impl {
                           track.erase_module_at(module_idx, range);
                       }
                   },
-                  {.priority = static_cast<std::size_t>(playing::queue_priority::timeline)}};
+                  {.priority = this->_priority.timeline}};
 
         this->_queue.push_back(std::move(task));
 
@@ -341,8 +346,7 @@ struct timeline_exporter::impl : base::impl {
                                }
                            }
                        },
-                       {.priority = static_cast<std::size_t>(playing::queue_priority::exporting),
-                        .cancel_id = timeline_cancel_matcher(range)}};
+                       {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher(range)}};
 
         this->_queue.push_back(std::move(export_op));
     }
@@ -503,9 +507,9 @@ struct timeline_exporter::impl : base::impl {
     }
 };
 
-timeline_exporter::timeline_exporter(std::string const &root_path, task_queue queue,
+timeline_exporter::timeline_exporter(std::string const &root_path, task_queue queue, task_priority priority,
                                      proc::sample_rate_t const sample_rate)
-    : base(std::make_shared<impl>(root_path, std::move(queue), sample_rate)) {
+    : base(std::make_shared<impl>(root_path, std::move(queue), std::move(priority), sample_rate)) {
     this->impl_ptr<impl>()->prepare(*this);
 }
 

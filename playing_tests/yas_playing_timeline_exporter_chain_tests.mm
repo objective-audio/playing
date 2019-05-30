@@ -15,7 +15,8 @@ using namespace yas::playing;
 namespace yas::playing::timeline_exporter_chain_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    task_queue queue{queue_priority_count};
+    task_queue queue{2};
+    timeline_exporter::task_priority const priority{.timeline = 0, .fragment = 1};
 };
 }
 
@@ -39,7 +40,7 @@ struct cpp {
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
 
-    timeline_exporter exporter{root_path, queue, sample_rate};
+    timeline_exporter exporter{root_path, queue, self->_cpp.priority, sample_rate};
 
     queue.wait_until_all_tasks_are_finished();
 

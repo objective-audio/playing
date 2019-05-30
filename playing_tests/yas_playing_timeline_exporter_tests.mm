@@ -17,7 +17,8 @@ using namespace yas::playing;
 namespace yas::playing::timeline_exporter_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    task_queue queue{queue_priority_count};
+    task_queue queue{2};
+    timeline_exporter::task_priority const priority{.timeline = 0, .fragment = 1};
 };
 }
 
@@ -42,9 +43,10 @@ struct cpp {
 - (void)test_initial {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
+    timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
 
-    timeline_exporter exporter{root_path, queue, sample_rate};
+    timeline_exporter exporter{root_path, queue, priority, sample_rate};
 
     queue.wait_until_all_tasks_are_finished();
 
@@ -54,11 +56,12 @@ struct cpp {
 - (void)test_set_timeline {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
+    timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    timeline_exporter exporter{root_path, queue, sample_rate};
+    timeline_exporter exporter{root_path, queue, priority, sample_rate};
 
     queue.wait_until_all_tasks_are_finished();
 
@@ -154,12 +157,13 @@ struct cpp {
 - (void)test_set_sample_rate {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
+    timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, post_sample_rate};
 
-    timeline_exporter exporter{root_path, queue, pre_sample_rate};
+    timeline_exporter exporter{root_path, queue, priority, pre_sample_rate};
 
     queue.wait_until_all_tasks_are_finished();
 
@@ -252,11 +256,12 @@ struct cpp {
 - (void)test_update_timeline {
     std::string const &root_path = self->_cpp.root_path;
     task_queue &queue = self->_cpp.queue;
+    timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    timeline_exporter exporter{root_path, queue, sample_rate};
+    timeline_exporter exporter{root_path, queue, priority, sample_rate};
 
     queue.wait_until_all_tasks_are_finished();
 

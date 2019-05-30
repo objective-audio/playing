@@ -27,12 +27,4 @@ enum class sample_store_type : char {
     uint8 = 10,
     boolean = 11,
 };
-
-enum class queue_priority : std::size_t {
-    playing = 0,
-    timeline = 1,
-    exporting = 2,
-};
-
-std::size_t const queue_priority_count = 3;
 }  // namespace yas::playing
