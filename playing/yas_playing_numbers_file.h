@@ -31,3 +31,11 @@ using read_result_t = result<event_map_t, read_error>;
 write_result_t write(std::string const &path, event_map_t const &);
 read_result_t read(std::string const &path);
 }  // namespace yas::playing::numbers_file
+
+namespace yas {
+std::string to_string(playing::numbers_file::write_error const &);
+std::string to_string(playing::numbers_file::read_error const &);
+}  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::playing::numbers_file::write_error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::numbers_file::read_error const &);

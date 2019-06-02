@@ -176,3 +176,39 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
 
     return read_result_t{std::move(result)};
 }
+
+std::string yas::to_string(playing::numbers_file::write_error const &error) {
+    switch (error) {
+        case playing::numbers_file::write_error::open_stream_failed:
+            return "open_stream_failed";
+        case playing::numbers_file::write_error::write_to_stream_failed:
+            return "write_to_stream_failed";
+        case playing::numbers_file::write_error::close_stream_failed:
+            return "close_stream_failed";
+    }
+}
+
+std::string yas::to_string(playing::numbers_file::read_error const &error) {
+    switch (error) {
+        case playing::numbers_file::read_error::open_stream_failed:
+            return "open_stream_failed";
+        case playing::numbers_file::read_error::read_frame_failed:
+            return "read_frame_failed";
+        case playing::numbers_file::read_error::read_sample_store_type_failed:
+            return "read_sample_store_type_failed";
+        case playing::numbers_file::read_error::read_value_failed:
+            return "read_value_failed";
+        case playing::numbers_file::read_error::sample_store_type_not_found:
+            return "sample_store_type_not_found";
+    }
+}
+
+std::ostream &operator<<(std::ostream &stream, yas::playing::numbers_file::write_error const &value) {
+    stream << to_string(value);
+    return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, yas::playing::numbers_file::read_error const &value) {
+    stream << to_string(value);
+    return stream;
+}
