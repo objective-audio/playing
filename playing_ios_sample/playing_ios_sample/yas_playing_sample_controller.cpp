@@ -8,11 +8,11 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::sample {
-    struct controller_factory : controller {
-        controller_factory() : controller() {
-        }
-    };
-}
+struct controller_factory : controller {
+    controller_factory() : controller() {
+    }
+};
+}  // namespace yas::playing::sample
 
 sample::controller::controller() {
 }
