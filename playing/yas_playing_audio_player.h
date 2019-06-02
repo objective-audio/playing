@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_task.h>
 #include "yas_playing_audio_player_protocol.h"
@@ -27,5 +28,7 @@ struct audio_player : base {
     [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t play_frame() const;
+
+    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
 };
 }  // namespace yas::playing

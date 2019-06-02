@@ -21,6 +21,7 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     std::string const _root_path;
+    chaining::value::holder<bool> _is_playing_holder{false};
     chaining::value::holder<std::vector<channel_index_t>> _ch_mapping{std::vector<channel_index_t>{}};
 
     // ロックここから
@@ -36,13 +37,6 @@ struct audio_player::impl : base::impl {
     void prepare(audio_player &player) {
         this->_setup_chaining(player);
         this->_setup_rendering_handler(player);
-    }
-
-    void set_playing(bool is_playing) {
-        std::lock_guard<std::recursive_mutex> lock(this->_mutex);
-
-        this->_is_playing = is_playing;
-        this->_renderable.set_is_rendering(is_playing);
     }
 
     void seek(frame_index_t const play_frame) {
@@ -144,6 +138,14 @@ struct audio_player::impl : base::impl {
                            .to_null()
                            .send_to(this->_update_circular_buffers_receiver)
                            .sync();
+
+        this->_pool += this->_is_playing_holder.chain()
+                           .perform([weak_player](bool const &is_playing) {
+                               if (auto player = weak_player.lock()) {
+                                   player.impl_ptr<impl>()->_update_playing(is_playing);
+                               }
+                           })
+                           .sync();
     }
 
     void _setup_rendering_handler(audio_player &player) {
@@ -209,6 +211,11 @@ struct audio_player::impl : base::impl {
                 play_frame += info.length;
             }
         });
+    }
+
+    void _update_playing(bool is_playing) {
+        this->_is_playing = is_playing;
+        this->_renderable.set_is_rendering(is_playing);
     }
 
     proc::sample_rate_t _frag_length() {
@@ -362,7 +369,7 @@ void audio_player::set_ch_mapping(std::vector<channel_index_t> ch_mapping) {
 }
 
 void audio_player::set_playing(bool const is_playing) {
-    impl_ptr<impl>()->set_playing(is_playing);
+    impl_ptr<impl>()->_is_playing_holder.set_value(is_playing);
 }
 
 void audio_player::seek(frame_index_t const play_frame) {
@@ -391,4 +398,8 @@ bool audio_player::is_playing() const {
 
 frame_index_t audio_player::play_frame() const {
     return impl_ptr<impl>()->_play_frame;
+}
+
+chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
+    return impl_ptr<impl>()->_is_playing_holder.chain();
 }
