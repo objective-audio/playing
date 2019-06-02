@@ -363,4 +363,18 @@ struct cpp {
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
 }
 
+- (void)test_method_to_string {
+    XCTAssertEqual(to_string(timeline_exporter::method::reset), "reset");
+    XCTAssertEqual(to_string(timeline_exporter::method::export_began), "export_began");
+    XCTAssertEqual(to_string(timeline_exporter::method::export_ended), "export_ended");
+}
+
+- (void)test_error_to_string {
+    XCTAssertEqual(to_string(timeline_exporter::error::remove_fragment_failed), "remove_fragment_failed");
+    XCTAssertEqual(to_string(timeline_exporter::error::create_directory_failed), "create_directory_failed");
+    XCTAssertEqual(to_string(timeline_exporter::error::write_signal_failed), "write_signal_failed");
+    XCTAssertEqual(to_string(timeline_exporter::error::write_numbers_failed), "write_numbers_failed");
+    XCTAssertEqual(to_string(timeline_exporter::error::get_content_paths_failed), "get_content_paths_failed");
+}
+
 @end
