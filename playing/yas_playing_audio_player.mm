@@ -163,11 +163,11 @@ struct audio_player::impl : base::impl {
 
             auto player_impl = player.impl_ptr<impl>();
 
-            auto lock = std::unique_lock<std::recursive_mutex>(player_impl->_mutex, std::try_to_lock);
-
             if (!player_impl->_atomic_is_playing) {
                 return;
             }
+
+            auto lock = std::unique_lock<std::recursive_mutex>(player_impl->_mutex, std::try_to_lock);
 
             frame_index_t const begin_play_frame = player_impl->_play_frame;
             frame_index_t play_frame = begin_play_frame;
@@ -393,7 +393,7 @@ std::vector<channel_index_t> const &audio_player::ch_mapping() const {
 }
 
 bool audio_player::is_playing() const {
-    return impl_ptr<impl>()->_atomic_is_playing;
+    return impl_ptr<impl>()->_is_playing.raw();
 }
 
 frame_index_t audio_player::play_frame() const {
