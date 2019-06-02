@@ -153,17 +153,17 @@ std::string yas::to_string(audio_buffer_container::read_error const &error) {
     }
 }
 
-std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::state const &value) {
-    os << to_string(value);
-    return os;
+std::ostream &operator<<(std::ostream &stream, yas::playing::audio_buffer_container::state const &value) {
+    stream << to_string(value);
+    return stream;
 }
 
-std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::load_error const &value) {
-    os << to_string(value);
-    return os;
+std::ostream &operator<<(std::ostream &stream, yas::playing::audio_buffer_container::load_error const &value) {
+    stream << to_string(value);
+    return stream;
 }
 
-std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffer_container::read_error const &value) {
-    os << to_string(value);
-    return os;
+std::ostream &operator<<(std::ostream &stream, yas::playing::audio_buffer_container::read_error const &value) {
+    stream << to_string(value);
+    return stream;
 }

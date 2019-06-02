@@ -54,3 +54,6 @@ namespace yas {
 std::string to_string(playing::timeline_exporter::method const &);
 std::string to_string(playing::timeline_exporter::error const &);
 };  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::playing::timeline_exporter::method const &);
+std::ostream &operator<<(std::ostream &, yas::playing::timeline_exporter::error const &);

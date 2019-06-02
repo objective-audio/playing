@@ -549,3 +549,13 @@ std::string yas::to_string(timeline_exporter::error const &error) {
             return "get_content_paths_failed";
     }
 }
+
+std::ostream &operator<<(std::ostream &stream, yas::playing::timeline_exporter::method const &value) {
+    stream << to_string(value);
+    return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, yas::playing::timeline_exporter::error const &value) {
+    stream << to_string(value);
+    return stream;
+}
