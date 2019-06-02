@@ -35,3 +35,8 @@ write_result_t write(std::string const &path, proc::signal_event const &event);
 read_result_t read(std::string const &path, void *data_ptr, std::size_t const byte_length);
 read_result_t read(signal_file_info const &, audio::pcm_buffer &, playing::frame_index_t const buf_top_frame);
 }  // namespace yas::playing::signal_file
+
+namespace yas {
+std::string to_string(playing::signal_file::write_error const &);
+std::string to_string(playing::signal_file::read_error const &);
+}  // namespace yas
