@@ -16,5 +16,10 @@ namespace yas::playing::sample {
         audio_coordinator coordinator{this->root_path};
         playing::timeline_exporter timeline_exporter{this->root_path, task_queue{2}, {.timeline = 0, .fragment = 1}, this->coordinator.sample_rate()};
         chaining::observer_pool pool;
+        
+    protected:
+        controller();
     };
+    
+    std::shared_ptr<controller> make_controller();
 }
