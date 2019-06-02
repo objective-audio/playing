@@ -75,4 +75,20 @@ struct cpp {
     XCTAssertEqual(read_events.find(10)->second, proc::make_number_event(boolean(true)));
 }
 
+- (void)test_write_error_to_string {
+    XCTAssertEqual(to_string(playing::numbers_file::write_error::open_stream_failed), "open_stream_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::write_error::write_to_stream_failed), "write_to_stream_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::write_error::close_stream_failed), "close_stream_failed");
+}
+
+- (void)test_read_error_to_string {
+    XCTAssertEqual(to_string(playing::numbers_file::read_error::open_stream_failed), "open_stream_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::read_error::read_frame_failed), "read_frame_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::read_error::read_sample_store_type_failed),
+                   "read_sample_store_type_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::read_error::read_value_failed), "read_value_failed");
+    XCTAssertEqual(to_string(playing::numbers_file::read_error::sample_store_type_not_found),
+                   "sample_store_type_not_found");
+}
+
 @end
