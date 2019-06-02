@@ -90,4 +90,19 @@ struct cpp {
     XCTAssertEqual(buffer.data_ptr_at_index<double>(0)[1], 2.0);
 }
 
+- (void)test_write_error_to_string {
+    XCTAssertEqual(to_string(playing::signal_file::write_error::open_stream_failed), "open_stream_failed");
+    XCTAssertEqual(to_string(playing::signal_file::write_error::write_to_stream_failed), "write_to_stream_failed");
+    XCTAssertEqual(to_string(playing::signal_file::write_error::close_stream_failed), "close_stream_failed");
+}
+
+- (void)test_read_error_to_string {
+    XCTAssertEqual(to_string(playing::signal_file::read_error::invalid_sample_type), "invalid_sample_type");
+    XCTAssertEqual(to_string(playing::signal_file::read_error::out_of_range), "out_of_range");
+    XCTAssertEqual(to_string(playing::signal_file::read_error::open_stream_failed), "open_stream_failed");
+    XCTAssertEqual(to_string(playing::signal_file::read_error::read_from_stream_failed), "read_from_stream_failed");
+    XCTAssertEqual(to_string(playing::signal_file::read_error::read_count_not_match), "read_count_not_match");
+    XCTAssertEqual(to_string(playing::signal_file::read_error::close_stream_failed), "close_stream_failed");
+}
+
 @end
