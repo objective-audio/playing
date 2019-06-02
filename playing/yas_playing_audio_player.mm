@@ -26,7 +26,6 @@ struct audio_player::impl : base::impl {
 
     // ロックここから
     std::atomic<frame_index_t> _play_frame = 0;
-    std::atomic<bool> _atomic_is_playing = false;
     // ロックここまで
 
     impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue,
@@ -95,6 +94,7 @@ struct audio_player::impl : base::impl {
     chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
     chaining::receiver<> _update_circular_buffers_receiver = nullptr;
 
+    std::atomic<bool> _atomic_is_playing = false;
     // ロックここから
     std::vector<audio_circular_buffer::ptr> _circular_buffers;
     std::optional<audio::format> _locked_format{std::nullopt};
