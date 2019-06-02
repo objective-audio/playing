@@ -21,12 +21,12 @@ using namespace yas::playing;
 
 struct audio_player::impl : base::impl {
     std::string const _root_path;
-    chaining::value::holder<bool> _is_playing_holder{false};
+    chaining::value::holder<bool> _is_playing{false};
     chaining::value::holder<std::vector<channel_index_t>> _ch_mapping{std::vector<channel_index_t>{}};
 
     // ロックここから
     std::atomic<frame_index_t> _play_frame = 0;
-    std::atomic<bool> _is_playing = false;
+    std::atomic<bool> _atomic_is_playing = false;
     // ロックここまで
 
     impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue,
@@ -139,7 +139,7 @@ struct audio_player::impl : base::impl {
                            .send_to(this->_update_circular_buffers_receiver)
                            .sync();
 
-        this->_pool += this->_is_playing_holder.chain()
+        this->_pool += this->_is_playing.chain()
                            .perform([weak_player](bool const &is_playing) {
                                if (auto player = weak_player.lock()) {
                                    player.impl_ptr<impl>()->_update_playing(is_playing);
@@ -165,7 +165,7 @@ struct audio_player::impl : base::impl {
 
             auto lock = std::unique_lock<std::recursive_mutex>(player_impl->_mutex, std::try_to_lock);
 
-            if (!player_impl->_is_playing) {
+            if (!player_impl->_atomic_is_playing) {
                 return;
             }
 
@@ -214,7 +214,7 @@ struct audio_player::impl : base::impl {
     }
 
     void _update_playing(bool is_playing) {
-        this->_is_playing = is_playing;
+        this->_atomic_is_playing = is_playing;
         this->_renderable.set_is_rendering(is_playing);
     }
 
@@ -369,7 +369,7 @@ void audio_player::set_ch_mapping(std::vector<channel_index_t> ch_mapping) {
 }
 
 void audio_player::set_playing(bool const is_playing) {
-    impl_ptr<impl>()->_is_playing_holder.set_value(is_playing);
+    impl_ptr<impl>()->_is_playing.set_value(is_playing);
 }
 
 void audio_player::seek(frame_index_t const play_frame) {
@@ -393,7 +393,7 @@ std::vector<channel_index_t> const &audio_player::ch_mapping() const {
 }
 
 bool audio_player::is_playing() const {
-    return impl_ptr<impl>()->_is_playing;
+    return impl_ptr<impl>()->_atomic_is_playing;
 }
 
 frame_index_t audio_player::play_frame() const {
@@ -401,5 +401,5 @@ frame_index_t audio_player::play_frame() const {
 }
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
-    return impl_ptr<impl>()->_is_playing_holder.chain();
+    return impl_ptr<impl>()->_is_playing.chain();
 }
