@@ -246,6 +246,9 @@ struct audio_player::impl : base::impl {
         sample_rate_t const sample_rate = std::round(format.sample_rate());
         path::timeline const tl_path{this->_root_path, "0", sample_rate};
 
+        std::vector<audio_circular_buffer::ptr> circular_buffers;
+        circular_buffers.reserve(ch_count);
+
         if (auto top_file_idx = this->_top_frag_idx(); top_file_idx && ch_count > 0) {
             auto each = make_fast_each(channel_index_t(ch_count));
             while (yas_each_next(each)) {
@@ -301,9 +304,11 @@ struct audio_player::impl : base::impl {
                         return true;
                     });
                 buffer->reload_all(*top_file_idx);
-                this->_circular_buffers.push_back(std::move(buffer));
+                circular_buffers.emplace_back(std::move(buffer));
             }
         }
+
+        this->_circular_buffers = std::move(circular_buffers);
     }
 
     audio::pcm_buffer _get_or_create_read_buffer(audio::format const &format, uint32_t const length) {
