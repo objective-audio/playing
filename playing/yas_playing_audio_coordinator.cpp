@@ -39,10 +39,6 @@ void audio_coordinator::seek(frame_index_t const play_frame) {
     impl_ptr<impl>()->_player.seek(play_frame);
 }
 
-void audio_coordinator::reload_all() {
-    impl_ptr<impl>()->_player.reload_all();
-}
-
 void audio_coordinator::reload(proc::time::range const &range) {
     auto &player = impl_ptr<impl>()->_player;
     auto const sample_rate = static_cast<proc::sample_rate_t>(this->sample_rate());

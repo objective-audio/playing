@@ -22,7 +22,6 @@ struct audio_player : base {
     void set_playing(bool const);
     void seek(frame_index_t const play_frame);
     void reload(channel_index_t const ch_idx, fragment_index_t const frag_idx);
-    void reload_all();
 
     [[nodiscard]] std::string const &root_path() const;
     [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;

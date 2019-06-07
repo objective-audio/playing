@@ -155,8 +155,7 @@ struct timeline_exporter::impl : base::impl {
 
                     auto const &root_path = exporter_impl->_root_path;
 
-                    auto result = file_manager::remove_content(root_path);
-                    if (!result) {
+                    if (auto const result = file_manager::remove_content(root_path); !result) {
                         std::runtime_error("remove timeline root directory failed.");
                     }
 
@@ -413,7 +412,7 @@ struct timeline_exporter::impl : base::impl {
 
                 auto const signal_path_str = path::signal_event{frag_path, range, event.sample_type()}.string();
 
-                if (auto result = signal_file::write(signal_path_str, event); !result) {
+                if (auto const result = signal_file::write(signal_path_str, event); !result) {
                     return error::write_signal_failed;
                 }
             }
@@ -421,7 +420,7 @@ struct timeline_exporter::impl : base::impl {
             if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
                 auto const number_path_str = path::number_events{frag_path}.string();
 
-                if (auto result = numbers_file::write(number_path_str, number_events); !result) {
+                if (auto const result = numbers_file::write(number_path_str, number_events); !result) {
                     return error::write_numbers_failed;
                 }
             }

@@ -20,7 +20,6 @@ struct audio_coordinator : base {
 
     void set_playing(bool const);
     void seek(frame_index_t const);
-    void reload_all();
     void reload(proc::time::range const &);
 
     [[nodiscard]] proc::sample_rate_t sample_rate() const;

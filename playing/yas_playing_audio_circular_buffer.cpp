@@ -28,9 +28,16 @@ audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::s
     }
 }
 
-void audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer, frame_index_t const play_frame) {
+audio_circular_buffer::read_result_t audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer,
+                                                                             frame_index_t const play_frame) {
     if (auto const &container_ptr = this->_front_container()) {
-        container_ptr->read_into_buffer(out_buffer, play_frame);
+        if (auto const result = container_ptr->read_into_buffer(out_buffer, play_frame)) {
+            return read_result_t{nullptr};
+        } else {
+            return read_result_t{read_error::read_from_container_failed};
+        }
+    } else {
+        return read_result_t{read_error::locked};
     }
 }
 

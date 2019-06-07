@@ -151,6 +151,9 @@ struct cpp {
     XCTAssertEqual(data_ptr_1[0], 1006);
     XCTAssertEqual(data_ptr_1[1], 1007);
 
+    // rotateしたバッファが読み込まれるのを待つ
+    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
+
     [self render:render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 8);
@@ -199,6 +202,81 @@ struct cpp {
     XCTAssertEqual(data_ptr_0[1], 7);
     XCTAssertEqual(data_ptr_1[0], 1006);
     XCTAssertEqual(data_ptr_1[1], 1007);
+}
+
+- (void)test_seek_waiting {
+    [self setup_files];
+
+    auto &queue = self->_cpp.playing_queue;
+
+    // リロードしてもバッファにデータが読み込まれないようにする
+    queue.suspend();
+
+    audio_player player{self->_cpp.renderer.renderable(), self->_cpp.root_path, queue, 0};
+
+    // 一応、少し待つ
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+
+    uint32_t const render_length = 2;
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
+
+    player.set_playing(true);
+
+    [self render:render_buffer];
+
+    // play_frameは進んでいない
+    XCTAssertEqual(player.play_frame(), 0);
+
+    XCTAssertEqual(data_ptr_0[0], 0);
+    XCTAssertEqual(data_ptr_0[1], 0);
+    XCTAssertEqual(data_ptr_1[0], 0);
+    XCTAssertEqual(data_ptr_1[1], 0);
+
+    // バッファにデータが読み込まれるのを待つ
+    queue.resume();
+    queue.wait_until_all_tasks_are_finished();
+
+    [self render:render_buffer];
+
+    XCTAssertEqual(player.play_frame(), 2);
+
+    XCTAssertEqual(data_ptr_0[0], 0);
+    XCTAssertEqual(data_ptr_0[1], 1);
+    XCTAssertEqual(data_ptr_1[0], 1000);
+    XCTAssertEqual(data_ptr_1[1], 1001);
+
+    // リロードしてもバッファにデータが読み込まれないようにする
+    queue.suspend();
+
+    player.seek(8);
+
+    // 一応、少し待つ
+    [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
+
+    [self render:render_buffer];
+
+    // play_frameは進んでいない
+    XCTAssertEqual(player.play_frame(), 8);
+
+    XCTAssertEqual(data_ptr_0[0], 0);
+    XCTAssertEqual(data_ptr_0[1], 0);
+    XCTAssertEqual(data_ptr_1[0], 0);
+    XCTAssertEqual(data_ptr_1[1], 0);
+
+    // バッファにデータが読み込まれるのを待つ
+    queue.resume();
+    queue.wait_until_all_tasks_are_finished();
+
+    [self render:render_buffer];
+
+    XCTAssertEqual(player.play_frame(), 10);
+
+    XCTAssertEqual(data_ptr_0[0], 8);
+    XCTAssertEqual(data_ptr_0[1], 9);
+    XCTAssertEqual(data_ptr_1[0], 1008);
+    XCTAssertEqual(data_ptr_1[1], 1009);
 }
 
 - (void)test_reload {
@@ -264,8 +342,6 @@ struct cpp {
                    });
 
     future.get();
-
-    self->_cpp.playing_queue.wait_until_all_tasks_are_finished();
 }
 
 @end

@@ -66,8 +66,9 @@ struct cpp {
     audio::pcm_buffer read_buffer{cpp.format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
-    circular_buffer->read_into_buffer(read_buffer, -3);
+    auto const result1 = circular_buffer->read_into_buffer(read_buffer, -3);
 
+    XCTAssertTrue(result1);
     XCTAssertEqual(data_ptr[0], -3);
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
@@ -77,8 +78,9 @@ struct cpp {
 
     read_buffer.clear();
 
-    circular_buffer->read_into_buffer(read_buffer, 0);
+    auto const result2 = circular_buffer->read_into_buffer(read_buffer, 0);
 
+    XCTAssertTrue(result2);
     XCTAssertEqual(data_ptr[0], 0);
     XCTAssertEqual(data_ptr[1], 1);
     XCTAssertEqual(data_ptr[2], 2);
@@ -88,8 +90,9 @@ struct cpp {
 
     read_buffer.clear();
 
-    circular_buffer->read_into_buffer(read_buffer, 3);
+    auto const result3 = circular_buffer->read_into_buffer(read_buffer, 3);
 
+    XCTAssertTrue(result3);
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);
     XCTAssertEqual(data_ptr[2], 5);
@@ -122,8 +125,9 @@ struct cpp {
     audio::pcm_buffer read_buffer{cpp.format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
 
-    circular_buffer->read_into_buffer(read_buffer, -3);
+    auto const result1 = circular_buffer->read_into_buffer(read_buffer, -3);
 
+    XCTAssertTrue(result1);
     XCTAssertEqual(data_ptr[0], -3);
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
@@ -133,8 +137,9 @@ struct cpp {
 
     read_buffer.clear();
 
-    circular_buffer->read_into_buffer(read_buffer, 0);
+    auto const result2 = circular_buffer->read_into_buffer(read_buffer, 0);
 
+    XCTAssertTrue(result2);
     XCTAssertEqual(data_ptr[0], 100);
     XCTAssertEqual(data_ptr[1], 101);
     XCTAssertEqual(data_ptr[2], 102);
@@ -144,8 +149,9 @@ struct cpp {
 
     read_buffer.clear();
 
-    circular_buffer->read_into_buffer(read_buffer, 3);
+    auto const result3 = circular_buffer->read_into_buffer(read_buffer, 3);
 
+    XCTAssertTrue(result3);
     XCTAssertEqual(data_ptr[0], 3);
     XCTAssertEqual(data_ptr[1], 4);
     XCTAssertEqual(data_ptr[2], 5);

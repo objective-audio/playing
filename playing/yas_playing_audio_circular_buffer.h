@@ -18,7 +18,14 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     using state_map_t = std::map<fragment_index_t, audio_buffer_container::state>;
     using state_map_holder_t = chaining::map::holder<fragment_index_t, audio_buffer_container::state>;
 
-    void read_into_buffer(audio::pcm_buffer &out_buffer, frame_index_t const play_frame);
+    enum read_error {
+        read_from_container_failed,
+        locked,
+    };
+
+    using read_result_t = result<std::nullptr_t, read_error>;
+
+    [[nodiscard]] read_result_t read_into_buffer(audio::pcm_buffer &out_buffer, frame_index_t const play_frame);
     void rotate_buffer(fragment_index_t const next_frag_idx);
     void reload_all(fragment_index_t const top_frag_idx);
     void reload(fragment_index_t const frag_idx);
