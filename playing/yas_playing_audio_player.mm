@@ -77,7 +77,7 @@ struct audio_player_rendering {
 
         if (auto const top_frag_idx = this->top_fragment_idx()) {
             for (auto &buffer : this->circular_buffers) {
-                buffer->reload_all(*top_frag_idx);
+                buffer->reload_all_buffers(*top_frag_idx);
             }
         }
     }
@@ -163,7 +163,7 @@ struct audio_player::impl : base::impl {
             return;
         }
 
-        rendering->circular_buffers.at(ch_idx)->reload(frag_idx);
+        rendering->circular_buffers.at(ch_idx)->reload_if_needed(frag_idx);
     }
 
     frame_index_t play_frame() {
@@ -290,7 +290,7 @@ struct audio_player::impl : base::impl {
                         read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 
                     if (info.next_frag_idx.has_value()) {
-                        circular_buffer->rotate_buffer(*info.next_frag_idx);
+                        circular_buffer->rotate_buffers(*info.next_frag_idx);
                     }
                 }
 
@@ -392,7 +392,7 @@ struct audio_player::impl : base::impl {
 
                         return true;
                     });
-                buffer->reload_all(*top_file_idx);
+                buffer->reload_all_buffers(*top_file_idx);
                 circular_buffers.emplace_back(std::move(buffer));
             }
         }

@@ -73,7 +73,7 @@ struct cpp {
     XCTAssertEqual(received.size(), 1);
     XCTAssertEqual(received.at(0).type(), chaining::event_type::fetched);
 
-    circular_buffer->reload_all(-1);
+    circular_buffer->reload_all_buffers(-1);
 
     queue.wait_until_all_tasks_are_finished();
 

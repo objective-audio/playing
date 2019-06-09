@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "yas_playing_audio_buffer_container.h"
+#include "yas_playing_audio_buffer.h"
 #include "yas_playing_audio_circular_buffer.h"
 #include "yas_playing_audio_coordinator.h"
 #include "yas_playing_audio_player.h"

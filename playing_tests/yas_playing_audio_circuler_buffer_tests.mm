@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import <audio/audio.h>
 #import <cpp_utils/cpp_utils.h>
-#import <playing/yas_playing_audio_buffer_container.h>
+#import <playing/yas_playing_audio_buffer.h>
 #import <playing/yas_playing_audio_circular_buffer.h>
 #import <playing/yas_playing_types.h>
 #import "yas_playing_test_utils.h"
@@ -60,7 +60,7 @@ struct cpp {
             return true;
         });
 
-    circular_buffer->reload_all(-1);
+    circular_buffer->reload_all_buffers(-1);
     queue.wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{cpp.format, 3};
@@ -73,7 +73,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
 
-    circular_buffer->rotate_buffer(0);
+    circular_buffer->rotate_buffers(0);
     queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
@@ -85,7 +85,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[1], 1);
     XCTAssertEqual(data_ptr[2], 2);
 
-    circular_buffer->rotate_buffer(1);
+    circular_buffer->rotate_buffers(1);
     queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
@@ -114,12 +114,12 @@ struct cpp {
                                                           return true;
                                                       });
 
-    circular_buffer->reload_all(-1);
+    circular_buffer->reload_all_buffers(-1);
     queue.wait_until_all_tasks_are_finished();
 
     offset = 100;
 
-    circular_buffer->reload(0);
+    circular_buffer->reload_if_needed(0);
     queue.wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{cpp.format, 3};
@@ -132,7 +132,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[1], -2);
     XCTAssertEqual(data_ptr[2], -1);
 
-    circular_buffer->rotate_buffer(0);
+    circular_buffer->rotate_buffers(0);
     queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
@@ -144,7 +144,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[1], 101);
     XCTAssertEqual(data_ptr[2], 102);
 
-    circular_buffer->rotate_buffer(1);
+    circular_buffer->rotate_buffers(1);
     queue.wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
@@ -166,7 +166,7 @@ struct cpp {
 
     XCTAssertEqual(circular_buffer->states().size(), 0);
 
-    circular_buffer->reload_all(-1);
+    circular_buffer->reload_all_buffers(-1);
     queue.wait_until_all_tasks_are_finished();
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
 

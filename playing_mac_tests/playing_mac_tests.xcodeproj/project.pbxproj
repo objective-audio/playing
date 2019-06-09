@@ -16,7 +16,7 @@
 		B6FB014A229B6B2C000C22F5 /* yas_playing_test_audio_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0138229B6B2C000C22F5 /* yas_playing_test_audio_renderer.cpp */; };
 		B6FB0157229B6CC0000C22F5 /* yas_playing_test_utils.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0146229B6B2C000C22F5 /* yas_playing_test_utils.mm */; };
 		B6FB0158229B6CCE000C22F5 /* yas_playing_test_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0143229B6B2C000C22F5 /* yas_playing_test_utils_tests.mm */; };
-		B6FB0159229B6D01000C22F5 /* yas_playing_audio_buffer_container_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_container_tests.mm */; };
+		B6FB0159229B6D01000C22F5 /* yas_playing_audio_buffer_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_tests.mm */; };
 		B6FB015A229B6D20000C22F5 /* yas_playing_audio_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB013D229B6B2C000C22F5 /* yas_playing_audio_utils_tests.mm */; };
 		B6FB015B229B6D23000C22F5 /* yas_playing_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB0140229B6B2C000C22F5 /* yas_playing_math_tests.mm */; };
 		B6FB015C229B6D2C000C22F5 /* yas_playing_path_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB013F229B6B2C000C22F5 /* yas_playing_path_utils_tests.mm */; };
@@ -55,7 +55,7 @@
 		B6FB0141229B6B2C000C22F5 /* yas_playing_timeline_exporter_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_exporter_tests.mm; sourceTree = "<group>"; };
 		B6FB0142229B6B2C000C22F5 /* yas_playing_audio_circular_buffer_chain_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_circular_buffer_chain_tests.mm; sourceTree = "<group>"; };
 		B6FB0143229B6B2C000C22F5 /* yas_playing_test_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_test_utils_tests.mm; sourceTree = "<group>"; };
-		B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_container_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_buffer_container_tests.mm; sourceTree = "<group>"; };
+		B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_buffer_tests.mm; sourceTree = "<group>"; };
 		B6FB0145229B6B2C000C22F5 /* yas_playing_audio_player_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_player_tests.mm; sourceTree = "<group>"; };
 		B6FB0146229B6B2C000C22F5 /* yas_playing_test_utils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_test_utils.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -119,7 +119,7 @@
 		B6FB0134229B6B2C000C22F5 /* playing_tests */ = {
 			isa = PBXGroup;
 			children = (
-				B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_container_tests.mm */,
+				B6FB0144229B6B2C000C22F5 /* yas_playing_audio_buffer_tests.mm */,
 				B6FB0142229B6B2C000C22F5 /* yas_playing_audio_circular_buffer_chain_tests.mm */,
 				B6FB0139229B6B2C000C22F5 /* yas_playing_audio_circuler_buffer_tests.mm */,
 				B6FB0145229B6B2C000C22F5 /* yas_playing_audio_player_tests.mm */,
@@ -234,7 +234,7 @@
 				B6FB015A229B6D20000C22F5 /* yas_playing_audio_utils_tests.mm in Sources */,
 				B6FB015B229B6D23000C22F5 /* yas_playing_math_tests.mm in Sources */,
 				B6FB0161229B6EC9000C22F5 /* yas_playing_signal_file_tests.mm in Sources */,
-				B6FB0159229B6D01000C22F5 /* yas_playing_audio_buffer_container_tests.mm in Sources */,
+				B6FB0159229B6D01000C22F5 /* yas_playing_audio_buffer_tests.mm in Sources */,
 				B6FB015E229B6D5A000C22F5 /* yas_playing_timeline_canceling_tests.mm in Sources */,
 				B6FB014A229B6B2C000C22F5 /* yas_playing_test_audio_renderer.cpp in Sources */,
 				B6FB015F229B6E93000C22F5 /* yas_playing_timeline_exporter_tests.mm in Sources */,

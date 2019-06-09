@@ -1,5 +1,5 @@
 //
-//  yas_playing_audio_buffer_container.h
+//  yas_playing_audio_buffer.h
 //
 
 #pragma once
@@ -13,19 +13,31 @@
 #include "yas_playing_types.h"
 
 namespace yas::playing {
-struct audio_buffer_container {
-    using ptr = std::shared_ptr<audio_buffer_container>;
-    using wptr = std::weak_ptr<audio_buffer_container>;
+struct audio_buffer {
+    using ptr = std::shared_ptr<audio_buffer>;
+    using wptr = std::weak_ptr<audio_buffer>;
 
-    enum class state {
+    enum class state_kind {
         unloaded,
         loaded,
     };
 
+    struct state {
+        using ptr = std::shared_ptr<state>;
+
+        std::optional<fragment_index_t> const frag_idx;
+        state_kind const kind;
+
+        state();
+        state(std::optional<fragment_index_t> const, state_kind const);
+    };
+
     enum class load_error {
+        locked,
         fragment_idx_is_null,
         invalid_fragment_idx,
         write_buffer_failed,
+        set_state_failed,
     };
 
     enum class read_error {
@@ -40,7 +52,7 @@ struct audio_buffer_container {
     using load_result_t = result<std::nullptr_t, load_error>;
     using read_result_t = result<std::nullptr_t, read_error>;
 
-    using load_f = std::function<bool(audio::pcm_buffer &buffer, int64_t const frag_idx)>;
+    using load_f = std::function<bool(audio::pcm_buffer &buffer, fragment_index_t const frag_idx)>;
 
     struct identifier : base {
         struct impl : base::impl {};
@@ -53,32 +65,34 @@ struct audio_buffer_container {
     [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
     [[nodiscard]] std::optional<frame_index_t> begin_frame() const;
     [[nodiscard]] audio::format const &format() const;
-    [[nodiscard]] bool contains(frame_index_t const frame) const;
 
     void prepare_loading(fragment_index_t const frag_idx);
     load_result_t load(fragment_index_t const frag_idx, load_f const &);
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, frame_index_t const play_frame) const;
 
    protected:
-    audio_buffer_container(audio::pcm_buffer &&buffer);
+    audio_buffer(audio::pcm_buffer &&buffer);
 
    private:
     audio::pcm_buffer _buffer;
-    std::optional<fragment_index_t> _frag_idx = std::nullopt;
-    state _state = state::unloaded;
+    state::ptr _state = std::make_shared<state>();
 
-    std::recursive_mutex mutable _mutex;
+    std::recursive_mutex mutable _loading_mutex;
+    std::recursive_mutex mutable _state_mutex;
+
+    bool _set_state(fragment_index_t const, state_kind const);
+    [[nodiscard]] state::ptr _try_get_state() const;
 };
 
-audio_buffer_container::ptr make_audio_buffer_container(audio::pcm_buffer &&buffer);
+audio_buffer::ptr make_audio_buffer(audio::pcm_buffer &&buffer);
 }  // namespace yas::playing
 
 namespace yas {
-std::string to_string(playing::audio_buffer_container::state const &state);
-std::string to_string(playing::audio_buffer_container::load_error const &error);
-std::string to_string(playing::audio_buffer_container::read_error const &error);
+std::string to_string(playing::audio_buffer::state_kind const &state);
+std::string to_string(playing::audio_buffer::load_error const &error);
+std::string to_string(playing::audio_buffer::read_error const &error);
 }  // namespace yas
 
-std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::state const &);
-std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::load_error const &);
-std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer_container::read_error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::state_kind const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::load_error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::read_error const &);
