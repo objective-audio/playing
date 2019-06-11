@@ -15,8 +15,8 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     using ptr = std::shared_ptr<audio_circular_buffer>;
     using wptr = std::weak_ptr<audio_circular_buffer>;
 
-    using state_map_t = std::map<fragment_index_t, audio_buffer::state>;
-    using state_map_holder_t = chaining::map::holder<fragment_index_t, audio_buffer::state>;
+    using state_map_t = std::map<std::size_t, audio_buffer::state>;
+    using state_map_holder_t = chaining::map::holder<std::size_t, audio_buffer::state>;
 
     enum read_error {
         read_from_container_failed,
@@ -41,7 +41,7 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     std::vector<audio_buffer::ptr> _buffers;
     state_map_holder_t _states_holder;
 
-    std::optional<fragment_index_t> _index_of(struct audio_buffer::identifier_t const &);
+    std::optional<fragment_index_t> _index_of(uintptr_t const);
 
    private:
     length_t const _frag_length;

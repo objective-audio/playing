@@ -62,7 +62,7 @@ struct audio_buffer {
         }
     };
 
-    using state_changed_f = std::function<void(identifier_t const &, state::ptr const &)>;
+    using state_changed_f = std::function<void(uintptr_t const, state::ptr const &)>;
 
     identifier_t const identifier;
 
