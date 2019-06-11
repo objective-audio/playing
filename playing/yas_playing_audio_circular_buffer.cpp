@@ -119,7 +119,7 @@ audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states
     return this->_states_holder.chain();
 }
 
-std::optional<fragment_index_t> audio_circular_buffer::_index_of(struct audio_buffer::identifier const &identifier) {
+std::optional<fragment_index_t> audio_circular_buffer::_index_of(struct audio_buffer::identifier_t const &identifier) {
     auto &buffers = this->_buffers;
     auto each = make_fast_each(buffers.size());
     while (yas_each_next(each)) {
@@ -144,7 +144,7 @@ struct audio_circular_buffer_factory : audio_circular_buffer {
         std::weak_ptr<audio_circular_buffer_factory> weak_factory = factory;
         this->_buffers = make_audio_buffers(
             this->_format, this->_buffer_count,
-            [weak_factory](struct audio_buffer::identifier const &identifier, audio_buffer::state::ptr const &state) {
+            [weak_factory](struct audio_buffer::identifier_t const &identifier, audio_buffer::state::ptr const &state) {
                 auto copied_id = identifier;
                 auto copied_state = state;
                 dispatch_async(dispatch_get_main_queue(), ^{

@@ -56,15 +56,15 @@ struct audio_buffer {
 
     using load_f = std::function<bool(audio::pcm_buffer &buffer, fragment_index_t const frag_idx)>;
 
-    struct identifier : base {
+    struct identifier_t : base {
         struct impl : base::impl {};
-        identifier() : base(std::make_shared<impl>()) {
+        identifier_t() : base(std::make_shared<impl>()) {
         }
     };
 
-    using state_changed_f = std::function<void(identifier const &, state::ptr const &)>;
+    using state_changed_f = std::function<void(identifier_t const &, state::ptr const &)>;
 
-    identifier const identifier;
+    identifier_t const identifier;
 
     [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
     [[nodiscard]] std::optional<frame_index_t> begin_frame() const;
