@@ -15,8 +15,8 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     using ptr = std::shared_ptr<audio_circular_buffer>;
     using wptr = std::weak_ptr<audio_circular_buffer>;
 
-    using state_map_t = std::map<std::size_t, audio_buffer::state>;
-    using state_map_holder_t = chaining::map::holder<std::size_t, audio_buffer::state>;
+    using state_map_t = std::map<std::size_t, loading_state>;
+    using state_map_holder_t = chaining::map::holder<std::size_t, loading_state>;
 
     enum read_error {
         read_from_container_failed,

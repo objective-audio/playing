@@ -10,29 +10,13 @@
 #include <cpp_utils/yas_result.h>
 #include <mutex>
 #include <optional>
+#include "yas_playing_loading_state.h"
 #include "yas_playing_types.h"
 
 namespace yas::playing {
 struct audio_buffer {
     using ptr = std::shared_ptr<audio_buffer>;
     using wptr = std::weak_ptr<audio_buffer>;
-
-    enum class state_kind {
-        unloaded,
-        loaded,
-    };
-
-    struct state {
-        using ptr = std::shared_ptr<state>;
-
-        std::optional<fragment_index_t> const frag_idx;
-        state_kind const kind;
-
-        state();
-        state(std::optional<fragment_index_t> const, state_kind const);
-
-        bool operator==(state const &rhs) const;
-    };
 
     enum class load_error {
         locked,
@@ -62,7 +46,7 @@ struct audio_buffer {
         }
     };
 
-    using state_changed_f = std::function<void(uintptr_t const, state::ptr const)>;
+    using state_changed_f = std::function<void(uintptr_t const, loading_state::ptr const)>;
 
     identifier_t const identifier;
 
@@ -79,25 +63,24 @@ struct audio_buffer {
 
    private:
     audio::pcm_buffer _buffer;
-    state::ptr _state = std::make_shared<state>();
+    loading_state::ptr _state = std::make_shared<loading_state>();
     state_changed_f _state_changed_handler = nullptr;
 
     std::recursive_mutex mutable _loading_mutex;
     std::recursive_mutex mutable _state_mutex;
 
-    bool _set_state(fragment_index_t const, state_kind const);
-    [[nodiscard]] state::ptr _try_get_state() const;
+    bool _set_state(fragment_index_t const, loading_kind const);
+    [[nodiscard]] loading_state::ptr _try_get_state() const;
 };
 
 audio_buffer::ptr make_audio_buffer(audio::pcm_buffer &&, audio_buffer::state_changed_f);
 }  // namespace yas::playing
 
 namespace yas {
-std::string to_string(playing::audio_buffer::state_kind const &state);
+
 std::string to_string(playing::audio_buffer::load_error const &error);
 std::string to_string(playing::audio_buffer::read_error const &error);
 }  // namespace yas
 
-std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::state_kind const &);
 std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::load_error const &);
 std::ostream &operator<<(std::ostream &, yas::playing::audio_buffer::read_error const &);

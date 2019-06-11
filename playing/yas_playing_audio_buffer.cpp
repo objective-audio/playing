@@ -8,25 +8,6 @@
 using namespace yas;
 using namespace yas::playing;
 
-#pragma mark - audio_buffer::state
-
-audio_buffer::state::state() : frag_idx(std::nullopt), kind(state_kind::unloaded) {
-}
-
-audio_buffer::state::state(std::optional<fragment_index_t> const frag_idx, state_kind const kind)
-    : frag_idx(frag_idx), kind(kind) {
-}
-
-bool audio_buffer::state::operator==(state const &rhs) const {
-    if (this->frag_idx && rhs.frag_idx) {
-        return *this->frag_idx == *rhs.frag_idx && this->kind == rhs.kind;
-    } else if (!this->frag_idx && !rhs.frag_idx) {
-        return this->kind == rhs.kind;
-    } else {
-        return false;
-    }
-}
-
 #pragma mark - audio_buffer
 
 audio_buffer::audio_buffer(audio::pcm_buffer &&buffer, state_changed_f &&handler)
@@ -52,13 +33,13 @@ audio::format const &audio_buffer::format() const {
 void audio_buffer::prepare_loading(fragment_index_t const frag_idx) {
     auto lock = std::unique_lock<std::recursive_mutex>(this->_loading_mutex, std::try_to_lock);
 
-    this->_set_state(frag_idx, state_kind::unloaded);
+    this->_set_state(frag_idx, loading_kind::unloaded);
 }
 
 audio_buffer::load_result_t audio_buffer::load(fragment_index_t const frag_idx, load_f const &handler) {
     std::lock_guard<std::recursive_mutex> lock(this->_loading_mutex);
 
-    state::ptr const prev_state = this->_try_get_state();
+    loading_state::ptr const prev_state = this->_try_get_state();
     if (!prev_state) {
         return load_result_t{load_error::locked};
     }
@@ -72,7 +53,7 @@ audio_buffer::load_result_t audio_buffer::load(fragment_index_t const frag_idx, 
     }
 
     if (handler(this->_buffer, frag_idx)) {
-        if (this->_set_state(frag_idx, state_kind::loaded)) {
+        if (this->_set_state(frag_idx, loading_kind::loaded)) {
             return load_result_t{nullptr};
         } else {
             return load_result_t{load_error::set_state_failed};
@@ -94,7 +75,7 @@ audio_buffer::read_result_t audio_buffer::read_into_buffer(audio::pcm_buffer &to
         return read_result_t{read_error::locked};
     }
 
-    if (state->kind != state_kind::loaded) {
+    if (state->kind != loading_kind::loaded) {
         return read_result_t{read_error::unloaded};
     }
 
@@ -122,14 +103,14 @@ audio_buffer::read_result_t audio_buffer::read_into_buffer(audio::pcm_buffer &to
     }
 }
 
-bool audio_buffer::_set_state(fragment_index_t const frag_idx, state_kind const kind) {
+bool audio_buffer::_set_state(fragment_index_t const frag_idx, loading_kind const kind) {
     std::lock_guard<std::recursive_mutex> lock(this->_state_mutex);
 
-    if (kind == state_kind::loaded && frag_idx != this->_state->frag_idx) {
+    if (kind == loading_kind::loaded && frag_idx != this->_state->frag_idx) {
         return false;
     }
 
-    this->_state = std::make_shared<state>(frag_idx, kind);
+    this->_state = std::make_shared<loading_state>(frag_idx, kind);
 
     std::thread thread{[handler = this->_state_changed_handler, identifier = this->identifier.identifier(),
                         state = this->_state] { handler(identifier, state); }};
@@ -139,7 +120,7 @@ bool audio_buffer::_set_state(fragment_index_t const frag_idx, state_kind const 
     return true;
 }
 
-audio_buffer::state::ptr audio_buffer::_try_get_state() const {
+loading_state::ptr audio_buffer::_try_get_state() const {
     if (auto lock = std::unique_lock<std::recursive_mutex>(this->_state_mutex, std::try_to_lock); lock.owns_lock()) {
         return this->_state;
     } else {
@@ -160,15 +141,6 @@ audio_buffer::ptr playing::make_audio_buffer(audio::pcm_buffer &&buffer, audio_b
 }
 
 #pragma mark -
-
-std::string yas::to_string(playing::audio_buffer::state_kind const &state) {
-    switch (state) {
-        case audio_buffer::state_kind::loaded:
-            return "loaded";
-        case audio_buffer::state_kind::unloaded:
-            return "unloaded";
-    }
-}
 
 std::string yas::to_string(audio_buffer::load_error const &error) {
     switch (error) {
@@ -200,11 +172,6 @@ std::string yas::to_string(audio_buffer::read_error const &error) {
         case audio_buffer::read_error::copy_failed:
             return "copy_failed";
     }
-}
-
-std::ostream &operator<<(std::ostream &stream, yas::playing::audio_buffer::state_kind const &value) {
-    stream << to_string(value);
-    return stream;
 }
 
 std::ostream &operator<<(std::ostream &stream, yas::playing::audio_buffer::load_error const &value) {

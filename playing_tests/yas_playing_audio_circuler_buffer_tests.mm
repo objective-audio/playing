@@ -172,9 +172,9 @@ struct cpp {
 
     XCTAssertEqual(circular_buffer->states().size(), 2);
     XCTAssertEqual(circular_buffer->states().at(0).frag_idx, -1);
-    XCTAssertEqual(circular_buffer->states().at(0).kind, audio_buffer::state_kind::loaded);
+    XCTAssertEqual(circular_buffer->states().at(0).kind, loading_kind::loaded);
     XCTAssertEqual(circular_buffer->states().at(1).frag_idx, 0);
-    XCTAssertEqual(circular_buffer->states().at(1).kind, audio_buffer::state_kind::loaded);
+    XCTAssertEqual(circular_buffer->states().at(1).kind, loading_kind::loaded);
 }
 
 @end

@@ -89,10 +89,10 @@ struct cpp {
     XCTAssertEqual(states.size(), 2);
     XCTAssertTrue(states.has_value(0));
     XCTAssertEqual(states.at(0).frag_idx, -1);
-    XCTAssertEqual(states.at(0).kind, audio_buffer::state_kind::loaded);
+    XCTAssertEqual(states.at(0).kind, loading_kind::loaded);
     XCTAssertTrue(states.has_value(1));
     XCTAssertEqual(states.at(1).frag_idx, 0);
-    XCTAssertEqual(states.at(1).kind, audio_buffer::state_kind::loaded);
+    XCTAssertEqual(states.at(1).kind, loading_kind::loaded);
 }
 
 @end
