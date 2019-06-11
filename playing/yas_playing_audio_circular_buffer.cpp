@@ -142,18 +142,17 @@ struct audio_circular_buffer_factory : audio_circular_buffer {
 
     void prepare(std::shared_ptr<audio_circular_buffer_factory> &factory) {
         std::weak_ptr<audio_circular_buffer_factory> weak_factory = factory;
-        this->_buffers = make_audio_buffers(
-            this->_format, this->_buffer_count,
-            [weak_factory](uintptr_t const identifier, audio_buffer::state::ptr const &state) {
-                auto copied_state = state;
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    if (auto factory = weak_factory.lock()) {
-                        if (auto const idx = factory->_index_of(identifier)) {
-                            factory->_states_holder.insert_or_replace(*idx, std::move(*copied_state));
-                        }
-                    }
-                });
-            });
+        this->_buffers =
+            make_audio_buffers(this->_format, this->_buffer_count,
+                               [weak_factory](uintptr_t const identifier, audio_buffer::state::ptr const state) {
+                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                       if (auto factory = weak_factory.lock()) {
+                                           if (auto const idx = factory->_index_of(identifier)) {
+                                               factory->_states_holder.insert_or_replace(*idx, std::move(*state));
+                                           }
+                                       }
+                                   });
+                               });
     }
 };
 }  // namespace yas::playing
