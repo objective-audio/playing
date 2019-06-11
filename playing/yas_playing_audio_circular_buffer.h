@@ -29,8 +29,8 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     void reload_all_buffers(fragment_index_t const top_frag_idx);
     void reload_if_needed(fragment_index_t const frag_idx);
 
-    state_map_t const &states() const;
-    state_map_holder_t::chain_t states_chain() const;
+    [[nodiscard]] state_map_t const &states() const;
+    [[nodiscard]] state_map_holder_t::chain_t states_chain() const;
 
    protected:
     audio_circular_buffer(audio::format const &format, std::size_t const container_count, task_queue &&queue,
