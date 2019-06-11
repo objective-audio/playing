@@ -14,7 +14,8 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing {
-std::vector<audio_buffer::ptr> make_audio_buffers(audio::format const &format, std::size_t const count) {
+std::vector<audio_buffer::ptr> make_audio_buffers(audio::format const &format, std::size_t const count,
+                                                  audio_buffer::state_changed_f handler) {
     auto const length = static_cast<uint32_t>(format.sample_rate());
 
     std::vector<audio_buffer::ptr> result;
@@ -22,7 +23,7 @@ std::vector<audio_buffer::ptr> make_audio_buffers(audio::format const &format, s
 
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
-        result.emplace_back(make_audio_buffer(audio::pcm_buffer{format, length}));
+        result.emplace_back(make_audio_buffer(audio::pcm_buffer{format, length}, handler));
     }
 
     return result;
@@ -35,8 +36,8 @@ audio_circular_buffer::audio_circular_buffer(audio::format const &format, std::s
       _queue(std::move(queue)),
       _priority(priority),
       _buffer_count(count),
-      _load_handler_ptr(std::make_shared<audio_buffer::load_f>(std::move(load_handler))),
-      _buffers(make_audio_buffers(format, count)) {
+      _format(format),
+      _load_handler_ptr(std::make_shared<audio_buffer::load_f>(std::move(load_handler))) {
 }
 
 audio_circular_buffer::read_result_t audio_circular_buffer::read_into_buffer(audio::pcm_buffer &out_buffer,
@@ -88,18 +89,12 @@ void audio_circular_buffer::reload_if_needed(fragment_index_t const frag_idx) {
 void audio_circular_buffer::_load_container(audio_buffer::ptr buffer_ptr, fragment_index_t const frag_idx) {
     std::lock_guard<std::recursive_mutex> lock(this->_loading_mutex);
 
-    this->_set_state_on_main(audio_buffer::state_kind::unloaded, frag_idx);
-
     buffer_ptr->prepare_loading(frag_idx);
 
     audio_circular_buffer::wptr weak = this->shared_from_this();
 
     task task{[weak, buffer_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](yas::task const &) {
-                  if (auto load_result = buffer_ptr->load(frag_idx, *load_handler_ptr)) {
-                      if (auto shared = weak.lock()) {
-                          shared->_set_state_on_main(audio_buffer::state_kind::loaded, frag_idx);
-                      }
-                  }
+                  buffer_ptr->load(frag_idx, *load_handler_ptr);
               },
               task_option_t{.push_cancel_id = buffer_ptr->identifier, .priority = this->_priority}};
 
@@ -114,22 +109,6 @@ void audio_circular_buffer::_rotate_buffers() {
     this->_current_idx.store((this->_current_idx.load() + 1) % this->_buffer_count);
 }
 
-void audio_circular_buffer::_set_state_on_main(audio_buffer::state_kind const state, fragment_index_t const frag_idx) {
-    audio_circular_buffer::wptr weak = this->shared_from_this();
-    auto handler = [weak, state, frag_idx]() {
-        if (auto shared = weak.lock()) {
-            if (state == audio_buffer::state_kind::loaded) {
-                shared->_states_holder.insert_or_replace(frag_idx, state);
-            } else {
-                shared->_states_holder.erase_for_key(frag_idx);
-            }
-        }
-    };
-    dispatch_async(dispatch_get_main_queue(), ^{
-        handler();
-    });
-}
-
 audio_circular_buffer::state_map_t const &audio_circular_buffer::states() const {
     assert(thread::is_main());
     return this->_states_holder.raw();
@@ -140,6 +119,18 @@ audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states
     return this->_states_holder.chain();
 }
 
+std::optional<fragment_index_t> audio_circular_buffer::_index_of(struct audio_buffer::identifier const &identifier) {
+    auto &buffers = this->_buffers;
+    auto each = make_fast_each(buffers.size());
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (buffers.at(idx)->identifier == identifier) {
+            return idx;
+        }
+    }
+    return std::nullopt;
+}
+
 #pragma mark -
 
 namespace yas::playing {
@@ -148,6 +139,23 @@ struct audio_circular_buffer_factory : audio_circular_buffer {
                                   task_priority_t const priority, audio_buffer::load_f &&handler)
         : audio_circular_buffer(format, container_count, std::move(queue), priority, std::move(handler)) {
     }
+
+    void prepare(std::shared_ptr<audio_circular_buffer_factory> &factory) {
+        std::weak_ptr<audio_circular_buffer_factory> weak_factory = factory;
+        this->_buffers = make_audio_buffers(
+            this->_format, this->_buffer_count,
+            [weak_factory](struct audio_buffer::identifier const &identifier, audio_buffer::state::ptr const &state) {
+                auto copied_id = identifier;
+                auto copied_state = state;
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    if (auto factory = weak_factory.lock()) {
+                        if (auto const idx = factory->_index_of(copied_id)) {
+                            factory->_states_holder.insert_or_replace(*idx, std::move(*copied_state));
+                        }
+                    }
+                });
+            });
+    }
 };
 }  // namespace yas::playing
 
@@ -155,6 +163,8 @@ audio_circular_buffer::ptr playing::make_audio_circular_buffer(audio::format con
                                                                std::size_t const container_count, task_queue queue,
                                                                task_priority_t const priority,
                                                                audio_buffer::load_f handler) {
-    return std::make_shared<audio_circular_buffer_factory>(format, container_count, std::move(queue), priority,
-                                                           std::move(handler));
+    auto ptr = std::make_shared<audio_circular_buffer_factory>(format, container_count, std::move(queue), priority,
+                                                               std::move(handler));
+    ptr->prepare(ptr);
+    return ptr;
 }

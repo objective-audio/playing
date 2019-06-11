@@ -171,8 +171,10 @@ struct cpp {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
 
     XCTAssertEqual(circular_buffer->states().size(), 2);
-    XCTAssertEqual(circular_buffer->states().count(-1), 1);
-    XCTAssertEqual(circular_buffer->states().count(0), 1);
+    XCTAssertEqual(circular_buffer->states().at(0).frag_idx, -1);
+    XCTAssertEqual(circular_buffer->states().at(0).kind, audio_buffer::state_kind::loaded);
+    XCTAssertEqual(circular_buffer->states().at(1).frag_idx, 0);
+    XCTAssertEqual(circular_buffer->states().at(1).kind, audio_buffer::state_kind::loaded);
 }
 
 @end

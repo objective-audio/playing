@@ -80,15 +80,19 @@ struct cpp {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
 
     XCTAssertEqual(received.size(), 5);
-    XCTAssertEqual(received.at(1).type(), chaining::event_type::erased);
+    XCTAssertEqual(received.at(1).type(), chaining::event_type::inserted);
     // 間の2つの順番は不定
-    //    XCTAssertEqual(received.at(2).type(), chaining::event_type::erased);
-    //    XCTAssertEqual(received.at(3).type(), chaining::event_type::inserted);
-    XCTAssertEqual(received.at(4).type(), chaining::event_type::inserted);
+    //    XCTAssertEqual(received.at(2).type(), chaining::event_type::inserted);
+    //    XCTAssertEqual(received.at(3).type(), chaining::event_type::replaced);
+    XCTAssertEqual(received.at(4).type(), chaining::event_type::replaced);
 
     XCTAssertEqual(states.size(), 2);
-    XCTAssertTrue(states.has_value(-1));
     XCTAssertTrue(states.has_value(0));
+    XCTAssertEqual(states.at(0).frag_idx, -1);
+    XCTAssertEqual(states.at(0).kind, audio_buffer::state_kind::loaded);
+    XCTAssertTrue(states.has_value(1));
+    XCTAssertEqual(states.at(1).frag_idx, 0);
+    XCTAssertEqual(states.at(1).kind, audio_buffer::state_kind::loaded);
 }
 
 @end

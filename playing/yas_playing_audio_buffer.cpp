@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_buffer.h"
+#include <thread>
 
 using namespace yas;
 using namespace yas::playing;
@@ -16,9 +17,20 @@ audio_buffer::state::state(std::optional<fragment_index_t> const frag_idx, state
     : frag_idx(frag_idx), kind(kind) {
 }
 
+bool audio_buffer::state::operator==(state const &rhs) const {
+    if (this->frag_idx && rhs.frag_idx) {
+        return *this->frag_idx == *rhs.frag_idx && this->kind == rhs.kind;
+    } else if (!this->frag_idx && !rhs.frag_idx) {
+        return this->kind == rhs.kind;
+    } else {
+        return false;
+    }
+}
+
 #pragma mark - audio_buffer
 
-audio_buffer::audio_buffer(audio::pcm_buffer &&buffer) : _buffer(std::move(buffer)) {
+audio_buffer::audio_buffer(audio::pcm_buffer &&buffer, state_changed_f &&handler)
+    : _buffer(std::move(buffer)), _state_changed_handler(std::move(handler)) {
 }
 
 std::optional<fragment_index_t> audio_buffer::fragment_idx() const {
@@ -119,6 +131,12 @@ bool audio_buffer::_set_state(fragment_index_t const frag_idx, state_kind const 
 
     this->_state = std::make_shared<state>(frag_idx, kind);
 
+    std::thread thread{[handler = this->_state_changed_handler, identifier = this->identifier, state = this->_state] {
+        handler(identifier, state);
+    }};
+
+    thread.detach();
+
     return true;
 }
 
@@ -133,12 +151,13 @@ audio_buffer::state::ptr audio_buffer::_try_get_state() const {
 #pragma mark -
 
 struct audio_buffer_factory : audio_buffer {
-    audio_buffer_factory(audio::pcm_buffer &&buffer) : audio_buffer(std::move(buffer)) {
+    audio_buffer_factory(audio::pcm_buffer &&buffer, state_changed_f &&handler)
+        : audio_buffer(std::move(buffer), std::move(handler)) {
     }
 };
 
-audio_buffer::ptr playing::make_audio_buffer(audio::pcm_buffer &&buffer) {
-    return std::make_shared<audio_buffer_factory>(std::move(buffer));
+audio_buffer::ptr playing::make_audio_buffer(audio::pcm_buffer &&buffer, audio_buffer::state_changed_f handler) {
+    return std::make_shared<audio_buffer_factory>(std::move(buffer), std::move(handler));
 }
 
 #pragma mark -

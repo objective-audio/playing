@@ -30,6 +30,8 @@ struct audio_buffer {
 
         state();
         state(std::optional<fragment_index_t> const, state_kind const);
+
+        bool operator==(state const &rhs) const;
     };
 
     enum class load_error {
@@ -60,6 +62,8 @@ struct audio_buffer {
         }
     };
 
+    using state_changed_f = std::function<void(identifier const &, state::ptr const &)>;
+
     identifier const identifier;
 
     [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
@@ -71,11 +75,12 @@ struct audio_buffer {
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, frame_index_t const play_frame) const;
 
    protected:
-    audio_buffer(audio::pcm_buffer &&buffer);
+    audio_buffer(audio::pcm_buffer &&, state_changed_f &&);
 
    private:
     audio::pcm_buffer _buffer;
     state::ptr _state = std::make_shared<state>();
+    state_changed_f _state_changed_handler = nullptr;
 
     std::recursive_mutex mutable _loading_mutex;
     std::recursive_mutex mutable _state_mutex;
@@ -84,7 +89,7 @@ struct audio_buffer {
     [[nodiscard]] state::ptr _try_get_state() const;
 };
 
-audio_buffer::ptr make_audio_buffer(audio::pcm_buffer &&buffer);
+audio_buffer::ptr make_audio_buffer(audio::pcm_buffer &&, audio_buffer::state_changed_f);
 }  // namespace yas::playing
 
 namespace yas {

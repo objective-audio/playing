@@ -19,7 +19,7 @@ static audio::format make_format(double sample_rate) {
 
 static audio_buffer::ptr make_container(audio::format format, uint32_t const file_length) {
     audio::pcm_buffer container_buffer{format, file_length};
-    return make_audio_buffer(std::move(container_buffer));
+    return make_audio_buffer(std::move(container_buffer), [](auto const &, auto const &) {});
 }
 
 static audio_buffer::ptr make_container(uint32_t const file_length) {
