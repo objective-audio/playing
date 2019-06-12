@@ -134,6 +134,7 @@ struct audio_player::impl : base::impl {
     std::string const _root_path;
     chaining::value::holder<bool> _is_playing{false};
     chaining::value::holder<std::vector<channel_index_t>> _ch_mapping{std::vector<channel_index_t>{}};
+    state_map_vector_holder_t _state_holder;
 
     impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue,
          task_priority_t const priority)
@@ -176,6 +177,7 @@ struct audio_player::impl : base::impl {
 
    private:
     chaining::observer_pool _pool;
+    chaining::observer_pool _state_pool;
 
     task_queue const _queue;
     task_priority_t const _priority;
@@ -320,7 +322,16 @@ struct audio_player::impl : base::impl {
         }
         auto const &format = *format_opt;
 
+        this->_state_pool.invalidate();
+        this->_state_holder.clear();
+
         auto circular_buffers = this->_make_circular_buffers(format, play_frame);
+
+        for (auto const &buffer : circular_buffers) {
+            state_map_holder_t map_holder;
+            this->_state_pool += buffer->states_chain().send_to(map_holder.receiver()).sync();
+            this->_state_holder.push_back(std::move(map_holder));
+        }
 
         this->_rendering = std::make_shared<audio_player_rendering>(this->_is_playing.raw(), play_frame, format,
                                                                     std::move(circular_buffers));
@@ -465,4 +476,8 @@ frame_index_t audio_player::play_frame() const {
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
     return impl_ptr<impl>()->_is_playing.chain();
+}
+
+state_map_vector_holder_t::chain_t audio_player::state_chain() const {
+    return impl_ptr<impl>()->_state_holder.chain();
 }

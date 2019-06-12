@@ -8,6 +8,7 @@
 #include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_task.h>
 #include "yas_playing_audio_player_protocol.h"
+#include "yas_playing_loading_state.h"
 #include "yas_playing_types.h"
 
 namespace yas::playing {
@@ -29,5 +30,6 @@ struct audio_player : base {
     [[nodiscard]] frame_index_t play_frame() const;
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
+    [[nodiscard]] state_map_vector_holder_t::chain_t state_chain() const;
 };
 }  // namespace yas::playing

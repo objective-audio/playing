@@ -28,6 +28,7 @@ struct loading_state {
 
 using state_map_t = std::map<std::size_t, loading_state>;
 using state_map_holder_t = chaining::map::holder<std::size_t, loading_state>;
+using state_map_vector_holder_t = chaining::vector::holder<state_map_holder_t>;
 }  // namespace yas::playing
 
 namespace yas {
