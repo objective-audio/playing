@@ -59,7 +59,7 @@ struct cpp {
 
     chaining::observer_pool pool;
 
-    playing::audio_circular_buffer::state_map_holder_t states;
+    playing::state_map_holder_t states;
 
     pool += circular_buffer->states_chain().send_to(states.receiver()).sync();
 

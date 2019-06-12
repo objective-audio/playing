@@ -109,12 +109,12 @@ void audio_circular_buffer::_rotate_buffers() {
     this->_current_idx.store((this->_current_idx.load() + 1) % this->_buffer_count);
 }
 
-audio_circular_buffer::state_map_t const &audio_circular_buffer::states() const {
+state_map_t const &audio_circular_buffer::states() const {
     assert(thread::is_main());
     return this->_states_holder.raw();
 }
 
-audio_circular_buffer::state_map_holder_t::chain_t audio_circular_buffer::states_chain() const {
+state_map_holder_t::chain_t audio_circular_buffer::states_chain() const {
     assert(thread::is_main());
     return this->_states_holder.chain();
 }

@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <chaining/yas_chaining_umbrella.h>
+#include <map>
 #include "yas_playing_types.h"
 
 namespace yas::playing {
@@ -23,6 +25,9 @@ struct loading_state {
 
     bool operator==(loading_state const &rhs) const;
 };
+
+using state_map_t = std::map<std::size_t, loading_state>;
+using state_map_holder_t = chaining::map::holder<std::size_t, loading_state>;
 }  // namespace yas::playing
 
 namespace yas {

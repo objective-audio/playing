@@ -5,7 +5,6 @@
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
-#include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_task.h>
 #include <deque>
 #include "yas_playing_audio_buffer.h"
@@ -14,9 +13,6 @@ namespace yas::playing {
 struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffer> {
     using ptr = std::shared_ptr<audio_circular_buffer>;
     using wptr = std::weak_ptr<audio_circular_buffer>;
-
-    using state_map_t = std::map<std::size_t, loading_state>;
-    using state_map_holder_t = chaining::map::holder<std::size_t, loading_state>;
 
     enum read_error {
         read_from_container_failed,
