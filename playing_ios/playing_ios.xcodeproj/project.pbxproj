@@ -148,8 +148,6 @@
 			children = (
 				B6DCC41C229AAEE7007F88B7 /* yas_playing_audio_buffer.cpp */,
 				B6DCC418229AAEE7007F88B7 /* yas_playing_audio_buffer.h */,
-				B67A4B7822AFEDBE00F9D183 /* yas_playing_loading_state.cpp */,
-				B67A4B7922AFEDBE00F9D183 /* yas_playing_loading_state.h */,
 				B6DCC426229AAEE7007F88B7 /* yas_playing_audio_circular_buffer.cpp */,
 				B6DCC425229AAEE7007F88B7 /* yas_playing_audio_circular_buffer.h */,
 				B6DCC421229AAEE7007F88B7 /* yas_playing_audio_configulation.h */,
@@ -163,6 +161,8 @@
 				B6DCC41D229AAEE7007F88B7 /* yas_playing_audio_renderer.h */,
 				B6DCC41A229AAEE7007F88B7 /* yas_playing_audio_utils.cpp */,
 				B6DCC430229AAEE7007F88B7 /* yas_playing_audio_utils.h */,
+				B67A4B7822AFEDBE00F9D183 /* yas_playing_loading_state.cpp */,
+				B67A4B7922AFEDBE00F9D183 /* yas_playing_loading_state.h */,
 				B6DCC435229AAEE7007F88B7 /* yas_playing_math.cpp */,
 				B6DCC427229AAEE7007F88B7 /* yas_playing_math.h */,
 				B6DCC42A229AAEE7007F88B7 /* yas_playing_numbers_file.cpp */,
