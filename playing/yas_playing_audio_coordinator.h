@@ -9,6 +9,7 @@
 #include <cpp_utils/yas_base.h>
 #include <processing/yas_processing_time.h>
 #include "yas_playing_audio_configulation.h"
+#include "yas_playing_loading_state.h"
 #include "yas_playing_types.h"
 
 namespace yas::playing {
@@ -32,5 +33,6 @@ struct audio_coordinator : base {
     [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
+    [[nodiscard]] state_map_vector_holder_t::chain_t state_chain() const;
 };
 }  // namespace yas::playing
