@@ -55,6 +55,14 @@ void audio_coordinator::reload(proc::time::range const &range) {
     }
 }
 
+bool audio_coordinator::is_playing() const {
+    return impl_ptr<impl>()->_player.is_playing();
+}
+
+frame_index_t audio_coordinator::play_frame() const {
+    return impl_ptr<impl>()->_player.play_frame();
+}
+
 proc::sample_rate_t audio_coordinator::sample_rate() const {
     return impl_ptr<impl>()->_renderer.sample_rate();
 }

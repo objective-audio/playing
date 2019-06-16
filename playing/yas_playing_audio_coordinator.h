@@ -22,6 +22,9 @@ struct audio_coordinator : base {
     void seek(frame_index_t const);
     void reload(proc::time::range const &);
 
+    bool is_playing() const;
+    frame_index_t play_frame() const;
+
     [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
