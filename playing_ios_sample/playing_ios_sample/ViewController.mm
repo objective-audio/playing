@@ -23,6 +23,7 @@ struct view_controller_cpp {
 @interface ViewController ()
 
 @property (nonatomic, retain) IBOutlet UIButton *playButton;
+@property (nonatomic, retain) IBOutlet UILabel *stateLabel;
 
 @end
 
@@ -32,6 +33,7 @@ struct view_controller_cpp {
 
 - (void)dealloc {
     [_playButton release];
+    [_stateLabel release];
     [super dealloc];
 }
 
