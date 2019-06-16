@@ -78,3 +78,7 @@ std::size_t audio_coordinator::channel_count() const {
 chaining::chain_sync_t<audio_configuration> audio_coordinator::configuration_chain() const {
     return impl_ptr<impl>()->_renderer.configuration_chain();
 }
+
+chaining::chain_sync_t<bool> audio_coordinator::is_playing_chain() const {
+    return impl_ptr<impl>()->_player.is_playing_chain();
+}
