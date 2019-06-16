@@ -14,6 +14,8 @@ namespace yas::playing::sample {
 struct view_controller_cpp {
     std::shared_ptr<sample::controller> controller{nullptr};
 
+    chaining::value::holder<bool> is_playing{false};
+
     chaining::observer_pool pool;
 };
 }
@@ -40,7 +42,9 @@ struct view_controller_cpp {
 
     auto &controller = self->_cpp.controller;
 
-    controller->pool += controller->coordinator.is_playing_chain()
+    controller->pool += controller->coordinator.is_playing_chain().send_to(self->_cpp.is_playing).sync();
+
+    controller->pool += self->_cpp.is_playing.chain()
                             .perform([unowned_self](bool const &is_playing) {
                                 NSString *title = is_playing ? @"Stop" : @"Play";
                                 ViewController *viewController = [unowned_self.object() object];
