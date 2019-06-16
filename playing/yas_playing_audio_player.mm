@@ -184,20 +184,20 @@ struct audio_player::impl : base::impl {
     audio_renderable _renderable;
     chaining::value::holder<std::size_t> _ch_count{std::size_t(0)};
     chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
-    chaining::receiver<> _update_rendering_receiver = nullptr;
+    chaining::perform_receiver<> _update_rendering_receiver = nullptr;
     audio_player_rendering::ptr _rendering = nullptr;
     frame_index_t _last_play_frame = 0;
 
     void _setup_chaining(audio_player &player) {
         auto weak_player = to_weak(player);
 
-        this->_update_rendering_receiver = chaining::receiver<>{[weak_player](auto const &) {
+        this->_update_rendering_receiver = chaining::perform_receiver<>{[weak_player](auto const &) {
             if (auto player = weak_player.lock()) {
                 player.impl_ptr<impl>()->_update_rendering();
             }
         }};
 
-        this->_pool += this->_ch_mapping.chain().to_null().send_to(this->_update_rendering_receiver).sync();
+        this->_pool += this->_ch_mapping.chain().send_null(this->_update_rendering_receiver).sync();
 
         this->_pool +=
             this->_renderable.chain_sample_rate()
@@ -212,10 +212,10 @@ struct audio_player::impl : base::impl {
                         return std::optional<audio::format>{std::nullopt};
                     }
                 })
-                .send_to(this->_format.receiver())
+                .send_to(this->_format)
                 .sync();
 
-        this->_pool += this->_renderable.chain_channel_count().send_to(this->_ch_count.receiver()).sync();
+        this->_pool += this->_renderable.chain_channel_count().send_to(this->_ch_count).sync();
 
         this->_pool += this->_format.chain()
                            .combine(this->_ch_count.chain())
@@ -329,7 +329,7 @@ struct audio_player::impl : base::impl {
 
         for (auto const &buffer : circular_buffers) {
             state_map_holder_t map_holder;
-            this->_state_pool += buffer->states_chain().send_to(map_holder.receiver()).sync();
+            this->_state_pool += buffer->states_chain().send_to(map_holder).sync();
             this->_state_holder.push_back(std::move(map_holder));
         }
 

@@ -61,7 +61,7 @@ struct cpp {
 
     playing::state_map_holder_t states;
 
-    pool += circular_buffer->states_chain().send_to(states.receiver()).sync();
+    pool += circular_buffer->states_chain().send_to(states).sync();
 
     XCTAssertEqual(states.size(), 0);
 
