@@ -15,15 +15,21 @@ struct view_controller_cpp {
     std::shared_ptr<sample::controller> controller{nullptr};
 
     chaining::value::holder<bool> is_playing{false};
+    chaining::value::holder<audio_configuration> configuration{
+        audio_configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0}};
     playing::state_map_vector_holder_t playing_buffer_state;
 
     chaining::observer_pool pool;
+
+    objc_ptr<CADisplayLink *> display_link;
 };
 }
 
 @interface ViewController ()
 
 @property (nonatomic, retain) IBOutlet UIButton *playButton;
+@property (nonatomic, retain) IBOutlet UILabel *playFrameLabel;
+@property (nonatomic, retain) IBOutlet UILabel *configurationLabel;
 @property (nonatomic, retain) IBOutlet UILabel *stateLabel;
 
 @end
@@ -34,6 +40,8 @@ struct view_controller_cpp {
 
 - (void)dealloc {
     [_playButton release];
+    [_playFrameLabel release];
+    [_configurationLabel release];
     [_stateLabel release];
     [super dealloc];
 }
@@ -46,6 +54,7 @@ struct view_controller_cpp {
     auto &controller = self->_cpp.controller;
 
     controller->pool += controller->coordinator.chain_is_playing().send_to(self->_cpp.is_playing).sync();
+    controller->pool += controller->coordinator.chain_configuration().send_to(self->_cpp.configuration).sync();
     controller->pool += controller->coordinator.chain_state().send_to(self->_cpp.playing_buffer_state).sync();
 
     controller->pool += self->_cpp.is_playing.chain()
@@ -55,12 +64,25 @@ struct view_controller_cpp {
                                 [viewController.playButton setTitle:title forState:UIControlStateNormal];
                             })
                             .sync();
+    controller->pool += self->_cpp.configuration.chain()
+                            .perform([unowned_self](auto const &) {
+                                ViewController *viewController = [unowned_self.object() object];
+                                [viewController _update_configuration_label];
+                            })
+                            .sync();
     controller->pool += self->_cpp.playing_buffer_state.chain()
                             .perform([unowned_self](auto const &) {
                                 ViewController *viewController = [unowned_self.object() object];
                                 [viewController _update_state_label];
                             })
                             .sync();
+
+    self->_cpp.display_link = make_objc_ptr<CADisplayLink *>([self]() {
+        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update_play_frame:)];
+        displayLink.preferredFramesPerSecond = 30;
+        [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+        return displayLink;
+    });
 }
 
 - (void)set_controller:(std::shared_ptr<yas::playing::sample::controller>)controller {
@@ -72,14 +94,21 @@ struct view_controller_cpp {
     coordinator.set_playing(!coordinator.is_playing());
 }
 
-- (void)_update_state_label {
-    std::vector<std::string> ch_texts;
+- (void)_update_configuration_label {
+    std::vector<std::string> texts;
 
     auto &coordinator = self->_cpp.controller->coordinator;
-    ch_texts.emplace_back("sample rate : " + std::to_string(coordinator.sample_rate()));
-    ch_texts.emplace_back("channel count : " + std::to_string(coordinator.channel_count()));
-    ch_texts.emplace_back("pcm format : " + to_string(coordinator.pcm_format()));
-    ch_texts.emplace_back("");
+    texts.emplace_back("sample rate : " + std::to_string(coordinator.sample_rate()));
+    texts.emplace_back("channel count : " + std::to_string(coordinator.channel_count()));
+    texts.emplace_back("pcm format : " + to_string(coordinator.pcm_format()));
+
+    std::string text = joined(texts, "\n");
+
+    self.configurationLabel.text = (NSString *)to_cf_object(text);
+}
+
+- (void)_update_state_label {
+    std::vector<std::string> ch_texts;
 
     auto &state = self->_cpp.playing_buffer_state;
     channel_index_t ch_idx = 0;
@@ -98,9 +127,12 @@ struct view_controller_cpp {
         ch_texts.emplace_back(buf_texts.size() > 0 ? joined(buf_texts, "\n") : "empty");
     }
 
-    std::string text = joined(ch_texts, "\n");
-
-    self.stateLabel.text = (NSString *)to_cf_object(text);
+    self.stateLabel.text = (NSString *)to_cf_object(joined(ch_texts, "\n"));
 }
 
+- (void)update_play_frame:(CADisplayLink *)displayLink {
+    std::string const play_frame_str =
+        "play_frame : " + std::to_string(self->_cpp.controller->coordinator.play_frame());
+    self.playFrameLabel.text = (NSString *)to_cf_object(play_frame_str);
+}
 @end
