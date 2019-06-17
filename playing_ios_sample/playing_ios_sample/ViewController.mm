@@ -28,6 +28,8 @@ struct view_controller_cpp {
 @interface ViewController ()
 
 @property (nonatomic, retain) IBOutlet UIButton *playButton;
+@property (nonatomic, retain) IBOutlet UIButton *minusButton;
+@property (nonatomic, retain) IBOutlet UIButton *plusButton;
 @property (nonatomic, retain) IBOutlet UILabel *playFrameLabel;
 @property (nonatomic, retain) IBOutlet UILabel *configurationLabel;
 @property (nonatomic, retain) IBOutlet UILabel *stateLabel;
@@ -40,6 +42,8 @@ struct view_controller_cpp {
 
 - (void)dealloc {
     [_playButton release];
+    [_minusButton release];
+    [_plusButton release];
     [_playFrameLabel release];
     [_configurationLabel release];
     [_stateLabel release];
@@ -48,6 +52,9 @@ struct view_controller_cpp {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+
+    [self.minusButton setTitle:@"minus1s" forState:UIControlStateNormal];
+    [self.plusButton setTitle:@"plus1s" forState:UIControlStateNormal];
 
     auto unowned_self = make_objc_ptr([[YASUnownedObject<ViewController *> alloc] initWithObject:self]);
 
@@ -92,6 +99,16 @@ struct view_controller_cpp {
 - (IBAction)playButtonTapped:(UIButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
     coordinator.set_playing(!coordinator.is_playing());
+}
+
+- (IBAction)minusButtonTapped:(UIButton *)sender {
+    auto &coordinator = self->_cpp.controller->coordinator;
+    coordinator.seek(coordinator.play_frame() - coordinator.sample_rate());
+}
+
+- (IBAction)plusButtonTapped:(UIButton *)sender {
+    auto &coordinator = self->_cpp.controller->coordinator;
+    coordinator.seek(coordinator.play_frame() + coordinator.sample_rate());
 }
 
 - (void)_update_configuration_label {
