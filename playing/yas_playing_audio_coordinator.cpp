@@ -75,14 +75,14 @@ std::size_t audio_coordinator::channel_count() const {
     return impl_ptr<impl>()->_renderer.channel_count();
 }
 
-chaining::chain_sync_t<audio_configuration> audio_coordinator::configuration_chain() const {
+chaining::chain_sync_t<audio_configuration> audio_coordinator::chain_configuration() const {
     return impl_ptr<impl>()->_renderer.configuration_chain();
 }
 
-chaining::chain_sync_t<bool> audio_coordinator::is_playing_chain() const {
+chaining::chain_sync_t<bool> audio_coordinator::chain_is_playing() const {
     return impl_ptr<impl>()->_player.is_playing_chain();
 }
 
-state_map_vector_holder_t::chain_t audio_coordinator::state_chain() const {
+state_map_vector_holder_t::chain_t audio_coordinator::chain_state() const {
     return impl_ptr<impl>()->_player.state_chain();
 }

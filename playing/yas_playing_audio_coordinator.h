@@ -30,9 +30,8 @@ struct audio_coordinator : base {
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
 
-    [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
-
-    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
-    [[nodiscard]] state_map_vector_holder_t::chain_t state_chain() const;
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> chain_configuration() const;
+    [[nodiscard]] chaining::chain_sync_t<bool> chain_is_playing() const;
+    [[nodiscard]] state_map_vector_holder_t::chain_t chain_state() const;
 };
 }  // namespace yas::playing

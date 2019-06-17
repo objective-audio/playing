@@ -45,8 +45,8 @@ struct view_controller_cpp {
 
     auto &controller = self->_cpp.controller;
 
-    controller->pool += controller->coordinator.is_playing_chain().send_to(self->_cpp.is_playing).sync();
-    controller->pool += controller->coordinator.state_chain().send_to(self->_cpp.playing_buffer_state).sync();
+    controller->pool += controller->coordinator.chain_is_playing().send_to(self->_cpp.is_playing).sync();
+    controller->pool += controller->coordinator.chain_state().send_to(self->_cpp.playing_buffer_state).sync();
 
     controller->pool += self->_cpp.is_playing.chain()
                             .perform([unowned_self](bool const &is_playing) {
