@@ -86,13 +86,14 @@ struct view_controller_cpp {
 
     for (auto &ch_state : state.raw()) {
         std::vector<std::string> buf_texts;
-        buf_texts.emplace_back("ch : " + std::to_string(ch_idx++));
+        buf_texts.emplace_back("channel : " + std::to_string(ch_idx++));
         for (auto &buf_pair : ch_state.raw()) {
             auto buf_idx_str = std::to_string(buf_pair.first);
             auto &buf_state = buf_pair.second;
             auto frag_idx_str = buf_state.frag_idx ? std::to_string(*buf_state.frag_idx) : "-";
             auto frag_kind_str = to_string(buf_state.kind);
-            buf_texts.emplace_back("  " + buf_idx_str + " : " + frag_idx_str + " : " + frag_kind_str);
+            buf_texts.emplace_back("  buffer:" + buf_idx_str + ", fragment:" + frag_idx_str +
+                                   ", kind:" + frag_kind_str);
         }
         ch_texts.emplace_back(buf_texts.size() > 0 ? joined(buf_texts, "\n") : "empty");
     }
