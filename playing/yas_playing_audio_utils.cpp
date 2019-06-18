@@ -4,6 +4,7 @@
 
 #include "yas_playing_audio_utils.h"
 #include <algorithm>
+#include "yas_playing_math.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -11,7 +12,7 @@ using namespace yas::playing;
 namespace yas::playing::audio_utils {
 static uint32_t processing_length(frame_index_t const play_frame, frame_index_t const next_frame,
                                   uint32_t const file_length) {
-    return std::min(uint32_t(next_frame - play_frame), uint32_t(file_length - (play_frame % file_length)));
+    return std::min(uint32_t(next_frame - play_frame), uint32_t(file_length - math::mod_int(play_frame, file_length)));
 }
 
 static std::optional<int64_t> get_next_file_idx(frame_index_t const play_frame, uint32_t const proc_length,
