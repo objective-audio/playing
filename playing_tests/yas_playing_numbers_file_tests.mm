@@ -43,12 +43,12 @@ struct cpp {
     auto const path = file_path{self->_cpp.root_path}.appending("numbers").string();
 
     numbers_file::event_map_t write_events{
-        {0, proc::make_number_event(double(0.0))},   {1, proc::make_number_event(float(1.0))},
-        {2, proc::make_number_event(int64_t(2))},    {3, proc::make_number_event(uint64_t(3))},
-        {4, proc::make_number_event(int32_t(4))},    {5, proc::make_number_event(uint32_t(5))},
-        {6, proc::make_number_event(int16_t(6))},    {7, proc::make_number_event(uint16_t(7))},
-        {8, proc::make_number_event(int8_t(8))},     {9, proc::make_number_event(uint8_t(9))},
-        {10, proc::make_number_event(boolean(true))}};
+        {0, proc::number_event::make_shared(double(0.0))},   {1, proc::number_event::make_shared(float(1.0))},
+        {2, proc::number_event::make_shared(int64_t(2))},    {3, proc::number_event::make_shared(uint64_t(3))},
+        {4, proc::number_event::make_shared(int32_t(4))},    {5, proc::number_event::make_shared(uint32_t(5))},
+        {6, proc::number_event::make_shared(int16_t(6))},    {7, proc::number_event::make_shared(uint16_t(7))},
+        {8, proc::number_event::make_shared(int8_t(8))},     {9, proc::number_event::make_shared(uint8_t(9))},
+        {10, proc::number_event::make_shared(boolean(true))}};
 
     auto write_result = numbers_file::write(path, write_events);
 
@@ -62,17 +62,17 @@ struct cpp {
 
     XCTAssertEqual(read_events.size(), 11);
 
-    XCTAssertEqual(read_events.find(0)->second, proc::make_number_event(double(0.0)));
-    XCTAssertEqual(read_events.find(1)->second, proc::make_number_event(float(1.0)));
-    XCTAssertEqual(read_events.find(2)->second, proc::make_number_event(int64_t(2)));
-    XCTAssertEqual(read_events.find(3)->second, proc::make_number_event(uint64_t(3)));
-    XCTAssertEqual(read_events.find(4)->second, proc::make_number_event(int32_t(4)));
-    XCTAssertEqual(read_events.find(5)->second, proc::make_number_event(uint32_t(5)));
-    XCTAssertEqual(read_events.find(6)->second, proc::make_number_event(int16_t(6)));
-    XCTAssertEqual(read_events.find(7)->second, proc::make_number_event(uint16_t(7)));
-    XCTAssertEqual(read_events.find(8)->second, proc::make_number_event(int8_t(8)));
-    XCTAssertEqual(read_events.find(9)->second, proc::make_number_event(uint8_t(9)));
-    XCTAssertEqual(read_events.find(10)->second, proc::make_number_event(boolean(true)));
+    XCTAssertTrue(read_events.find(0)->second->is_equal(proc::number_event::make_shared(double(0.0))));
+    XCTAssertTrue(read_events.find(1)->second->is_equal(proc::number_event::make_shared(float(1.0))));
+    XCTAssertTrue(read_events.find(2)->second->is_equal(proc::number_event::make_shared(int64_t(2))));
+    XCTAssertTrue(read_events.find(3)->second->is_equal(proc::number_event::make_shared(uint64_t(3))));
+    XCTAssertTrue(read_events.find(4)->second->is_equal(proc::number_event::make_shared(int32_t(4))));
+    XCTAssertTrue(read_events.find(5)->second->is_equal(proc::number_event::make_shared(uint32_t(5))));
+    XCTAssertTrue(read_events.find(6)->second->is_equal(proc::number_event::make_shared(int16_t(6))));
+    XCTAssertTrue(read_events.find(7)->second->is_equal(proc::number_event::make_shared(uint16_t(7))));
+    XCTAssertTrue(read_events.find(8)->second->is_equal(proc::number_event::make_shared(int8_t(8))));
+    XCTAssertTrue(read_events.find(9)->second->is_equal(proc::number_event::make_shared(uint8_t(9))));
+    XCTAssertTrue(read_events.find(10)->second->is_equal(proc::number_event::make_shared(boolean(true))));
 }
 
 - (void)test_write_error_to_string {

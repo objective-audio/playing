@@ -29,13 +29,14 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     [[nodiscard]] state_map_holder_t::chain_t states_chain() const;
 
    protected:
-    audio_circular_buffer(audio::format const &format, std::size_t const container_count, task_queue &&queue,
-                          task_priority_t const priority, audio_buffer::load_f &&);
+    audio_circular_buffer(audio::format const &format, std::size_t const container_count,
+                          std::shared_ptr<task_queue> const &queue, task_priority_t const priority,
+                          audio_buffer::load_f &&);
 
     std::size_t const _buffer_count;
     audio::format const _format;
     std::vector<audio_buffer::ptr> _buffers;
-    state_map_holder_t _states_holder;
+    state_map_holder_ptr_t _states_holder = state_map_holder_t::make_shared();
 
     std::optional<fragment_index_t> _index_of(uintptr_t const);
 
@@ -43,7 +44,7 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     length_t const _frag_length;
     std::shared_ptr<audio_buffer::load_f> const _load_handler_ptr;
     std::atomic<std::size_t> _current_idx = 0;
-    task_queue _queue;
+    std::shared_ptr<task_queue> _queue;
     task_priority_t const _priority;
     std::recursive_mutex _loading_mutex;
 
@@ -53,6 +54,6 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
 };
 
 audio_circular_buffer::ptr make_audio_circular_buffer(audio::format const &format, std::size_t const container_count,
-                                                      task_queue queue, task_priority_t const priority,
-                                                      audio_buffer::load_f);
+                                                      std::shared_ptr<task_queue> const &queue,
+                                                      task_priority_t const priority, audio_buffer::load_f);
 }  // namespace yas::playing

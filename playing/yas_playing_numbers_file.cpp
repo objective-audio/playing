@@ -26,9 +26,9 @@ numbers_file::write_result_t numbers_file::write(std::string const &path, event_
             }
         }
 
-        proc::number_event const &event = event_pair.second;
+        proc::number_event_ptr const &event = event_pair.second;
 
-        auto const store_type = timeline_utils::to_sample_store_type(event.sample_type());
+        auto const store_type = timeline_utils::to_sample_store_type(event->sample_type());
         if (char const *data = timeline_utils::char_data(store_type)) {
             stream.write(data, sizeof(sample_store_type));
             if (stream.fail()) {
@@ -36,8 +36,8 @@ numbers_file::write_result_t numbers_file::write(std::string const &path, event_
             }
         }
 
-        if (char const *data = timeline_utils::char_data(event)) {
-            stream.write(data, event.sample_byte_count());
+        if (char const *data = timeline_utils::char_data(*event)) {
+            stream.write(data, event->sample_byte_count());
             if (stream.fail()) {
                 return write_result_t{write_error::write_to_stream_failed};
             }
@@ -53,16 +53,16 @@ numbers_file::write_result_t numbers_file::write(std::string const &path, event_
 }
 
 namespace yas::playing::numbers_file {
-using readk_value_result_t = result<proc::number_event, std::nullptr_t>;
+using read_value_result_t = result<proc::number_event_ptr, std::nullptr_t>;
 
 template <typename T>
-readk_value_result_t read_value(std::ifstream &stream) {
+read_value_result_t read_value(std::ifstream &stream) {
     T value;
     stream.read(reinterpret_cast<char *>(&value), sizeof(T));
     if (stream.fail() || stream.gcount() != sizeof(T)) {
-        return readk_value_result_t{nullptr};
+        return read_value_result_t{nullptr};
     }
-    return readk_value_result_t{proc::make_number_event(value)};
+    return read_value_result_t{proc::number_event::make_shared(value)};
 }
 }  // namespace yas::playing::numbers_file
 
@@ -167,7 +167,7 @@ numbers_file::read_result_t numbers_file::read(std::string const &path) {
                 if (stream.fail() || stream.gcount() != sizeof(bool)) {
                     return read_result_t{read_error::read_value_failed};
                 }
-                result.emplace(frame, proc::make_number_event(yas::boolean{value}));
+                result.emplace(frame, proc::number_event::make_shared(yas::boolean{value}));
                 break;
             case sample_store_type::unknown:
                 return read_result_t{read_error::sample_store_type_not_found};

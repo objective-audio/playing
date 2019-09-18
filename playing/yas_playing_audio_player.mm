@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_audio_player.h"
+#include <audio/yas_audio_ptr.h>
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_file_manager.h>
@@ -22,7 +23,7 @@ using namespace yas::playing;
 
 namespace yas::playing::audio_player_utils {
 proc::sample_rate_t fragment_length(audio::format const &format) {
-    return static_cast<proc::sample_rate_t>(format ? format.sample_rate() : 0);
+    return static_cast<proc::sample_rate_t>(format.sample_rate());
 }
 
 std::optional<fragment_index_t> top_fragment_idx(proc::sample_rate_t const frag_length,
@@ -90,22 +91,22 @@ struct audio_player_rendering {
         return this->_seeking->is_seeking;
     }
 
-    audio::pcm_buffer &get_or_create_read_buffer(audio::format const &format, uint32_t const length) {
+    audio::pcm_buffer_ptr const &get_or_create_read_buffer(audio::format const &format, uint32_t const length) {
         assert(!thread::is_main());
 
         if (this->_read_buffer) {
-            if (this->_read_buffer.format() != format) {
-                this->_read_buffer = nullptr;
-            } else if (this->_read_buffer.frame_capacity() < length) {
-                this->_read_buffer = nullptr;
+            if (this->_read_buffer->get()->format() != format) {
+                this->_read_buffer = std::nullopt;
+            } else if (this->_read_buffer->get()->frame_capacity() < length) {
+                this->_read_buffer = std::nullopt;
             }
         }
 
         if (!this->_read_buffer) {
-            this->_read_buffer = audio::pcm_buffer{format, length};
+            this->_read_buffer = std::make_shared<audio::pcm_buffer>(format, length);
         }
 
-        return this->_read_buffer;
+        return *this->_read_buffer;
     }
 
     void update_seeking_after_rendering(frame_index_t const next_frame, frame_index_t const prev_frame) {
@@ -119,7 +120,7 @@ struct audio_player_rendering {
     }
 
    private:
-    audio::pcm_buffer _read_buffer{nullptr};
+    std::optional<audio::pcm_buffer_ptr> _read_buffer{std::nullopt};
     seeking::ptr _seeking;
     std::recursive_mutex mutable _seeking_mutex;
 
@@ -130,18 +131,19 @@ struct audio_player_rendering {
 };
 }
 
-struct audio_player::impl : base::impl {
+struct audio_player::impl {
     std::string const _root_path;
-    chaining::value::holder<bool> _is_playing{false};
-    chaining::value::holder<std::vector<channel_index_t>> _ch_mapping{std::vector<channel_index_t>{}};
-    state_map_vector_holder_t _state_holder;
+    chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
+    chaining::value::holder_ptr<std::vector<channel_index_t>> _ch_mapping =
+        chaining::value::holder<std::vector<channel_index_t>>::make_shared(std::vector<channel_index_t>{});
+    state_map_vector_holder_ptr_t _state_holder = state_map_vector_holder_t::make_shared();
 
-    impl(audio_renderable &&renderable, std::string const &root_path, task_queue &&queue,
+    impl(audio_renderable_ptr const &renderable, std::string const &root_path, std::shared_ptr<task_queue> const &queue,
          task_priority_t const priority)
-        : _root_path(root_path), _renderable(std::move(renderable)), _queue(std::move(queue)), _priority(priority) {
+        : _root_path(root_path), _renderable(renderable), _queue(queue), _priority(priority) {
     }
 
-    void prepare(audio_player &player) {
+    void prepare(audio_player_ptr const &player) {
         this->_setup_chaining(player);
         this->_setup_rendering_handler(player);
     }
@@ -179,29 +181,31 @@ struct audio_player::impl : base::impl {
     chaining::observer_pool _pool;
     chaining::observer_pool _state_pool;
 
-    task_queue const _queue;
+    std::shared_ptr<task_queue> const _queue;
     task_priority_t const _priority;
-    audio_renderable _renderable;
-    chaining::value::holder<std::size_t> _ch_count{std::size_t(0)};
-    chaining::value::holder<std::optional<audio::format>> _format{std::nullopt};
-    chaining::perform_receiver<> _update_rendering_receiver = nullptr;
+    audio_renderable_ptr _renderable;
+    chaining::value::holder_ptr<std::size_t> _ch_count =
+        chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
+    chaining::value::holder_ptr<std::optional<audio::format>> _format =
+        chaining::value::holder<std::optional<audio::format>>::make_shared(std::nullopt);
+    chaining::perform_receiver_ptr<> _update_rendering_receiver = nullptr;
     audio_player_rendering::ptr _rendering = nullptr;
     frame_index_t _last_play_frame = 0;
 
-    void _setup_chaining(audio_player &player) {
+    void _setup_chaining(audio_player_ptr const &player) {
         auto weak_player = to_weak(player);
 
-        this->_update_rendering_receiver = chaining::perform_receiver<>{[weak_player](auto const &) {
+        this->_update_rendering_receiver = chaining::perform_receiver<>::make_shared([weak_player](auto const &) {
             if (auto player = weak_player.lock()) {
-                player.impl_ptr<impl>()->_update_rendering();
+                player->_impl->_update_rendering();
             }
-        }};
+        });
 
-        this->_pool += this->_ch_mapping.chain().send_null(this->_update_rendering_receiver).sync();
+        this->_pool += this->_ch_mapping->chain().send_null_to(this->_update_rendering_receiver).sync();
 
         this->_pool +=
-            this->_renderable.chain_sample_rate()
-                .combine(this->_renderable.chain_pcm_format())
+            this->_renderable->chain_sample_rate()
+                .combine(this->_renderable->chain_pcm_format())
                 .to([](std::pair<double, audio::pcm_format> const &pair) {
                     if (pair.first > 0.0) {
                         return std::make_optional(audio::format{audio::format::args{.sample_rate = pair.first,
@@ -215,27 +219,27 @@ struct audio_player::impl : base::impl {
                 .send_to(this->_format)
                 .sync();
 
-        this->_pool += this->_renderable.chain_channel_count().send_to(this->_ch_count).sync();
+        this->_pool += this->_renderable->chain_channel_count().send_to(this->_ch_count).sync();
 
-        this->_pool += this->_format.chain()
-                           .combine(this->_ch_count.chain())
+        this->_pool += this->_format->chain()
+                           .combine(this->_ch_count->chain())
                            .to_null()
                            .send_to(this->_update_rendering_receiver)
                            .sync();
 
-        this->_pool += this->_is_playing.chain()
+        this->_pool += this->_is_playing->chain()
                            .perform([weak_player](bool const &is_playing) {
                                if (auto player = weak_player.lock()) {
-                                   player.impl_ptr<impl>()->_update_playing(is_playing);
+                                   player->_impl->_update_playing(is_playing);
                                }
                            })
                            .sync();
     }
 
-    void _setup_rendering_handler(audio_player &player) {
+    void _setup_rendering_handler(audio_player_ptr const &player) {
         auto weak_player = to_weak(player);
 
-        this->_renderable.set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer) {
+        this->_renderable->set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer) {
             if (out_buffer.format().is_interleaved()) {
                 throw std::invalid_argument("out_buffer is not non-interleaved.");
             }
@@ -245,7 +249,7 @@ struct audio_player::impl : base::impl {
                 return;
             }
 
-            auto player_impl = player.impl_ptr<impl>();
+            auto const &player_impl = player->_impl;
             auto rendering = player_impl->_rendering;
             if (!rendering) {
                 return;
@@ -265,7 +269,7 @@ struct audio_player::impl : base::impl {
                                                              .pcm_format = out_format.pcm_format(),
                                                              .interleaved = false,
                                                              .channel_count = 1}};
-            auto &read_buffer = rendering->get_or_create_read_buffer(read_format, out_length);
+            auto const &read_buffer = rendering->get_or_create_read_buffer(read_format, out_length);
 
             while (current_frame < next_frame) {
                 auto const info = audio_utils::processing_info{current_frame, next_frame, frag_length};
@@ -279,17 +283,17 @@ struct audio_player::impl : base::impl {
                         break;
                     }
 
-                    read_buffer.clear();
-                    read_buffer.set_frame_length(info.length);
+                    read_buffer->clear();
+                    read_buffer->set_frame_length(info.length);
 
                     auto &circular_buffer = rendering->circular_buffers.at(idx);
-                    if (auto const result = circular_buffer->read_into_buffer(read_buffer, current_frame); !result) {
+                    if (auto const result = circular_buffer->read_into_buffer(*read_buffer, current_frame); !result) {
                         out_buffer.clear();
                         return;
                     }
 
                     out_buffer.copy_channel_from(
-                        read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
+                        *read_buffer, {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 
                     if (info.next_frag_idx.has_value()) {
                         circular_buffer->rotate_buffers(*info.next_frag_idx);
@@ -307,7 +311,7 @@ struct audio_player::impl : base::impl {
         if (auto rendering = this->_rendering) {
             rendering->is_playing.store(is_playing);
         }
-        this->_renderable.set_is_rendering(is_playing);
+        this->_renderable->set_is_rendering(is_playing);
     }
 
     void _update_rendering() {
@@ -316,30 +320,30 @@ struct audio_player::impl : base::impl {
 
         this->_rendering = nullptr;
 
-        auto const &format_opt = this->_format.raw();
+        auto const &format_opt = this->_format->raw();
         if (!format_opt) {
             return;
         }
         auto const &format = *format_opt;
 
         this->_state_pool.invalidate();
-        this->_state_holder.clear();
+        this->_state_holder->clear();
 
         auto circular_buffers = this->_make_circular_buffers(format, play_frame);
 
         for (auto const &buffer : circular_buffers) {
-            state_map_holder_t map_holder;
+            state_map_holder_ptr_t map_holder = state_map_holder_t::make_shared();
             this->_state_pool += buffer->states_chain().send_to(map_holder).sync();
-            this->_state_holder.push_back(std::move(map_holder));
+            this->_state_holder->push_back(std::move(map_holder));
         }
 
-        this->_rendering = std::make_shared<audio_player_rendering>(this->_is_playing.raw(), play_frame, format,
+        this->_rendering = std::make_shared<audio_player_rendering>(this->_is_playing->raw(), play_frame, format,
                                                                     std::move(circular_buffers));
     }
 
     std::vector<audio_circular_buffer::ptr> _make_circular_buffers(audio::format const &format,
                                                                    frame_index_t const play_frame) {
-        std::size_t const ch_count = this->_ch_count.raw();
+        std::size_t const ch_count = this->_ch_count->raw();
         std::vector<channel_index_t> const ch_mapping = this->_actually_ch_mapping();
 
         sample_rate_t const sample_rate = std::round(format.sample_rate());
@@ -414,7 +418,7 @@ struct audio_player::impl : base::impl {
     std::vector<channel_index_t> _actually_ch_mapping() {
         std::vector<channel_index_t> mapped;
 
-        auto each = make_fast_each(this->_ch_count.raw());
+        auto each = make_fast_each(this->_ch_count->raw());
         while (yas_each_next(each)) {
             mapped.push_back(this->_map_ch_idx(yas_each_index(each)));
         }
@@ -423,7 +427,7 @@ struct audio_player::impl : base::impl {
     }
 
     channel_index_t _map_ch_idx(channel_index_t ch_idx) {
-        auto const &mapping = this->_ch_mapping.raw();
+        auto const &mapping = this->_ch_mapping->raw();
 
         if (ch_idx < mapping.size()) {
             return mapping.at(ch_idx);
@@ -433,51 +437,58 @@ struct audio_player::impl : base::impl {
     }
 };
 
-audio_player::audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue,
-                           task_priority_t const priority)
-    : base(std::make_shared<impl>(std::move(renderable), root_path, std::move(queue), priority)) {
-    impl_ptr<impl>()->prepare(*this);
-}
-
-audio_player::audio_player(std::nullptr_t) : base(nullptr) {
+audio_player::audio_player(audio_renderable_ptr const &renderable, std::string const &root_path,
+                           std::shared_ptr<task_queue> const &queue, task_priority_t const priority)
+    : _impl(std::make_unique<impl>(renderable, root_path, queue, priority)) {
 }
 
 void audio_player::set_ch_mapping(std::vector<channel_index_t> ch_mapping) {
-    impl_ptr<impl>()->_ch_mapping.set_value(std::move(ch_mapping));
+    this->_impl->_ch_mapping->set_value(std::move(ch_mapping));
 }
 
 void audio_player::set_playing(bool const is_playing) {
-    impl_ptr<impl>()->_is_playing.set_value(is_playing);
+    this->_impl->_is_playing->set_value(is_playing);
 }
 
 void audio_player::seek(frame_index_t const play_frame) {
-    impl_ptr<impl>()->seek(play_frame);
+    this->_impl->seek(play_frame);
 }
 
 void audio_player::reload(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
-    impl_ptr<impl>()->reload(ch_idx, frag_idx);
+    this->_impl->reload(ch_idx, frag_idx);
 }
 
 std::string const &audio_player::root_path() const {
-    return impl_ptr<impl>()->_root_path;
+    return this->_impl->_root_path;
 }
 
 std::vector<channel_index_t> const &audio_player::ch_mapping() const {
-    return impl_ptr<impl>()->_ch_mapping.raw();
+    return this->_impl->_ch_mapping->raw();
 }
 
 bool audio_player::is_playing() const {
-    return impl_ptr<impl>()->_is_playing.raw();
+    return this->_impl->_is_playing->raw();
 }
 
 frame_index_t audio_player::play_frame() const {
-    return impl_ptr<impl>()->play_frame();
+    return this->_impl->play_frame();
 }
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
-    return impl_ptr<impl>()->_is_playing.chain();
+    return this->_impl->_is_playing->chain();
 }
 
 state_map_vector_holder_t::chain_t audio_player::state_chain() const {
-    return impl_ptr<impl>()->_state_holder.chain();
+    return this->_impl->_state_holder->chain();
+}
+
+void audio_player::_prepare(audio_player_ptr const &shared) {
+    this->_impl->prepare(shared);
+}
+
+audio_player_ptr audio_player::make_shared(audio_renderable_ptr const &renderable, std::string const &root_path,
+                                           std::shared_ptr<task_queue> const &queue, task_priority_t const priority) {
+    auto shared = audio_player_ptr(new audio_player{renderable, root_path, queue, priority});
+    shared->_prepare(shared);
+    return shared;
 }

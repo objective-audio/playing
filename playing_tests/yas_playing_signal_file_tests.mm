@@ -44,11 +44,11 @@ struct cpp {
 
     auto const path = file_path{self->_cpp.root_path}.appending("signal").string();
 
-    auto write_event = proc::make_signal_event<int64_t>(2);
-    write_event.data<int64_t>()[0] = 10;
-    write_event.data<int64_t>()[1] = 11;
+    auto write_event = proc::signal_event::make_shared<int64_t>(2);
+    write_event->data<int64_t>()[0] = 10;
+    write_event->data<int64_t>()[1] = 11;
 
-    auto const write_result = signal_file::write(path, write_event);
+    auto const write_result = signal_file::write(path, *write_event);
 
     XCTAssertTrue(write_result);
 
@@ -70,11 +70,11 @@ struct cpp {
     auto const path = file_path{self->_cpp.root_path}.appending("signal").string();
     signal_file_info const file_info{path, proc::time::range{0, 2}, typeid(double)};
 
-    auto write_event = proc::make_signal_event<double>(2);
-    write_event.data<double>()[0] = 1.0;
-    write_event.data<double>()[1] = 2.0;
+    auto write_event = proc::signal_event::make_shared<double>(2);
+    write_event->data<double>()[0] = 1.0;
+    write_event->data<double>()[1] = 2.0;
 
-    auto const write_result = signal_file::write(path, write_event);
+    auto const write_result = signal_file::write(path, *write_event);
 
     XCTAssertTrue(write_result);
 

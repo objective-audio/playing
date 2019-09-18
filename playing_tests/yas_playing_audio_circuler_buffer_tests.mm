@@ -15,7 +15,7 @@ using namespace yas::playing;
 
 namespace yas::playing::audio_circular_buffer_test {
 struct cpp {
-    task_queue queue{nullptr};
+    std::shared_ptr<task_queue> queue{nullptr};
     sample_rate_t const sample_rate = 3;
     channel_index_t const ch_idx = 0;
     std::size_t const ch_count = 1;
@@ -37,7 +37,7 @@ struct cpp {
 - (void)setUp {
     file_manager::remove_content(test_utils::root_path());
 
-    self->_cpp.queue = task_queue{};
+    self->_cpp.queue = std::make_shared<task_queue>();
 }
 
 - (void)tearDown {
@@ -48,7 +48,7 @@ struct cpp {
 
 - (void)test_read_into_buffer {
     auto &cpp = self->_cpp;
-    task_queue &queue = cpp.queue;
+    std::shared_ptr<task_queue> const &queue = cpp.queue;
 
     auto circular_buffer =
         make_audio_circular_buffer(cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
@@ -61,7 +61,7 @@ struct cpp {
         });
 
     circular_buffer->reload_all_buffers(-1);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{cpp.format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
@@ -74,7 +74,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[2], -1);
 
     circular_buffer->rotate_buffers(0);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -86,7 +86,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[2], 2);
 
     circular_buffer->rotate_buffers(1);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -100,7 +100,7 @@ struct cpp {
 
 - (void)test_reload {
     auto &cpp = self->_cpp;
-    task_queue &queue = cpp.queue;
+    std::shared_ptr<task_queue> const &queue = cpp.queue;
 
     int64_t offset = 0;
 
@@ -115,12 +115,12 @@ struct cpp {
                                                       });
 
     circular_buffer->reload_all_buffers(-1);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     offset = 100;
 
     circular_buffer->reload_if_needed(0);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     audio::pcm_buffer read_buffer{cpp.format, 3};
     int16_t const *data_ptr = read_buffer.data_ptr_at_index<int16_t>(0);
@@ -133,7 +133,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[2], -1);
 
     circular_buffer->rotate_buffers(0);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -145,7 +145,7 @@ struct cpp {
     XCTAssertEqual(data_ptr[2], 102);
 
     circular_buffer->rotate_buffers(1);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     read_buffer.clear();
 
@@ -159,7 +159,7 @@ struct cpp {
 
 - (void)test_states {
     auto &cpp = self->_cpp;
-    task_queue &queue = cpp.queue;
+    std::shared_ptr<task_queue> const &queue = cpp.queue;
 
     auto circular_buffer = make_audio_circular_buffer(
         cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
@@ -167,7 +167,7 @@ struct cpp {
     XCTAssertEqual(circular_buffer->states().size(), 0);
 
     circular_buffer->reload_all_buffers(-1);
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
 
     XCTAssertEqual(circular_buffer->states().size(), 2);

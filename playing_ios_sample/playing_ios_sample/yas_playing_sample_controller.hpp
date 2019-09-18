@@ -11,11 +11,12 @@
 
 namespace yas::playing::sample {
 struct controller {
-    std::string root_path =
+    std::string const root_path =
         file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("sample").string();
-    audio_coordinator coordinator{this->root_path};
-    playing::timeline_exporter timeline_exporter{
-        this->root_path, task_queue{2}, {.timeline = 0, .fragment = 1}, this->coordinator.sample_rate()};
+    audio_coordinator_ptr coordinator = audio_coordinator::make_shared(this->root_path);
+    playing::timeline_exporter_ptr timeline_exporter =
+        playing::timeline_exporter::make_shared(this->root_path, std::make_shared<task_queue>(2),
+                                                {.timeline = 0, .fragment = 1}, this->coordinator->sample_rate());
     chaining::observer_pool pool;
 
    protected:

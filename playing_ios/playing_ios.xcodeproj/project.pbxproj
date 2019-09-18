@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B67A4B7A22AFEDBE00F9D183 /* yas_playing_loading_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B67A4B7822AFEDBE00F9D183 /* yas_playing_loading_state.cpp */; };
 		B67A4B7B22AFEDBE00F9D183 /* yas_playing_loading_state.h in Headers */ = {isa = PBXBuildFile; fileRef = B67A4B7922AFEDBE00F9D183 /* yas_playing_loading_state.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6C3053D2332682000D8C657 /* yas_playing_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B6C3053C2332682000D8C657 /* yas_playing_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC411229AAE5F007F88B7 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC40F229AAE5F007F88B7 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC439229AAEE7007F88B7 /* yas_playing_audio_coordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC416229AAEE7007F88B7 /* yas_playing_audio_coordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC43A229AAEE7007F88B7 /* yas_playing_timeline_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC417229AAEE7007F88B7 /* yas_playing_timeline_container.cpp */; };
@@ -55,6 +56,7 @@
 /* Begin PBXFileReference section */
 		B67A4B7822AFEDBE00F9D183 /* yas_playing_loading_state.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_loading_state.cpp; sourceTree = "<group>"; };
 		B67A4B7922AFEDBE00F9D183 /* yas_playing_loading_state.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_loading_state.h; sourceTree = "<group>"; };
+		B6C3053C2332682000D8C657 /* yas_playing_ptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_ptr.h; sourceTree = "<group>"; };
 		B6DCC40C229AAE5F007F88B7 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC40F229AAE5F007F88B7 /* playing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = playing.h; sourceTree = "<group>"; };
 		B6DCC410229AAE5F007F88B7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -169,6 +171,7 @@
 				B6DCC431229AAEE7007F88B7 /* yas_playing_numbers_file.h */,
 				B6DCC419229AAEE7007F88B7 /* yas_playing_path.cpp */,
 				B6DCC436229AAEE7007F88B7 /* yas_playing_path.h */,
+				B6C3053C2332682000D8C657 /* yas_playing_ptr.h */,
 				B6DCC437229AAEE7007F88B7 /* yas_playing_signal_file_info.cpp */,
 				B6DCC423229AAEE7007F88B7 /* yas_playing_signal_file_info.h */,
 				B6DCC434229AAEE7007F88B7 /* yas_playing_signal_file.cpp */,
@@ -207,6 +210,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B6C3053D2332682000D8C657 /* yas_playing_ptr.h in Headers */,
 				B6DCC455229AAEE7007F88B7 /* yas_playing_timeline_exporter.h in Headers */,
 				B6DCC44C229AAEE7007F88B7 /* yas_playing_timeline_container.h in Headers */,
 				B6DCC43E229AAEE7007F88B7 /* yas_playing_timeline_utils.h in Headers */,

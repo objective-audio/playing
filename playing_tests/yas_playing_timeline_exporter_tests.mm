@@ -17,7 +17,7 @@ using namespace yas::playing;
 namespace yas::playing::timeline_exporter_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    task_queue queue{2};
+    std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
     timeline_exporter::task_priority const priority{.timeline = 0, .fragment = 1};
 };
 }
@@ -35,51 +35,51 @@ struct cpp {
 }
 
 - (void)tearDown {
-    self->_cpp.queue.cancel_all();
-    self->_cpp.queue.wait_until_all_tasks_are_finished();
+    self->_cpp.queue->cancel_all();
+    self->_cpp.queue->wait_until_all_tasks_are_finished();
     file_manager::remove_content(self->_cpp.root_path);
 }
 
 - (void)test_initial {
     std::string const &root_path = self->_cpp.root_path;
-    task_queue &queue = self->_cpp.queue;
+    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
 
-    timeline_exporter exporter{root_path, queue, priority, sample_rate};
+    auto exporter = timeline_exporter::make_shared(root_path, queue, priority, sample_rate);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(root_path));
 }
 
 - (void)test_set_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    task_queue &queue = self->_cpp.queue;
+    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    timeline_exporter exporter{root_path, queue, priority, sample_rate};
+    auto exporter = timeline_exporter::make_shared(root_path, queue, priority, sample_rate);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     auto module0 = proc::make_signal_module<int64_t>(10);
-    module0.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+    module0->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
     auto module1 = proc::make_number_module<int64_t>(11);
-    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+    module1->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
 
-    proc::track track0;
-    track0.push_back_module(module0, {-2, 5});
-    proc::track track1;
-    track1.push_back_module(module1, {10, 1});
+    auto track0 = proc::track::make_shared();
+    track0->push_back_module(module0, {-2, 5});
+    auto track1 = proc::track::make_shared();
+    track1->push_back_module(module1, {10, 1});
 
-    proc::timeline timeline{{{0, track0}, {1, track1}}};
+    auto timeline = proc::timeline::make_shared({{0, track0}, {1, track1}});
 
-    exporter.set_timeline_container({identifier, sample_rate, timeline});
+    exporter->set_timeline_container(timeline_container::make_shared(identifier, sample_rate, timeline));
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
@@ -150,42 +150,42 @@ struct cpp {
         XCTAssertEqual(event_pairs.size(), 1);
         auto const &event_pair = *event_pairs.begin();
         XCTAssertEqual(event_pair.first, 10);
-        XCTAssertEqual(event_pair.second.get<int64_t>(), 11);
+        XCTAssertEqual(event_pair.second->get<int64_t>(), 11);
     }
 }
 
 - (void)test_set_sample_rate {
     std::string const &root_path = self->_cpp.root_path;
-    task_queue &queue = self->_cpp.queue;
+    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, post_sample_rate};
 
-    timeline_exporter exporter{root_path, queue, priority, pre_sample_rate};
+    auto exporter = timeline_exporter::make_shared(root_path, queue, priority, pre_sample_rate);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     auto module0 = proc::make_signal_module<int64_t>(10);
-    module0.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+    module0->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
     auto module1 = proc::make_number_module<int64_t>(11);
-    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+    module1->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
 
-    proc::track track0;
-    track0.push_back_module(module0, {-2, 5});
-    proc::track track1;
-    track1.push_back_module(module1, {10, 1});
+    auto track0 = proc::track::make_shared();
+    track0->push_back_module(module0, {-2, 5});
+    auto track1 = proc::track::make_shared();
+    track1->push_back_module(module1, {10, 1});
 
-    proc::timeline timeline{{{0, track0}, {1, track1}}};
+    auto timeline = proc::timeline::make_shared({{0, track0}, {1, track1}});
 
-    exporter.set_timeline_container({identifier, pre_sample_rate, timeline});
+    exporter->set_timeline_container(timeline_container::make_shared(identifier, pre_sample_rate, timeline));
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
-    exporter.set_timeline_container({identifier, post_sample_rate, timeline});
+    exporter->set_timeline_container(timeline_container::make_shared(identifier, post_sample_rate, timeline));
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(root_path));
 
@@ -249,38 +249,38 @@ struct cpp {
         XCTAssertEqual(event_pairs.size(), 1);
         auto const &event_pair = *event_pairs.begin();
         XCTAssertEqual(event_pair.first, 10);
-        XCTAssertEqual(event_pair.second.get<int64_t>(), 11);
+        XCTAssertEqual(event_pair.second->get<int64_t>(), 11);
     }
 }
 
 - (void)test_update_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    task_queue &queue = self->_cpp.queue;
+    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     timeline_exporter::task_priority const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    timeline_exporter exporter{root_path, queue, priority, sample_rate};
+    auto exporter = timeline_exporter::make_shared(root_path, queue, priority, sample_rate);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
-    proc::timeline timeline;
+    auto timeline = proc::timeline::make_shared();
 
-    exporter.set_timeline_container({identifier, sample_rate, timeline});
+    exporter->set_timeline_container(timeline_container::make_shared(identifier, sample_rate, timeline));
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(root_path));
 
-    proc::track track;
+    auto track = proc::track::make_shared();
     auto module1 = proc::make_number_module<int64_t>(100);
-    module1.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
-    track.push_back_module(module1, {0, 1});
+    module1->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+    track->push_back_module(module1, {0, 1});
 
-    timeline.insert_track(0, track);
+    timeline->insert_track(0, track);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     path::channel const ch0_path{tl_path, 0};
 
@@ -291,16 +291,16 @@ struct cpp {
     if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
-        XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
+        XCTAssertEqual(result.value().begin()->second->get<int64_t>(), 100);
     } else {
         XCTAssert(0);
     }
 
     auto module2 = proc::make_number_module<Float64>(1.0);
-    module2.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-    track.push_back_module(module2, {2, 1});
+    module2->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+    track->push_back_module(module2, {2, 1});
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     path::channel const ch1_path{tl_path, 1};
 
@@ -310,16 +310,16 @@ struct cpp {
     if (auto result = playing::numbers_file::read(frag_1_1_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 2);
-        XCTAssertEqual(result.value().begin()->second.get<Float64>(), 1.0);
+        XCTAssertEqual(result.value().begin()->second->get<Float64>(), 1.0);
     } else {
         XCTAssert(0);
     }
 
     auto module3 = proc::make_number_module<boolean>(true);
-    module3.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
-    track.push_back_module(module3, {0, 1});
+    module3->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+    track->push_back_module(module3, {0, 1});
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
@@ -327,38 +327,38 @@ struct cpp {
         XCTAssertEqual(result.value().size(), 2);
         auto iterator = result.value().begin();
         XCTAssertEqual(iterator->first, 0);
-        XCTAssertEqual(iterator->second.get<int64_t>(), 100);
+        XCTAssertEqual(iterator->second->get<int64_t>(), 100);
         ++iterator;
         XCTAssertEqual(iterator->first, 0);
-        XCTAssertEqual(iterator->second.get<boolean>(), true);
+        XCTAssertEqual(iterator->second->get<boolean>(), true);
     } else {
         XCTAssert(0);
     }
 
-    track.erase_module(module3, {0, 1});
+    track->erase_module(module3, {0, 1});
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
     if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
-        XCTAssertEqual(result.value().begin()->second.get<int64_t>(), 100);
+        XCTAssertEqual(result.value().begin()->second->get<int64_t>(), 100);
     } else {
         XCTAssert(0);
     }
 
-    track.erase_module(module1, {0, 1});
+    track->erase_module(module1, {0, 1});
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
 
-    timeline.erase_track(0);
+    timeline->erase_track(0);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     XCTAssertFalse(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
 }

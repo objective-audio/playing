@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B68CE59223272BD700FC2EF3 /* yas_playing_ptr.h in Headers */ = {isa = PBXBuildFile; fileRef = B68CE59123272BD700FC2EF3 /* yas_playing_ptr.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6F8436F22B086AF00A90717 /* yas_playing_loading_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6F8436D22B086AF00A90717 /* yas_playing_loading_state.cpp */; };
 		B6F8437022B086AF00A90717 /* yas_playing_loading_state.h in Headers */ = {isa = PBXBuildFile; fileRef = B6F8436E22B086AF00A90717 /* yas_playing_loading_state.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FB00BD229B69D5000C22F5 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FB00BB229B69D5000C22F5 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -53,6 +54,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B68CE59123272BD700FC2EF3 /* yas_playing_ptr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_ptr.h; sourceTree = "<group>"; };
 		B6F8436D22B086AF00A90717 /* yas_playing_loading_state.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_loading_state.cpp; sourceTree = "<group>"; };
 		B6F8436E22B086AF00A90717 /* yas_playing_loading_state.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_loading_state.h; sourceTree = "<group>"; };
 		B6FB00B8229B69D4000C22F5 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -195,6 +197,7 @@
 				B6FB00D2229B6A19000C22F5 /* yas_playing_timeline_utils.h */,
 				B6FB00DF229B6A19000C22F5 /* yas_playing_types.h */,
 				B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.h */,
+				B68CE59123272BD700FC2EF3 /* yas_playing_ptr.h */,
 			);
 			name = playing;
 			path = ../../playing;
@@ -207,6 +210,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B68CE59223272BD700FC2EF3 /* yas_playing_ptr.h in Headers */,
 				B6FB010C229B6A1A000C22F5 /* yas_playing_timeline_exporter.h in Headers */,
 				B6FB0103229B6A1A000C22F5 /* yas_playing_timeline_container.h in Headers */,
 				B6FB00F5229B6A1A000C22F5 /* yas_playing_timeline_utils.h in Headers */,
