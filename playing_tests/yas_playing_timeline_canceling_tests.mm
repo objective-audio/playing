@@ -20,31 +20,31 @@ using namespace yas;
 }
 
 - (void)test_range_cancel_request {
-    playing::timeline_cancel_matcher matcher{{1, 2}};
-    playing::timeline_range_cancel_request range_request_a{{1, 2}};
-    playing::timeline_range_cancel_request range_request_b{{0, 3}};
-    playing::timeline_range_cancel_request range_request_c{{1, 3}};
+    auto matcher = playing::timeline_cancel_matcher::make_shared(proc::time::range{1, 2});
+    auto range_request_a = playing::timeline_range_cancel_request::make_shared({1, 2});
+    auto range_request_b = playing::timeline_range_cancel_request::make_shared({0, 3});
+    auto range_request_c = playing::timeline_range_cancel_request::make_shared({1, 3});
 
-    XCTAssertEqual(matcher, range_request_a);
-    XCTAssertEqual(matcher, range_request_b);
-    XCTAssertEqual(matcher, range_request_c);
-    XCTAssertEqual(range_request_a, matcher);
-    XCTAssertEqual(range_request_b, matcher);
-    XCTAssertEqual(range_request_c, matcher);
+    XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_a));
+    XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_b));
+    XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_c), );
+    XCTAssertTrue(task_cancel_id::cast(range_request_a)->is_equal(matcher));
+    XCTAssertTrue(task_cancel_id::cast(range_request_b)->is_equal(matcher));
+    XCTAssertTrue(task_cancel_id::cast(range_request_c)->is_equal(matcher));
 
-    playing::timeline_range_cancel_request range_request_d{{1, 1}};
-    playing::timeline_range_cancel_request range_request_e{{2, 1}};
-    playing::timeline_range_cancel_request range_request_f{{0, 2}};
-    playing::timeline_range_cancel_request range_request_g{{2, 2}};
+    auto range_request_d = playing::timeline_range_cancel_request::make_shared({1, 1});
+    auto range_request_e = playing::timeline_range_cancel_request::make_shared({2, 1});
+    auto range_request_f = playing::timeline_range_cancel_request::make_shared({0, 2});
+    auto range_request_g = playing::timeline_range_cancel_request::make_shared({2, 2});
 
-    XCTAssertNotEqual(matcher, range_request_d);
-    XCTAssertNotEqual(matcher, range_request_e);
-    XCTAssertNotEqual(matcher, range_request_f);
-    XCTAssertNotEqual(matcher, range_request_g);
-    XCTAssertNotEqual(range_request_d, matcher);
-    XCTAssertNotEqual(range_request_e, matcher);
-    XCTAssertNotEqual(range_request_f, matcher);
-    XCTAssertNotEqual(range_request_g, matcher);
+    XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_d));
+    XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_e));
+    XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_f));
+    XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_g));
+    XCTAssertFalse(task_cancel_id::cast(range_request_d)->is_equal(matcher));
+    XCTAssertFalse(task_cancel_id::cast(range_request_e)->is_equal(matcher));
+    XCTAssertFalse(task_cancel_id::cast(range_request_f)->is_equal(matcher));
+    XCTAssertFalse(task_cancel_id::cast(range_request_g)->is_equal(matcher));
 }
 
 @end

@@ -4,30 +4,39 @@
 
 #pragma once
 
-#include <cpp_utils/yas_base.h>
-#include <cpp_utils/yas_protocol.h>
+#include <cpp_utils/yas_task_protocol.h>
 #include <processing/yas_processing_umbrella.h>
+#include "yas_playing_ptr.h"
 
 namespace yas::playing {
-struct timeline_cancel_matcher : base {
-    class impl;
+struct timeline_cancel_matcher : task_cancel_id {
+    std::optional<proc::time::range> const range;
 
-    timeline_cancel_matcher(proc::time::range const &);
-    timeline_cancel_matcher();
-    timeline_cancel_matcher(std::nullptr_t);
+    static timeline_cancel_matcher_ptr make_shared();
+    static timeline_cancel_matcher_ptr make_shared(std::optional<proc::time::range> const &);
+
+   private:
+    std::weak_ptr<timeline_cancel_matcher> _weak_matcher;
+
+    timeline_cancel_matcher(std::optional<proc::time::range> const &);
+
+    bool is_equal(task_cancel_id_ptr const &) const override;
 };
 
-struct timeline_cancel_request : protocol {
-    struct impl : protocol::impl {
-        virtual bool is_match(timeline_cancel_matcher::impl const &) const = 0;
-    };
+struct timeline_cancel_request {
+    virtual bool is_match(timeline_cancel_matcher_ptr const &) const = 0;
 };
 
 // requestの範囲に完全に含まれていたらキャンセルさせる
-struct timeline_range_cancel_request : base {
-    class impl;
+struct timeline_range_cancel_request : timeline_cancel_request, task_cancel_id {
+    proc::time::range const range;
 
+    static timeline_range_cancel_request_ptr make_shared(proc::time::range const &);
+
+   private:
     explicit timeline_range_cancel_request(proc::time::range const &range);
-    timeline_range_cancel_request(std::nullptr_t);
+
+    bool is_match(timeline_cancel_matcher_ptr const &) const override;
+    bool is_equal(task_cancel_id_ptr const &) const override;
 };
 }  // namespace yas::playing

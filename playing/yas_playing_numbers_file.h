@@ -24,7 +24,7 @@ enum class read_error {
     sample_store_type_not_found,
 };
 
-using event_map_t = std::multimap<playing::frame_index_t, proc::number_event>;
+using event_map_t = std::multimap<playing::frame_index_t, proc::number_event_ptr>;
 using write_result_t = result<std::nullptr_t, write_error>;
 using read_result_t = result<event_map_t, read_error>;
 

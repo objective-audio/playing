@@ -8,12 +8,40 @@
 #include <audio/yas_audio_format.h>
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_result.h>
+#include <cpp_utils/yas_task_protocol.h>
 #include <mutex>
 #include <optional>
 #include "yas_playing_loading_state.h"
+#include "yas_playing_ptr.h"
 #include "yas_playing_types.h"
 
 namespace yas::playing {
+struct cancel_id : task_cancel_id {
+    bool is_equal(std::shared_ptr<task_cancel_id> const &rhs) const override {
+        if (auto casted_rhs = std::dynamic_pointer_cast<cancel_id>(rhs)) {
+            return this->identifier() == casted_rhs->identifier();
+        }
+        return false;
+    }
+
+    uintptr_t identifier() const {
+        return reinterpret_cast<uintptr_t>(this);
+    }
+
+    static cancel_id_ptr make_shared() {
+        return cancel_id_ptr(new cancel_id{});
+    }
+
+   private:
+    cancel_id() {
+    }
+
+    cancel_id(cancel_id const &) = delete;
+    cancel_id(cancel_id &&) = delete;
+    cancel_id &operator=(cancel_id const &) = delete;
+    cancel_id &operator=(cancel_id &&) = delete;
+};
+
 struct audio_buffer {
     using ptr = std::shared_ptr<audio_buffer>;
     using wptr = std::weak_ptr<audio_buffer>;
@@ -40,15 +68,9 @@ struct audio_buffer {
 
     using load_f = std::function<bool(audio::pcm_buffer &buffer, fragment_index_t const frag_idx)>;
 
-    struct identifier_t : base {
-        struct impl : base::impl {};
-        identifier_t() : base(std::make_shared<impl>()) {
-        }
-    };
-
     using state_changed_f = std::function<void(uintptr_t const, loading_state::ptr const)>;
 
-    identifier_t const identifier;
+    cancel_id_ptr const identifier = cancel_id::make_shared();
 
     [[nodiscard]] std::optional<fragment_index_t> fragment_idx() const;
     [[nodiscard]] std::optional<frame_index_t> begin_frame() const;

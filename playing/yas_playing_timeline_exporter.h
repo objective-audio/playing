@@ -5,16 +5,14 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_result.h>
 #include <cpp_utils/yas_task.h>
 #include <processing/yas_processing_timeline.h>
+#include "yas_playing_ptr.h"
 #include "yas_playing_timeline_container.h"
 
 namespace yas::playing {
-struct timeline_exporter : base {
-    class impl;
-
+struct timeline_exporter {
     enum class method {
         reset,
         export_began,
@@ -41,12 +39,22 @@ struct timeline_exporter : base {
         task_priority_t const fragment;
     };
 
-    timeline_exporter(std::string const &root_path, task_queue, task_priority, proc::sample_rate_t const);
-    timeline_exporter(std::nullptr_t);
-
-    void set_timeline_container(timeline_container);
+    void set_timeline_container(timeline_container_ptr const &);
 
     chaining::chain_unsync_t<event> event_chain() const;
+
+    static timeline_exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
+                                             task_priority const &, proc::sample_rate_t const);
+
+   private:
+    class impl;
+
+    std::shared_ptr<impl> _impl;
+
+    timeline_exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
+                      proc::sample_rate_t const);
+
+    void _prepare(timeline_exporter_ptr const &);
 };
 }  // namespace yas::playing
 

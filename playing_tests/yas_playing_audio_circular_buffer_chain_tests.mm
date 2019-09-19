@@ -12,7 +12,7 @@ using namespace yas::playing;
 
 namespace yas::playing::audio_circular_buffer_chain_test {
 struct cpp {
-    task_queue queue{nullptr};
+    std::shared_ptr<task_queue> queue{nullptr};
     sample_rate_t const sample_rate = 3;
     channel_index_t const ch_idx = 0;
     std::size_t const ch_count = 1;
@@ -34,7 +34,7 @@ struct cpp {
 - (void)setUp {
     file_manager::remove_content(test_utils::root_path());
 
-    self->_cpp.queue = task_queue{};
+    self->_cpp.queue = std::make_shared<task_queue>();
 }
 
 - (void)tearDown {
@@ -45,7 +45,7 @@ struct cpp {
 
 - (void)test_states_chain {
     auto &cpp = self->_cpp;
-    task_queue &queue = cpp.queue;
+    std::shared_ptr<task_queue> const &queue = cpp.queue;
 
     auto circular_buffer =
         make_audio_circular_buffer(cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
@@ -59,11 +59,11 @@ struct cpp {
 
     chaining::observer_pool pool;
 
-    playing::state_map_holder_t states;
+    auto states = playing::state_map_holder_t::make_shared();
 
     pool += circular_buffer->states_chain().send_to(states).sync();
 
-    XCTAssertEqual(states.size(), 0);
+    XCTAssertEqual(states->size(), 0);
 
     std::vector<chaining::event> received;
 
@@ -75,7 +75,7 @@ struct cpp {
 
     circular_buffer->reload_all_buffers(-1);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.0]];
 
@@ -86,13 +86,13 @@ struct cpp {
     //    XCTAssertEqual(received.at(3).type(), chaining::event_type::replaced);
     XCTAssertEqual(received.at(4).type(), chaining::event_type::replaced);
 
-    XCTAssertEqual(states.size(), 2);
-    XCTAssertTrue(states.has_value(0));
-    XCTAssertEqual(states.at(0).frag_idx, -1);
-    XCTAssertEqual(states.at(0).kind, loading_kind::loaded);
-    XCTAssertTrue(states.has_value(1));
-    XCTAssertEqual(states.at(1).frag_idx, 0);
-    XCTAssertEqual(states.at(1).kind, loading_kind::loaded);
+    XCTAssertEqual(states->size(), 2);
+    XCTAssertTrue(states->has_value(0));
+    XCTAssertEqual(states->at(0).frag_idx, -1);
+    XCTAssertEqual(states->at(0).kind, loading_kind::loaded);
+    XCTAssertTrue(states->has_value(1));
+    XCTAssertEqual(states->at(1).frag_idx, 0);
+    XCTAssertEqual(states->at(1).kind, loading_kind::loaded);
 }
 
 @end

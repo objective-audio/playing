@@ -15,7 +15,7 @@ using namespace yas::playing;
 namespace yas::playing::timeline_exporter_chain_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    task_queue queue{2};
+    std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
     timeline_exporter::task_priority const priority{.timeline = 0, .fragment = 1};
 };
 }
@@ -36,29 +36,29 @@ struct cpp {
 
 - (void)test_chain {
     std::string const &root_path = self->_cpp.root_path;
-    task_queue &queue = self->_cpp.queue;
+    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
 
-    timeline_exporter exporter{root_path, queue, self->_cpp.priority, sample_rate};
+    auto exporter = timeline_exporter::make_shared(root_path, queue, self->_cpp.priority, sample_rate);
 
-    queue.wait_until_all_tasks_are_finished();
+    queue->wait_until_all_tasks_are_finished();
 
-    proc::timeline timeline;
+    auto timeline = proc::timeline::make_shared();
 
     {
         std::vector<timeline_exporter::event> received;
 
         auto expectation = [self expectationWithDescription:@"set timeline"];
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
                             })
                             .end();
 
-        exporter.set_timeline_container({identifier, sample_rate, timeline});
+        exporter->set_timeline_container(timeline_container::make_shared(identifier, sample_rate, timeline));
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 
@@ -66,7 +66,7 @@ struct cpp {
         XCTAssertEqual(received.at(0).result.value(), timeline_exporter::method::reset);
     }
 
-    proc::track track;
+    auto track = proc::track::make_shared();
 
     {
         std::vector<timeline_exporter::event> received;
@@ -74,7 +74,7 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert track"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
@@ -82,10 +82,10 @@ struct cpp {
                             .end();
 
         auto module = proc::make_number_module<int64_t>(100);
-        module.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
-        track.push_back_module(module, {0, 1});
+        module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+        track->push_back_module(module, {0, 1});
 
-        timeline.insert_track(0, track);
+        timeline->insert_track(0, track);
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 
@@ -102,7 +102,7 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module same range"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
@@ -110,8 +110,8 @@ struct cpp {
                             .end();
 
         auto module = proc::make_number_module<int64_t>(200);
-        module.connect_output(proc::to_connector_index(proc::constant::output::value), 0);
-        track.push_back_module(module, {0, 1});
+        module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
+        track->push_back_module(module, {0, 1});
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 
@@ -129,7 +129,7 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module diff range"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
@@ -137,8 +137,8 @@ struct cpp {
                             .end();
 
         auto module = proc::make_number_module<Float64>(1.0);
-        module.connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-        track.push_back_module(module, {2, 3});
+        module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+        track->push_back_module(module, {2, 3});
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 
@@ -158,14 +158,14 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase module"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
                             })
                             .end();
 
-        track.erase_modules_for_range({0, 1});
+        track->erase_modules_for_range({0, 1});
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 
@@ -183,14 +183,14 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase track"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto observer = exporter.event_chain()
+        auto observer = exporter->event_chain()
                             .perform([&received, &expectation](auto const &event) {
                                 received.push_back(event);
                                 [expectation fulfill];
                             })
                             .end();
 
-        timeline.erase_track(0);
+        timeline->erase_track(0);
 
         [self waitForExpectations:@[expectation] timeout:10.0];
 

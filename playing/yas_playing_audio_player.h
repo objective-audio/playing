@@ -5,20 +5,14 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_base.h>
 #include <cpp_utils/yas_task.h>
 #include "yas_playing_audio_player_protocol.h"
 #include "yas_playing_loading_state.h"
+#include "yas_playing_ptr.h"
 #include "yas_playing_types.h"
 
 namespace yas::playing {
-struct audio_player : base {
-    class impl;
-
-    audio_player(audio_renderable renderable, std::string const &root_path, task_queue queue,
-                 task_priority_t const priority);
-    audio_player(std::nullptr_t);
-
+struct audio_player {
     void set_ch_mapping(std::vector<int64_t>);
     void set_playing(bool const);
     void seek(frame_index_t const play_frame);
@@ -31,5 +25,18 @@ struct audio_player : base {
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
     [[nodiscard]] state_map_vector_holder_t::chain_t state_chain() const;
+
+    static audio_player_ptr make_shared(audio_renderable_ptr const &renderable, std::string const &root_path,
+                                        std::shared_ptr<task_queue> const &queue, task_priority_t const priority);
+
+   private:
+    class impl;
+
+    std::unique_ptr<impl> _impl;
+
+    audio_player(audio_renderable_ptr const &renderable, std::string const &root_path,
+                 std::shared_ptr<task_queue> const &queue, task_priority_t const priority);
+
+    void _prepare(audio_player_ptr const &);
 };
 }  // namespace yas::playing

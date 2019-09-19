@@ -112,7 +112,7 @@ bool audio_buffer::_set_state(fragment_index_t const frag_idx, loading_kind cons
 
     this->_state = std::make_shared<loading_state>(frag_idx, kind);
 
-    std::thread thread{[handler = this->_state_changed_handler, identifier = this->identifier.identifier(),
+    std::thread thread{[handler = this->_state_changed_handler, identifier = this->identifier->identifier(),
                         state = this->_state] { handler(identifier, state); }};
 
     thread.detach();
