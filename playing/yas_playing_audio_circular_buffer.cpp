@@ -92,7 +92,7 @@ void audio_circular_buffer::_load_container(audio_buffer::ptr buffer_ptr, fragme
 
     buffer_ptr->prepare_loading(frag_idx);
 
-    audio_circular_buffer::wptr weak = this->shared_from_this();
+    audio_circular_buffer_wptr weak = this->shared_from_this();
 
     auto task = task::make_shared([weak, buffer_ptr, frag_idx, load_handler_ptr = this->_load_handler_ptr](
                                       yas::task const &) { buffer_ptr->load(frag_idx, *load_handler_ptr); },
@@ -158,11 +158,11 @@ struct audio_circular_buffer_factory : audio_circular_buffer {
 };
 }  // namespace yas::playing
 
-audio_circular_buffer::ptr playing::make_audio_circular_buffer(audio::format const &format,
-                                                               std::size_t const container_count,
-                                                               std::shared_ptr<task_queue> const &queue,
-                                                               task_priority_t const priority,
-                                                               audio_buffer::load_f handler) {
+audio_circular_buffer_ptr playing::make_audio_circular_buffer(audio::format const &format,
+                                                              std::size_t const container_count,
+                                                              std::shared_ptr<task_queue> const &queue,
+                                                              task_priority_t const priority,
+                                                              audio_buffer::load_f handler) {
     auto ptr =
         std::make_shared<audio_circular_buffer_factory>(format, container_count, queue, priority, std::move(handler));
     ptr->prepare(ptr);
