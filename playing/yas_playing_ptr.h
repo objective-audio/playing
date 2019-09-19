@@ -15,6 +15,8 @@ class timeline_range_cancel_request;
 class audio_renderer;
 class audio_player;
 class cancel_id;
+class audio_player_rendering;
+class audio_circular_buffer;
 
 class audio_renderable;
 
@@ -27,6 +29,9 @@ using timeline_range_cancel_request_ptr = std::shared_ptr<timeline_range_cancel_
 using audio_renderer_ptr = std::shared_ptr<audio_renderer>;
 using audio_player_ptr = std::shared_ptr<audio_player>;
 using cancel_id_ptr = std::shared_ptr<cancel_id>;
+using audio_player_rendering_ptr = std::shared_ptr<audio_player_rendering>;
+using audio_circular_buffer_ptr = std::shared_ptr<audio_circular_buffer>;
+using audio_circular_buffer_wptr = std::weak_ptr<audio_circular_buffer>;
 
 using audio_renderable_ptr = std::shared_ptr<audio_renderable>;
 }  // namespace yas::playing

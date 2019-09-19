@@ -21,9 +21,15 @@ struct test_audio_renderer : audio_renderable {
     static test_audio_renderer_ptr make_shared();
 
    private:
-    class impl;
-
-    std::unique_ptr<impl> _impl;
+    chaining::value::holder_ptr<proc::sample_rate_t> _sample_rate =
+        chaining::value::holder<proc::sample_rate_t>::make_shared(proc::sample_rate_t{0});
+    chaining::value::holder_ptr<audio::pcm_format> _pcm_format =
+        chaining::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
+    chaining::value::holder_ptr<std::size_t> _channel_count =
+        chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
+    std::atomic<bool> _is_rendering = false;
+    audio_renderable::rendering_f _rendering_handler;
+    std::recursive_mutex _rendering_mutex;
 
     test_audio_renderer();
 

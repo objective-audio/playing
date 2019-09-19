@@ -8,12 +8,10 @@
 #include <cpp_utils/yas_task.h>
 #include <deque>
 #include "yas_playing_audio_buffer.h"
+#include "yas_playing_ptr.h"
 
 namespace yas::playing {
 struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffer> {
-    using ptr = std::shared_ptr<audio_circular_buffer>;
-    using wptr = std::weak_ptr<audio_circular_buffer>;
-
     enum read_error {
         read_from_container_failed,
     };
@@ -53,7 +51,7 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     audio_buffer::ptr const &_current_buffer();
 };
 
-audio_circular_buffer::ptr make_audio_circular_buffer(audio::format const &format, std::size_t const container_count,
-                                                      std::shared_ptr<task_queue> const &queue,
-                                                      task_priority_t const priority, audio_buffer::load_f);
+audio_circular_buffer_ptr make_audio_circular_buffer(audio::format const &format, std::size_t const container_count,
+                                                     std::shared_ptr<task_queue> const &queue,
+                                                     task_priority_t const priority, audio_buffer::load_f);
 }  // namespace yas::playing
