@@ -4,9 +4,8 @@
 
 #pragma once
 
-#include <audio/yas_audio_engine_au_io.h>
-#include <audio/yas_audio_engine_manager.h>
-#include <audio/yas_audio_engine_tap.h>
+#include <audio/yas_audio_graph.h>
+#include <audio/yas_audio_graph_tap.h>
 #include <processing/yas_processing_types.h>
 #include "yas_playing_audio_configulation.h"
 #include "yas_playing_audio_player_protocol.h"
@@ -14,17 +13,19 @@
 
 namespace yas::playing {
 struct audio_renderer : audio_renderable {
-    [[nodiscard]] audio::engine::manager_ptr const &manager();
+    [[nodiscard]] audio::graph_ptr const &graph();
     [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
 
     [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
 
-    static audio_renderer_ptr make_shared();
+    static audio_renderer_ptr make_shared(audio::io_device_ptr const &);
 
    private:
-    audio::engine::manager_ptr _manager = audio::engine::manager::make_shared();
+    audio::io_device_ptr _device;
+
+    audio::graph_ptr _graph = audio::graph::make_shared();
     chaining::value::holder_ptr<proc::sample_rate_t> _sample_rate =
         chaining::value::holder<proc::sample_rate_t>::make_shared(proc::sample_rate_t{0});
     chaining::value::holder_ptr<audio::pcm_format> _pcm_format =
@@ -35,9 +36,9 @@ struct audio_renderer : audio_renderable {
         chaining::value::holder<audio_configuration>::make_shared(
             {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
 
-    audio::engine::au_output_ptr _output = audio::engine::au_output::make_shared();
-    audio::engine::tap_ptr _tap = audio::engine::tap::make_shared();
-    std::optional<audio::engine::connection_ptr> _connection = std::nullopt;
+    audio::graph_io_ptr _io = this->_graph->add_io(this->_device);
+    audio::graph_tap_ptr _tap = audio::graph_tap::make_shared();
+    std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
 
     chaining::observer_pool _pool;
 
@@ -45,7 +46,7 @@ struct audio_renderer : audio_renderable {
     audio_renderable::rendering_f _rendering_handler;
     std::recursive_mutex _rendering_mutex;
 
-    audio_renderer();
+    audio_renderer(audio::io_device_ptr const &);
 
     void _prepare(audio_renderer_ptr const &);
 
@@ -58,6 +59,6 @@ struct audio_renderer : audio_renderable {
     void _setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer);
     void _update_configuration();
     void _update_connection();
-    void _render(audio::pcm_buffer &);
+    void _render(audio::pcm_buffer_ptr const &);
 };
 }  // namespace yas::playing

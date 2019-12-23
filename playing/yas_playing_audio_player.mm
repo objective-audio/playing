@@ -242,8 +242,8 @@ void audio_player::_setup_chaining(audio_player_ptr const &player) {
 void audio_player::_setup_rendering_handler(audio_player_ptr const &player) {
     auto weak_player = to_weak(player);
 
-    this->_renderable->set_rendering_handler([weak_player](audio::pcm_buffer &out_buffer) {
-        if (out_buffer.format().is_interleaved()) {
+    this->_renderable->set_rendering_handler([weak_player](audio::pcm_buffer_ptr const &out_buffer) {
+        if (out_buffer->format().is_interleaved()) {
             throw std::invalid_argument("out_buffer is not non-interleaved.");
         }
 
@@ -263,10 +263,10 @@ void audio_player::_setup_rendering_handler(audio_player_ptr const &player) {
 
         frame_index_t const begin_frame = rendering->play_frame();
         frame_index_t current_frame = begin_frame;
-        uint32_t const out_length = out_buffer.frame_length();
+        uint32_t const out_length = out_buffer->frame_length();
         frame_index_t const next_frame = current_frame + out_length;
         uint32_t const frag_length = rendering->fragment_length();
-        audio::format const &out_format = out_buffer.format();
+        audio::format const &out_format = out_buffer->format();
         audio::format const read_format = audio::format{{.sample_rate = out_format.sample_rate(),
                                                          .pcm_format = out_format.pcm_format(),
                                                          .interleaved = false,
@@ -290,12 +290,12 @@ void audio_player::_setup_rendering_handler(audio_player_ptr const &player) {
 
                 auto &circular_buffer = rendering->circular_buffers.at(idx);
                 if (auto const result = circular_buffer->read_into_buffer(*read_buffer, current_frame); !result) {
-                    out_buffer.clear();
+                    out_buffer->clear();
                     return;
                 }
 
-                out_buffer.copy_channel_from(*read_buffer,
-                                             {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
+                out_buffer->copy_channel_from(*read_buffer,
+                                              {.to_channel = idx, .to_begin_frame = to_frame, .length = info.length});
 
                 if (info.next_frag_idx.has_value()) {
                     circular_buffer->rotate_buffers(*info.next_frag_idx);

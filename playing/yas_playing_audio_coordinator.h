@@ -31,17 +31,18 @@ struct audio_coordinator {
     [[nodiscard]] chaining::chain_sync_t<bool> chain_is_playing() const;
     [[nodiscard]] state_map_vector_holder_t::chain_t chain_state() const;
 
-    static audio_coordinator_ptr make_shared(std::string const &root_path);
+    static audio_coordinator_ptr make_shared(std::string const &root_path, audio::io_device_ptr const &);
 
    private:
+    audio::io_device_ptr _device;
     std::string _root_path;
     std::shared_ptr<task_queue> _queue = std::make_shared<task_queue>();
-    audio_renderer_ptr _renderer = audio_renderer::make_shared();
+    audio_renderer_ptr _renderer = audio_renderer::make_shared(this->_device);
     audio_player_ptr _player{audio_player::make_shared(this->_renderer, this->_root_path, this->_queue, 0)};
 
     chaining::observer_pool _pool;
 
-    explicit audio_coordinator(std::string const &root_path);
+    explicit audio_coordinator(std::string const &root_path, audio::io_device_ptr const &);
 
     audio_coordinator(audio_coordinator const &) = delete;
     audio_coordinator(audio_coordinator &&) = delete;
