@@ -25,12 +25,12 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
     this->_sample_rate->set_value(sample_rate);
 }
 
-void test_audio_renderer::render(audio::pcm_buffer &buffer) {
+void test_audio_renderer::render(audio::pcm_buffer_ptr const &buffer) {
     if (!this->_is_rendering.load()) {
         return;
     }
 
-    auto const &format = buffer.format();
+    auto const &format = buffer->format();
 
     if (format.is_interleaved()) {
         throw std::invalid_argument("buffer is not non-interleaved.");

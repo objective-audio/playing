@@ -18,5 +18,6 @@ sample::controller::controller() {
 }
 
 std::shared_ptr<sample::controller> sample::make_controller() {
+    auto result = audio::ios_session::shared()->activate();
     return std::make_shared<sample::controller_factory>();
 }

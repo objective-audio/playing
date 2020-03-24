@@ -117,9 +117,9 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
-    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
+    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
+    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
@@ -177,9 +177,9 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
-    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
+    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
+    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
@@ -190,7 +190,7 @@ struct cpp {
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    render_buffer.clear();
+    render_buffer->clear();
 
     player->seek(6);
 
@@ -218,9 +218,9 @@ struct cpp {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
-    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
+    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
+    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
@@ -287,9 +287,9 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
-    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
+    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
+    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
@@ -300,7 +300,7 @@ struct cpp {
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    render_buffer.clear();
+    render_buffer->clear();
 
     self->_cpp.exporter->set_timeline_container(playing::timeline_container::make_shared(
         "0", self->_cpp.sample_rate, test_utils::test_timeline(100, self->_cpp.ch_count)));
@@ -328,8 +328,8 @@ struct cpp {
     self->_cpp.exporting_queue->wait_until_all_tasks_are_finished();
 }
 
-- (void)render:(audio::pcm_buffer &)render_buffer {
-    render_buffer.clear();
+- (void)render:(audio::pcm_buffer_ptr const &)render_buffer {
+    render_buffer->clear();
 
     std::promise<void> promise;
     auto future = promise.get_future();

@@ -11,7 +11,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-audio_coordinator::audio_coordinator(std::string const &root_path) : _root_path(root_path) {
+audio_coordinator::audio_coordinator(std::string const &root_path, audio::io_device_ptr const &device)
+    : _root_path(root_path), _device(device) {
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {
@@ -70,6 +71,6 @@ state_map_vector_holder_t::chain_t audio_coordinator::chain_state() const {
     return this->_player->state_chain();
 }
 
-audio_coordinator_ptr audio_coordinator::make_shared(std::string const &root_path) {
-    return audio_coordinator_ptr(new audio_coordinator{root_path});
+audio_coordinator_ptr audio_coordinator::make_shared(std::string const &root_path, audio::io_device_ptr const &device) {
+    return audio_coordinator_ptr(new audio_coordinator{root_path, device});
 }

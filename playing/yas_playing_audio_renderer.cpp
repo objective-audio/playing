@@ -3,16 +3,17 @@
 //
 
 #include "yas_playing_audio_renderer.h"
-#include <audio/yas_audio_engine_au.h>
+#include <audio/yas_audio_graph_io.h>
+#include <audio/yas_audio_io.h>
 
 using namespace yas;
 using namespace yas::playing;
 
-audio_renderer::audio_renderer() {
+audio_renderer::audio_renderer(audio::io_device_ptr const &device) : _device(device) {
 }
 
-audio::engine::manager_ptr const &audio_renderer::manager() {
-    return this->_manager;
+audio::graph_ptr const &audio_renderer::graph() {
+    return this->_graph;
 }
 
 proc::sample_rate_t audio_renderer::sample_rate() const {
@@ -52,7 +53,7 @@ void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
 
     this->_update_configuration();
 
-    this->_pool += this->_manager->chain(audio::engine::manager::method::configuration_change)
+    this->_pool += this->_device->io_device_chain()
                        .perform([weak_renderer](auto const &) {
                            if (auto renderer = weak_renderer.lock()) {
                                renderer->_update_configuration();
@@ -72,9 +73,9 @@ void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
                        .perform([weak_renderer](bool const &is_rendering) {
                            if (auto renderer = weak_renderer.lock()) {
                                if (is_rendering) {
-                                   renderer->_manager->start_render();
+                                   renderer->_graph->start_render();
                                } else {
-                                   renderer->_manager->stop();
+                                   renderer->_graph->stop();
                                }
                            }
                        })
@@ -103,7 +104,7 @@ void audio_renderer::set_is_rendering(bool const is_rendering) {
 }
 
 void audio_renderer::_setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer) {
-    this->_tap->set_render_handler([weak_renderer = std::move(weak_renderer)](audio::engine::node::render_args args) {
+    this->_tap->set_render_handler([weak_renderer = std::move(weak_renderer)](audio::graph_node::render_args args) {
         if (args.bus_idx != 0) {
             return;
         }
@@ -115,16 +116,20 @@ void audio_renderer::_setup_tap(std::weak_ptr<audio_renderer> const &weak_render
 }
 
 void audio_renderer::_update_configuration() {
-    audio::engine::au_io const &au_io = this->_output->au_io();
-    proc::sample_rate_t const sample_rate = static_cast<proc::sample_rate_t>(std::round(au_io.device_sample_rate()));
-    uint32_t const ch_count = au_io.output_device_channel_count();
-    this->_sample_rate->set_value(sample_rate);
-    this->_channel_count->set_value(ch_count);
+    if (auto const &device = this->_io->raw_io()->device()) {
+        if (auto const &output_format = device.value()->output_format()) {
+            this->_sample_rate->set_value(output_format->sample_rate());
+            this->_channel_count->set_value(output_format->channel_count());
+            return;
+        }
+    }
+    this->_sample_rate->set_value(0);
+    this->_channel_count->set_value(0);
 }
 
 void audio_renderer::_update_connection() {
     if (this->_connection) {
-        this->_manager->disconnect(*this->_connection);
+        this->_graph->disconnect(*this->_connection);
         this->_connection = std::nullopt;
     }
 
@@ -133,12 +138,12 @@ void audio_renderer::_update_connection() {
 
     if (sample_rate > 0.0 && ch_count > 0) {
         audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
-        this->_connection = this->_manager->connect(this->_tap->node(), this->_output->au_io().au().node(), format);
+        this->_connection = this->_graph->connect(this->_tap->node(), this->_io->node(), format);
     }
 }
 
-void audio_renderer::_render(audio::pcm_buffer &buffer) {
-    auto const &format = buffer.format();
+void audio_renderer::_render(audio::pcm_buffer_ptr const &buffer) {
+    auto const &format = buffer->format();
 
     if (format.is_interleaved()) {
         throw std::invalid_argument("buffer is not non-interleaved.");
@@ -152,8 +157,8 @@ void audio_renderer::_render(audio::pcm_buffer &buffer) {
     }
 }
 
-audio_renderer_ptr audio_renderer::make_shared() {
-    auto shared = audio_renderer_ptr(new audio_renderer{});
+audio_renderer_ptr audio_renderer::make_shared(audio::io_device_ptr const &device) {
+    auto shared = audio_renderer_ptr(new audio_renderer{device});
     shared->_prepare(shared);
     return shared;
 }
