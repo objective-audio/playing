@@ -22,6 +22,9 @@ struct controller {
 
    protected:
     controller();
+
+   private:
+    proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const);
 };
 
 std::shared_ptr<controller> make_controller();
