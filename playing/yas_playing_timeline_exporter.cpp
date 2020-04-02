@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_timeline_exporter.h"
+
 #include <audio/yas_audio_file.h>
 #include <audio/yas_audio_pcm_buffer.h>
 #include <chaining/yas_chaining_umbrella.h>
@@ -12,6 +13,7 @@
 #include <cpp_utils/yas_thread.h>
 #include <cpp_utils/yas_to_integer.h>
 #include <processing/yas_processing_umbrella.h>
+
 #include "yas_playing_math.h"
 #include "yas_playing_numbers_file.h"
 #include "yas_playing_path.h"
@@ -438,8 +440,7 @@ struct timeline_exporter::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range,
-                                                                   task const &task) {
+    [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range, task const &task) {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;

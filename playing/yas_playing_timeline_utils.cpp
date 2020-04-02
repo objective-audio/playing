@@ -3,9 +3,12 @@
 //
 
 #include "yas_playing_timeline_utils.h"
+
 #include <audio/yas_audio_format.h>
 #include <cpp_utils/yas_boolean.h>
+
 #include <fstream>
+
 #include "yas_playing_math.h"
 
 using namespace yas;

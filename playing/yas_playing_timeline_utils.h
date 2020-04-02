@@ -10,6 +10,7 @@
 #include <processing/yas_processing_number_event.h>
 #include <processing/yas_processing_signal_event.h>
 #include <processing/yas_processing_time.h>
+
 #include "yas_playing_types.h"
 
 namespace yas::playing::timeline_utils {

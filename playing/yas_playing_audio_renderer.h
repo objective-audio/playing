@@ -7,6 +7,7 @@
 #include <audio/yas_audio_graph.h>
 #include <audio/yas_audio_graph_tap.h>
 #include <processing/yas_processing_types.h>
+
 #include "yas_playing_audio_configulation.h"
 #include "yas_playing_audio_player_protocol.h"
 #include "yas_playing_ptr.h"

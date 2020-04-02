@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_task_protocol.h>
 #include <processing/yas_processing_umbrella.h>
+
 #include "yas_playing_ptr.h"
 
 namespace yas::playing {

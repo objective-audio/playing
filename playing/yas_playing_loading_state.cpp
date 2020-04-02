@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_loading_state.h"
+
 #include <string>
 
 using namespace yas;

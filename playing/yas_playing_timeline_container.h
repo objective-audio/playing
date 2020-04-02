@@ -5,6 +5,7 @@
 #pragma once
 
 #include <processing/yas_processing_timeline.h>
+
 #include "yas_playing_ptr.h"
 
 namespace yas::playing {
