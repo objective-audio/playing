@@ -25,7 +25,7 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
     this->_sample_rate->set_value(sample_rate);
 }
 
-void test_audio_renderer::render(audio::pcm_buffer_ptr const &buffer) {
+void test_audio_renderer::render(audio::pcm_buffer *const buffer) {
     if (!this->_is_rendering.load()) {
         return;
     }

@@ -59,6 +59,6 @@ struct audio_renderer : audio_renderable {
     void _setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer);
     void _update_configuration();
     void _update_connection();
-    void _render(audio::pcm_buffer_ptr const &);
+    void _render(audio::pcm_buffer *const);
 };
 }  // namespace yas::playing

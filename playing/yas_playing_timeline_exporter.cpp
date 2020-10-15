@@ -438,8 +438,7 @@ struct timeline_exporter::impl {
         return std::nullopt;
     }
 
-        [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range,
-                                                                   task const &task) {
+    [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range, task const &task) {
         assert(!thread::is_main());
 
         auto const &root_path = this->_root_path;

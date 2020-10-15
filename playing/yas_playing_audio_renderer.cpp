@@ -104,7 +104,7 @@ void audio_renderer::set_is_rendering(bool const is_rendering) {
 }
 
 void audio_renderer::_setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer) {
-    this->_tap->set_render_handler([weak_renderer = std::move(weak_renderer)](audio::graph_node::render_args args) {
+    this->_tap->set_render_handler([weak_renderer = std::move(weak_renderer)](audio::node_render_args const &args) {
         if (args.bus_idx != 0) {
             return;
         }
@@ -138,11 +138,11 @@ void audio_renderer::_update_connection() {
 
     if (sample_rate > 0.0 && ch_count > 0) {
         audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
-        this->_connection = this->_graph->connect(this->_tap->node(), this->_io->node(), format);
+        this->_connection = this->_graph->connect(this->_tap->node, this->_io->output_node, format);
     }
 }
 
-void audio_renderer::_render(audio::pcm_buffer_ptr const &buffer) {
+void audio_renderer::_render(audio::pcm_buffer *const buffer) {
     auto const &format = buffer->format();
 
     if (format.is_interleaved()) {
