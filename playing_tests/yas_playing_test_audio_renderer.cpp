@@ -3,6 +3,7 @@
 //
 
 #include "yas_playing_test_audio_renderer.h"
+
 #include <audio/yas_audio_format.h>
 #include <processing/yas_processing_types.h>
 

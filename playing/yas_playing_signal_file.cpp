@@ -3,9 +3,12 @@
 //
 
 #include "yas_playing_signal_file.h"
+
 #include <audio/yas_audio_format.h>
 #include <audio/yas_audio_types.h>
+
 #include <fstream>
+
 #include "yas_playing_timeline_utils.h"
 
 using namespace yas;

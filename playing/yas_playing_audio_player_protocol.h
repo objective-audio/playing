@@ -8,7 +8,9 @@
 #include <audio/yas_audio_ptr.h>
 #include <chaining/yas_chaining_umbrella.h>
 #include <processing/yas_processing_types.h>
+
 #include <functional>
+
 #include "yas_playing_ptr.h"
 
 namespace yas::playing {

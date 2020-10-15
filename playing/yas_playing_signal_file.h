@@ -8,7 +8,9 @@
 #include <cpp_utils/yas_result.h>
 #include <processing/yas_processing_signal_event.h>
 #include <processing/yas_processing_time.h>
+
 #include <string>
+
 #include "yas_playing_signal_file_info.h"
 #include "yas_playing_types.h"
 

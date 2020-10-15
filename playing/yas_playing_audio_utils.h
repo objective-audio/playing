@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <optional>
+
 #include "yas_playing_types.h"
 
 namespace yas::playing::audio_utils {
