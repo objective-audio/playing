@@ -3,9 +3,11 @@
 //
 
 #include "yas_playing_signal_file_info.h"
+
 #include <cpp_utils/yas_boolean.h>
 #include <cpp_utils/yas_stl_utils.h>
 #include <cpp_utils/yas_to_integer.h>
+
 #include "yas_playing_path.h"
 
 using namespace yas;

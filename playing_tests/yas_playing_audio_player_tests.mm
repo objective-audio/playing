@@ -117,34 +117,34 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
-    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 2);
     XCTAssertEqual(data_ptr_0[1], 3);
     XCTAssertEqual(data_ptr_1[0], 1002);
     XCTAssertEqual(data_ptr_1[1], 1003);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 4);
     XCTAssertEqual(data_ptr_0[1], 5);
     XCTAssertEqual(data_ptr_1[0], 1004);
     XCTAssertEqual(data_ptr_1[1], 1005);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -154,14 +154,14 @@ struct cpp {
     // rotateしたバッファが読み込まれるのを待つ
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 8);
     XCTAssertEqual(data_ptr_0[1], 9);
     XCTAssertEqual(data_ptr_1[0], 1008);
     XCTAssertEqual(data_ptr_1[1], 1009);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 10);
     XCTAssertEqual(data_ptr_0[1], 11);
@@ -177,26 +177,26 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
-    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
+    audio::pcm_buffer render_buffer(self->_cpp.format, render_length);
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    render_buffer->clear();
+    render_buffer.clear();
 
     player->seek(6);
 
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -218,13 +218,13 @@ struct cpp {
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
 
     uint32_t const render_length = 2;
-    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
-    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     // play_frameは進んでいない
     XCTAssertEqual(player->play_frame(), 0);
@@ -238,7 +238,7 @@ struct cpp {
     queue->resume();
     queue->wait_until_all_tasks_are_finished();
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(player->play_frame(), 2);
 
@@ -255,7 +255,7 @@ struct cpp {
     // 一応、少し待つ
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     // play_frameは進んでいない
     XCTAssertEqual(player->play_frame(), 8);
@@ -269,7 +269,7 @@ struct cpp {
     queue->resume();
     queue->wait_until_all_tasks_are_finished();
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(player->play_frame(), 10);
 
@@ -287,20 +287,20 @@ struct cpp {
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
     uint32_t const render_length = 2;
-    auto const render_buffer = std::make_shared<audio::pcm_buffer>(self->_cpp.format, render_length);
-    int16_t const *data_ptr_0 = render_buffer->data_ptr_at_index<int16_t>(0);
-    int16_t const *data_ptr_1 = render_buffer->data_ptr_at_index<int16_t>(1);
+    audio::pcm_buffer render_buffer{self->_cpp.format, render_length};
+    int16_t const *data_ptr_0 = render_buffer.data_ptr_at_index<int16_t>(0);
+    int16_t const *data_ptr_1 = render_buffer.data_ptr_at_index<int16_t>(1);
 
     player->set_playing(true);
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    render_buffer->clear();
+    render_buffer.clear();
 
     self->_cpp.exporter->set_timeline_container(playing::timeline_container::make_shared(
         "0", self->_cpp.sample_rate, test_utils::test_timeline(100, self->_cpp.ch_count)));
@@ -312,7 +312,7 @@ struct cpp {
 
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:render_buffer];
+    [self render:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 102);
     XCTAssertEqual(data_ptr_0[1], 3);
@@ -328,7 +328,7 @@ struct cpp {
     self->_cpp.exporting_queue->wait_until_all_tasks_are_finished();
 }
 
-- (void)render:(audio::pcm_buffer_ptr const &)render_buffer {
+- (void)render:(audio::pcm_buffer *const)render_buffer {
     render_buffer->clear();
 
     std::promise<void> promise;

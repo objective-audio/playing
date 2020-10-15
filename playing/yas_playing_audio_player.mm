@@ -242,7 +242,7 @@ void audio_player::_setup_chaining(audio_player_ptr const &player) {
 void audio_player::_setup_rendering_handler(audio_player_ptr const &player) {
     auto weak_player = to_weak(player);
 
-    this->_renderable->set_rendering_handler([weak_player](audio::pcm_buffer_ptr const &out_buffer) {
+    this->_renderable->set_rendering_handler([weak_player](audio::pcm_buffer *const out_buffer) {
         if (out_buffer->format().is_interleaved()) {
             throw std::invalid_argument("out_buffer is not non-interleaved.");
         }

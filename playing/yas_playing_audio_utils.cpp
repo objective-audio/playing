@@ -3,7 +3,9 @@
 //
 
 #include "yas_playing_audio_utils.h"
+
 #include <algorithm>
+
 #include "yas_playing_math.h"
 
 using namespace yas;
