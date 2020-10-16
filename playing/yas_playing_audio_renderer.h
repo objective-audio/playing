@@ -24,21 +24,21 @@ struct audio_renderer : audio_renderable {
     static audio_renderer_ptr make_shared(audio::io_device_ptr const &);
 
    private:
-    audio::io_device_ptr _device;
+    audio::io_device_ptr const _device;
 
-    audio::graph_ptr _graph = audio::graph::make_shared();
-    chaining::value::holder_ptr<proc::sample_rate_t> _sample_rate =
+    audio::graph_ptr const _graph = audio::graph::make_shared();
+    chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
         chaining::value::holder<proc::sample_rate_t>::make_shared(proc::sample_rate_t{0});
-    chaining::value::holder_ptr<audio::pcm_format> _pcm_format =
+    chaining::value::holder_ptr<audio::pcm_format> const _pcm_format =
         chaining::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
-    chaining::value::holder_ptr<std::size_t> _channel_count =
+    chaining::value::holder_ptr<std::size_t> const _channel_count =
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
-    chaining::value::holder_ptr<audio_configuration> _configuration =
+    chaining::value::holder_ptr<audio_configuration> const _configuration =
         chaining::value::holder<audio_configuration>::make_shared(
             {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
 
-    audio::graph_io_ptr _io = this->_graph->add_io(this->_device);
-    audio::graph_tap_ptr _tap = audio::graph_tap::make_shared();
+    audio::graph_io_ptr const _io = this->_graph->add_io(this->_device);
+    audio::graph_tap_ptr const _tap = audio::graph_tap::make_shared();
     std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
 
     chaining::observer_pool _pool;
