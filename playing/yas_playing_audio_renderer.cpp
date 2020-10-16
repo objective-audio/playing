@@ -65,8 +65,21 @@ chaining::chain_sync_t<audio_configuration> audio_renderer::configuration_chain(
 }
 
 void audio_renderer::set_rendering_handler(audio_renderable::rendering_f handler) {
-    std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
-    this->_rendering_handler = std::move(handler);
+    this->_tap->set_render_handler([handler = std::move(handler)](audio::node_render_args const &args) {
+        if (args.bus_idx != 0) {
+            return;
+        }
+
+        auto const &buffer = args.buffer;
+
+        if (buffer->format().is_interleaved()) {
+            return;
+        }
+
+        if (handler) {
+            handler(buffer);
+        }
+    });
 }
 
 chaining::chain_sync_t<proc::sample_rate_t> audio_renderer::chain_sample_rate() {
@@ -83,24 +96,6 @@ chaining::chain_sync_t<std::size_t> audio_renderer::chain_channel_count() {
 
 void audio_renderer::set_is_rendering(bool const is_rendering) {
     this->_is_rendering->set_value(is_rendering);
-}
-
-void audio_renderer::_update_tap_renderer() {
-    this->_tap->set_render_handler([handler = this->_rendering_handler](audio::node_render_args const &args) {
-        if (args.bus_idx != 0) {
-            return;
-        }
-
-        auto const &buffer = args.buffer;
-
-        if (buffer->format().is_interleaved()) {
-            return;
-        }
-
-        if (handler) {
-            handler(buffer);
-        }
-    });
 }
 
 void audio_renderer::_update_configuration() {
@@ -127,21 +122,6 @@ void audio_renderer::_update_connection() {
     if (sample_rate > 0.0 && ch_count > 0) {
         audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
         this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
-    }
-}
-
-void audio_renderer::_render(audio::pcm_buffer *const buffer) {
-    auto const &format = buffer->format();
-
-    if (format.is_interleaved()) {
-        throw std::invalid_argument("buffer is not non-interleaved.");
-    }
-
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
-        lock.owns_lock()) {
-        if (auto const &handler = this->_rendering_handler) {
-            handler(buffer);
-        }
     }
 }
 

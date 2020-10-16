@@ -44,8 +44,6 @@ struct audio_renderer : audio_renderable {
     chaining::observer_pool _pool;
 
     chaining::value::holder_ptr<bool> _is_rendering = chaining::value::holder<bool>::make_shared(false);
-    audio_renderable::rendering_f _rendering_handler;
-    std::recursive_mutex _rendering_mutex;
 
     audio_renderer(audio::io_device_ptr const &);
 
@@ -55,9 +53,7 @@ struct audio_renderer : audio_renderable {
     chaining::chain_sync_t<std::size_t> chain_channel_count() override;
     void set_is_rendering(bool const) override;
 
-    void _update_tap_renderer();
     void _update_configuration();
     void _update_connection();
-    void _render(audio::pcm_buffer *const);
 };
 }  // namespace yas::playing
