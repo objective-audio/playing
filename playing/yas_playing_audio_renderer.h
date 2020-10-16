@@ -57,7 +57,6 @@ struct audio_renderer : audio_renderable {
     chaining::chain_sync_t<std::size_t> chain_channel_count() override;
     void set_is_rendering(bool const) override;
 
-    void _setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer);
     void _update_tap_renderer();
     void _update_configuration();
     void _update_connection();
