@@ -14,7 +14,8 @@
 
 namespace yas::playing {
 struct audio_renderer : audio_renderable {
-    [[nodiscard]] audio::graph_ptr const &graph();
+    audio::graph_ptr const graph;
+
     [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
@@ -26,7 +27,6 @@ struct audio_renderer : audio_renderable {
    private:
     audio::io_device_ptr const _device;
 
-    audio::graph_ptr const _graph = audio::graph::make_shared();
     chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
         chaining::value::holder<proc::sample_rate_t>::make_shared(proc::sample_rate_t{0});
     chaining::value::holder_ptr<audio::pcm_format> const _pcm_format =
@@ -37,7 +37,7 @@ struct audio_renderer : audio_renderable {
         chaining::value::holder<audio_configuration>::make_shared(
             {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
 
-    audio::graph_io_ptr const _io = this->_graph->add_io(this->_device);
+    audio::graph_io_ptr const _io = this->graph->add_io(this->_device);
     audio::graph_tap_ptr const _tap = audio::graph_tap::make_shared();
     std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
 

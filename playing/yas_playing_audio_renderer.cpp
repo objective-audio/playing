@@ -10,11 +10,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-audio_renderer::audio_renderer(audio::io_device_ptr const &device) : _device(device) {
-}
-
-audio::graph_ptr const &audio_renderer::graph() {
-    return this->_graph;
+audio_renderer::audio_renderer(audio::io_device_ptr const &device)
+    : graph(audio::graph::make_shared()), _device(device) {
 }
 
 proc::sample_rate_t audio_renderer::sample_rate() const {
@@ -74,9 +71,9 @@ void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
                        .perform([weak_renderer](bool const &is_rendering) {
                            if (auto renderer = weak_renderer.lock()) {
                                if (is_rendering) {
-                                   renderer->_graph->start_render();
+                                   renderer->graph->start_render();
                                } else {
-                                   renderer->_graph->stop();
+                                   renderer->graph->stop();
                                }
                            }
                        })
@@ -130,7 +127,7 @@ void audio_renderer::_update_configuration() {
 
 void audio_renderer::_update_connection() {
     if (this->_connection) {
-        this->_graph->disconnect(*this->_connection);
+        this->graph->disconnect(*this->_connection);
         this->_connection = std::nullopt;
     }
 
@@ -139,7 +136,7 @@ void audio_renderer::_update_connection() {
 
     if (sample_rate > 0.0 && ch_count > 0) {
         audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
-        this->_connection = this->_graph->connect(this->_tap->node, this->_io->output_node, format);
+        this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
     }
 }
 
