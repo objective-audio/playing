@@ -12,6 +12,40 @@ using namespace yas::playing;
 
 audio_renderer::audio_renderer(audio::io_device_ptr const &device)
     : graph(audio::graph::make_shared()), _device(device) {
+    this->_update_configuration();
+
+    this->_sample_rate->chain()
+        .to_null()
+        .merge(this->_pcm_format->chain().to_null())
+        .merge(this->_channel_count->chain().to_null())
+        .perform([this](auto const &) {
+            this->_configuration->set_value(audio_configuration{.sample_rate = this->_sample_rate->raw(),
+                                                                .pcm_format = this->_pcm_format->raw(),
+                                                                .channel_count = this->_channel_count->raw()});
+        })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_device->io_device_chain()
+        .perform([this](auto const &) { this->_update_configuration(); })
+        .end()
+        ->add_to(this->_pool);
+
+    this->_configuration->chain()
+        .perform([this](auto const &) { this->_update_connection(); })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_is_rendering->chain()
+        .perform([this](bool const &is_rendering) {
+            if (is_rendering) {
+                this->graph->start_render();
+            } else {
+                this->graph->stop();
+            }
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 proc::sample_rate_t audio_renderer::sample_rate() const {
@@ -34,50 +68,6 @@ void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
     auto weak_renderer = to_weak(renderer);
 
     this->_setup_tap(weak_renderer);
-
-    this->_pool += this->_sample_rate->chain()
-                       .to_null()
-                       .merge(this->_pcm_format->chain().to_null())
-                       .merge(this->_channel_count->chain().to_null())
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_configuration->set_value(
-                                   audio_configuration{.sample_rate = renderer->_sample_rate->raw(),
-                                                       .pcm_format = renderer->_pcm_format->raw(),
-                                                       .channel_count = renderer->_channel_count->raw()});
-                           }
-                       })
-                       .sync();
-
-    this->_update_configuration();
-
-    this->_pool += this->_device->io_device_chain()
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_update_configuration();
-                           }
-                       })
-                       .end();
-
-    this->_pool += this->_configuration->chain()
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_update_connection();
-                           }
-                       })
-                       .sync();
-
-    this->_pool += this->_is_rendering->chain()
-                       .perform([weak_renderer](bool const &is_rendering) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               if (is_rendering) {
-                                   renderer->graph->start_render();
-                               } else {
-                                   renderer->graph->stop();
-                               }
-                           }
-                       })
-                       .sync();
 }
 
 void audio_renderer::set_rendering_handler(audio_renderable::rendering_f handler) {
