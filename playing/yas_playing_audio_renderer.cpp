@@ -103,6 +103,24 @@ void audio_renderer::_setup_tap(std::weak_ptr<audio_renderer> const &weak_render
     });
 }
 
+void audio_renderer::_update_tap_renderer() {
+    this->_tap->set_render_handler([handler = this->_rendering_handler](audio::node_render_args const &args) {
+        if (args.bus_idx != 0) {
+            return;
+        }
+
+        auto const &buffer = args.buffer;
+
+        if (buffer->format().is_interleaved()) {
+            return;
+        }
+
+        if (handler) {
+            handler(buffer);
+        }
+    });
+}
+
 void audio_renderer::_update_configuration() {
     if (auto const &device = this->_io->raw_io()->device()) {
         if (auto const &output_format = device.value()->output_format()) {
