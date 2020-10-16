@@ -64,9 +64,6 @@ chaining::chain_sync_t<audio_configuration> audio_renderer::configuration_chain(
     return this->_configuration->chain();
 }
 
-void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
-}
-
 void audio_renderer::set_rendering_handler(audio_renderable::rendering_f handler) {
     std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
     this->_rendering_handler = std::move(handler);
@@ -149,7 +146,5 @@ void audio_renderer::_render(audio::pcm_buffer *const buffer) {
 }
 
 audio_renderer_ptr audio_renderer::make_shared(audio::io_device_ptr const &device) {
-    auto shared = audio_renderer_ptr(new audio_renderer{device});
-    shared->_prepare(shared);
-    return shared;
+    return audio_renderer_ptr(new audio_renderer{device});
 }
