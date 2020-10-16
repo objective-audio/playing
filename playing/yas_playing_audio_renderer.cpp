@@ -64,7 +64,7 @@ chaining::chain_sync_t<audio_configuration> audio_renderer::configuration_chain(
     return this->_configuration->chain();
 }
 
-void audio_renderer::set_rendering_handler(audio_renderable::rendering_f handler) {
+void audio_renderer::set_rendering_handler(audio_renderable::rendering_f &&handler) {
     this->_tap->set_render_handler([handler = std::move(handler)](audio::node_render_args const &args) {
         if (args.bus_idx != 0) {
             return;

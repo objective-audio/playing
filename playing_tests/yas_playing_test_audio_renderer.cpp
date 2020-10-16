@@ -45,7 +45,7 @@ void test_audio_renderer::render(audio::pcm_buffer *const buffer) {
     }
 }
 
-void test_audio_renderer::set_rendering_handler(rendering_f handler) {
+void test_audio_renderer::set_rendering_handler(rendering_f &&handler) {
     std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
     this->_rendering_handler = std::move(handler);
 }

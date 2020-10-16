@@ -47,7 +47,7 @@ struct audio_renderer : audio_renderable {
 
     audio_renderer(audio::io_device_ptr const &);
 
-    void set_rendering_handler(audio_renderable::rendering_f) override;
+    void set_rendering_handler(audio_renderable::rendering_f &&) override;
     chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
     chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
     chaining::chain_sync_t<std::size_t> chain_channel_count() override;
