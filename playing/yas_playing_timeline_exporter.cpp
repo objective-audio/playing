@@ -27,9 +27,9 @@ using namespace yas::playing;
 
 struct timeline_exporter::impl {
     std::string const _root_path;
-    std::shared_ptr<task_queue> _queue;
-    task_priority _priority;
-    chaining::notifier_ptr<event> _event_notifier = chaining::notifier<event>::make_shared();
+    std::shared_ptr<task_queue> const _queue;
+    task_priority const _priority;
+    chaining::notifier_ptr<event> const _event_notifier = chaining::notifier<event>::make_shared();
 
     impl(std::string const &root_path, std::shared_ptr<task_queue> const &queue, task_priority const &priority,
          proc::sample_rate_t const sample_rate)
@@ -70,7 +70,7 @@ struct timeline_exporter::impl {
     }
 
    private:
-    chaining::value::holder_ptr<timeline_container_ptr> _src_container;
+    chaining::value::holder_ptr<timeline_container_ptr> const _src_container;
     chaining::observer_pool _pool;
 
     struct background {

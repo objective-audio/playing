@@ -17,7 +17,7 @@ namespace yas::playing {
 struct audio_renderable {
     using rendering_f = std::function<void(audio::pcm_buffer *const)>;
 
-    virtual void set_rendering_handler(rendering_f) = 0;
+    virtual void set_rendering_handler(rendering_f &&) = 0;
     virtual chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() = 0;
     virtual chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() = 0;
     virtual chaining::chain_sync_t<std::size_t> chain_channel_count() = 0;

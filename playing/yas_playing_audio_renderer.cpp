@@ -10,11 +10,42 @@
 using namespace yas;
 using namespace yas::playing;
 
-audio_renderer::audio_renderer(audio::io_device_ptr const &device) : _device(device) {
-}
+audio_renderer::audio_renderer(audio::io_device_ptr const &device)
+    : graph(audio::graph::make_shared()), _device(device) {
+    this->_update_configuration();
 
-audio::graph_ptr const &audio_renderer::graph() {
-    return this->_graph;
+    this->_sample_rate->chain()
+        .to_null()
+        .merge(this->_pcm_format->chain().to_null())
+        .merge(this->_channel_count->chain().to_null())
+        .perform([this](auto const &) {
+            this->_configuration->set_value(audio_configuration{.sample_rate = this->_sample_rate->raw(),
+                                                                .pcm_format = this->_pcm_format->raw(),
+                                                                .channel_count = this->_channel_count->raw()});
+        })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_device->io_device_chain()
+        .perform([this](auto const &) { this->_update_configuration(); })
+        .end()
+        ->add_to(this->_pool);
+
+    this->_configuration->chain()
+        .perform([this](auto const &) { this->_update_connection(); })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_is_rendering->chain()
+        .perform([this](bool const &is_rendering) {
+            if (is_rendering) {
+                this->graph->start_render();
+            } else {
+                this->graph->stop();
+            }
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 proc::sample_rate_t audio_renderer::sample_rate() const {
@@ -33,59 +64,22 @@ chaining::chain_sync_t<audio_configuration> audio_renderer::configuration_chain(
     return this->_configuration->chain();
 }
 
-void audio_renderer::_prepare(audio_renderer_ptr const &renderer) {
-    auto weak_renderer = to_weak(renderer);
+void audio_renderer::set_rendering_handler(audio_renderable::rendering_f &&handler) {
+    this->_tap->set_render_handler([handler = std::move(handler)](audio::node_render_args const &args) {
+        if (args.bus_idx != 0) {
+            return;
+        }
 
-    this->_setup_tap(weak_renderer);
+        auto const &buffer = args.buffer;
 
-    this->_pool += this->_sample_rate->chain()
-                       .to_null()
-                       .merge(this->_pcm_format->chain().to_null())
-                       .merge(this->_channel_count->chain().to_null())
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_configuration->set_value(
-                                   audio_configuration{.sample_rate = renderer->_sample_rate->raw(),
-                                                       .pcm_format = renderer->_pcm_format->raw(),
-                                                       .channel_count = renderer->_channel_count->raw()});
-                           }
-                       })
-                       .sync();
+        if (buffer->format().is_interleaved()) {
+            return;
+        }
 
-    this->_update_configuration();
-
-    this->_pool += this->_device->io_device_chain()
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_update_configuration();
-                           }
-                       })
-                       .end();
-
-    this->_pool += this->_configuration->chain()
-                       .perform([weak_renderer](auto const &) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               renderer->_update_connection();
-                           }
-                       })
-                       .sync();
-
-    this->_pool += this->_is_rendering->chain()
-                       .perform([weak_renderer](bool const &is_rendering) {
-                           if (auto renderer = weak_renderer.lock()) {
-                               if (is_rendering) {
-                                   renderer->_graph->start_render();
-                               } else {
-                                   renderer->_graph->stop();
-                               }
-                           }
-                       })
-                       .sync();
-}
-
-void audio_renderer::set_rendering_handler(audio_renderable::rendering_f handler) {
-    std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
-    this->_rendering_handler = std::move(handler);
+        if (handler) {
+            handler(buffer);
+        }
+    });
 }
 
 chaining::chain_sync_t<proc::sample_rate_t> audio_renderer::chain_sample_rate() {
@@ -104,18 +98,6 @@ void audio_renderer::set_is_rendering(bool const is_rendering) {
     this->_is_rendering->set_value(is_rendering);
 }
 
-void audio_renderer::_setup_tap(std::weak_ptr<audio_renderer> const &weak_renderer) {
-    this->_tap->set_render_handler([weak_renderer = std::move(weak_renderer)](audio::node_render_args const &args) {
-        if (args.bus_idx != 0) {
-            return;
-        }
-
-        if (auto renderer = weak_renderer.lock()) {
-            renderer->_render(args.buffer);
-        }
-    });
-}
-
 void audio_renderer::_update_configuration() {
     if (auto const &device = this->_io->raw_io()->device()) {
         if (auto const &output_format = device.value()->output_format()) {
@@ -130,7 +112,7 @@ void audio_renderer::_update_configuration() {
 
 void audio_renderer::_update_connection() {
     if (this->_connection) {
-        this->_graph->disconnect(*this->_connection);
+        this->graph->disconnect(*this->_connection);
         this->_connection = std::nullopt;
     }
 
@@ -139,27 +121,10 @@ void audio_renderer::_update_connection() {
 
     if (sample_rate > 0.0 && ch_count > 0) {
         audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
-        this->_connection = this->_graph->connect(this->_tap->node, this->_io->output_node, format);
-    }
-}
-
-void audio_renderer::_render(audio::pcm_buffer *const buffer) {
-    auto const &format = buffer->format();
-
-    if (format.is_interleaved()) {
-        throw std::invalid_argument("buffer is not non-interleaved.");
-    }
-
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
-        lock.owns_lock()) {
-        if (auto const &handler = this->_rendering_handler) {
-            handler(buffer);
-        }
+        this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
     }
 }
 
 audio_renderer_ptr audio_renderer::make_shared(audio::io_device_ptr const &device) {
-    auto shared = audio_renderer_ptr(new audio_renderer{device});
-    shared->_prepare(shared);
-    return shared;
+    return audio_renderer_ptr(new audio_renderer{device});
 }
