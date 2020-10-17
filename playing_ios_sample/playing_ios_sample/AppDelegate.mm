@@ -12,7 +12,7 @@ using namespace yas::playing;
 
 namespace yas::playing::sample {
 struct app_delegate_cpp {
-    std::shared_ptr<sample::controller> controller = sample::make_controller();
+    std::shared_ptr<sample::controller> const controller = sample::controller::make_shared();
 };
 }
 
