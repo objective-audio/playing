@@ -29,7 +29,6 @@ struct test_audio_renderer : audio_renderable {
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
-    std::recursive_mutex _rendering_mutex;
 
     test_audio_renderer();
 

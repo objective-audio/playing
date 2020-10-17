@@ -37,16 +37,12 @@ void test_audio_renderer::render(audio::pcm_buffer *const buffer) {
         throw std::invalid_argument("buffer is not non-interleaved.");
     }
 
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_rendering_mutex, std::try_to_lock);
-        lock.owns_lock()) {
-        if (auto const &handler = this->_rendering_handler) {
-            handler(buffer);
-        }
+    if (auto const &handler = this->_rendering_handler) {
+        handler(buffer);
     }
 }
 
 void test_audio_renderer::set_rendering_handler(rendering_f &&handler) {
-    std::lock_guard<std::recursive_mutex> lock(this->_rendering_mutex);
     this->_rendering_handler = std::move(handler);
 }
 
