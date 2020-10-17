@@ -16,9 +16,9 @@ struct test_audio_renderer : audio_renderable {
     void set_channel_count(uint32_t const);
     void set_sample_rate(double const);
 
-    void render(audio::pcm_buffer *const);
+    [[nodiscard]] bool render_on_bg(audio::pcm_buffer *const);
 
-    static test_audio_renderer_ptr make_shared();
+    [[nodiscard]] static test_audio_renderer_ptr make_shared();
 
    private:
     chaining::value::holder_ptr<proc::sample_rate_t> _sample_rate =

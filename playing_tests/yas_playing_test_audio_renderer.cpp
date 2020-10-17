@@ -5,6 +5,7 @@
 #include "yas_playing_test_audio_renderer.h"
 
 #include <audio/yas_audio_format.h>
+#include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_types.h>
 
 using namespace yas;
@@ -26,19 +27,24 @@ void test_audio_renderer::set_sample_rate(double const sample_rate) {
     this->_sample_rate->set_value(sample_rate);
 }
 
-void test_audio_renderer::render(audio::pcm_buffer *const buffer) {
+bool test_audio_renderer::render_on_bg(audio::pcm_buffer *const buffer) {
+    assert(!thread::is_main());
+
     if (!this->_is_rendering.load()) {
-        return;
+        return false;
     }
 
     auto const &format = buffer->format();
 
     if (format.is_interleaved()) {
-        throw std::invalid_argument("buffer is not non-interleaved.");
+        return false;
     }
 
     if (auto const &handler = this->_rendering_handler) {
         handler(buffer);
+        return true;
+    } else {
+        return false;
     }
 }
 
