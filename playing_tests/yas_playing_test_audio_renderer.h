@@ -16,9 +16,9 @@ struct test_audio_renderer : audio_renderable {
     void set_channel_count(uint32_t const);
     void set_sample_rate(double const);
 
-    void render(audio::pcm_buffer *const);
+    [[nodiscard]] bool render_on_bg(audio::pcm_buffer *const);
 
-    static test_audio_renderer_ptr make_shared();
+    [[nodiscard]] static test_audio_renderer_ptr make_shared();
 
    private:
     chaining::value::holder_ptr<proc::sample_rate_t> _sample_rate =
@@ -29,7 +29,6 @@ struct test_audio_renderer : audio_renderable {
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
-    std::recursive_mutex _rendering_mutex;
 
     test_audio_renderer();
 

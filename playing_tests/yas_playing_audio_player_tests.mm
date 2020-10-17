@@ -123,28 +123,28 @@ struct cpp {
 
     player->set_playing(true);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
     XCTAssertEqual(data_ptr_1[0], 1000);
     XCTAssertEqual(data_ptr_1[1], 1001);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 2);
     XCTAssertEqual(data_ptr_0[1], 3);
     XCTAssertEqual(data_ptr_1[0], 1002);
     XCTAssertEqual(data_ptr_1[1], 1003);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 4);
     XCTAssertEqual(data_ptr_0[1], 5);
     XCTAssertEqual(data_ptr_1[0], 1004);
     XCTAssertEqual(data_ptr_1[1], 1005);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -154,14 +154,14 @@ struct cpp {
     // rotateしたバッファが読み込まれるのを待つ
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 8);
     XCTAssertEqual(data_ptr_0[1], 9);
     XCTAssertEqual(data_ptr_1[0], 1008);
     XCTAssertEqual(data_ptr_1[1], 1009);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 10);
     XCTAssertEqual(data_ptr_0[1], 11);
@@ -183,7 +183,7 @@ struct cpp {
 
     player->set_playing(true);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
@@ -196,7 +196,7 @@ struct cpp {
 
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 6);
     XCTAssertEqual(data_ptr_0[1], 7);
@@ -224,7 +224,7 @@ struct cpp {
 
     player->set_playing(true);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     // play_frameは進んでいない
     XCTAssertEqual(player->play_frame(), 0);
@@ -238,7 +238,7 @@ struct cpp {
     queue->resume();
     queue->wait_until_all_tasks_are_finished();
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(player->play_frame(), 2);
 
@@ -255,7 +255,7 @@ struct cpp {
     // 一応、少し待つ
     [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:0.2]];
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     // play_frameは進んでいない
     XCTAssertEqual(player->play_frame(), 8);
@@ -269,7 +269,7 @@ struct cpp {
     queue->resume();
     queue->wait_until_all_tasks_are_finished();
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(player->play_frame(), 10);
 
@@ -293,7 +293,7 @@ struct cpp {
 
     player->set_playing(true);
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 0);
     XCTAssertEqual(data_ptr_0[1], 1);
@@ -312,7 +312,7 @@ struct cpp {
 
     self->_cpp.playing_queue->wait_until_all_tasks_are_finished();
 
-    [self render:&render_buffer];
+    [self render_on_bg:&render_buffer];
 
     XCTAssertEqual(data_ptr_0[0], 102);
     XCTAssertEqual(data_ptr_0[1], 3);
@@ -328,20 +328,24 @@ struct cpp {
     self->_cpp.exporting_queue->wait_until_all_tasks_are_finished();
 }
 
-- (void)render:(audio::pcm_buffer *const)render_buffer {
+- (void)render_on_bg:(audio::pcm_buffer *const)render_buffer {
     render_buffer->clear();
+
+    bool is_rendered = false;
 
     std::promise<void> promise;
     auto future = promise.get_future();
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-                   [&renderer = self->_cpp.renderer, &render_buffer, &promise] {
-                       renderer->render(render_buffer);
+                   [&renderer = self->_cpp.renderer, &render_buffer, &promise, &is_rendered] {
+                       is_rendered = renderer->render_on_bg(render_buffer);
 
                        promise.set_value();
                    });
 
     future.get();
+
+    XCTAssertTrue(is_rendered);
 }
 
 @end
