@@ -36,7 +36,7 @@ struct audio_circular_buffer : std::enable_shared_from_this<audio_circular_buffe
     std::size_t const _buffer_count;
     audio::format const _format;
     std::vector<audio_buffer::ptr> _buffers;
-    state_map_holder_ptr_t _states_holder = state_map_holder_t::make_shared();
+    state_map_holder_ptr_t const _states_holder = state_map_holder_t::make_shared();
 
     std::optional<fragment_index_t> _index_of(uintptr_t const);
 

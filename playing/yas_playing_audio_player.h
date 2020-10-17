@@ -35,19 +35,19 @@ struct audio_player {
    private:
     std::string const _root_path;
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
-    chaining::value::holder_ptr<std::vector<channel_index_t>> _ch_mapping =
+    chaining::value::holder_ptr<std::vector<channel_index_t>> const _ch_mapping =
         chaining::value::holder<std::vector<channel_index_t>>::make_shared(std::vector<channel_index_t>{});
-    state_map_vector_holder_ptr_t _state_holder = state_map_vector_holder_t::make_shared();
+    state_map_vector_holder_ptr_t const _state_holder = state_map_vector_holder_t::make_shared();
 
     chaining::observer_pool _pool;
     chaining::observer_pool _state_pool;
 
     std::shared_ptr<task_queue> const _queue;
     task_priority_t const _priority;
-    audio_renderable_ptr _renderable;
-    chaining::value::holder_ptr<std::size_t> _ch_count =
+    audio_renderable_ptr const _renderable;
+    chaining::value::holder_ptr<std::size_t> const _ch_count =
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
-    chaining::value::holder_ptr<std::optional<audio::format>> _format =
+    chaining::value::holder_ptr<std::optional<audio::format>> const _format =
         chaining::value::holder<std::optional<audio::format>>::make_shared(std::nullopt);
     chaining::perform_receiver_ptr<> _update_rendering_receiver = nullptr;
     audio_player_rendering_ptr _rendering = nullptr;
