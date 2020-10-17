@@ -20,12 +20,11 @@ struct controller {
                                                 {.timeline = 0, .fragment = 1}, this->coordinator->sample_rate());
     chaining::observer_pool pool;
 
-   protected:
-    controller();
+    static std::shared_ptr<controller> make_shared();
 
    private:
+    controller();
+
     proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const);
 };
-
-std::shared_ptr<controller> make_controller();
 }  // namespace yas::playing::sample

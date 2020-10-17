@@ -129,16 +129,9 @@ loading_state::ptr audio_buffer::_try_get_state() const {
     }
 }
 
-#pragma mark -
-
-struct audio_buffer_factory : audio_buffer {
-    audio_buffer_factory(audio::pcm_buffer &&buffer, state_changed_f &&handler)
-        : audio_buffer(std::move(buffer), std::move(handler)) {
-    }
-};
-
-audio_buffer::ptr playing::make_audio_buffer(audio::pcm_buffer &&buffer, audio_buffer::state_changed_f handler) {
-    return std::make_shared<audio_buffer_factory>(std::move(buffer), std::move(handler));
+audio_buffer::ptr playing::audio_buffer::make_shared(audio::pcm_buffer &&buffer,
+                                                     audio_buffer::state_changed_f handler) {
+    return std::shared_ptr<audio_buffer>(new audio_buffer{std::move(buffer), std::move(handler)});
 }
 
 #pragma mark -

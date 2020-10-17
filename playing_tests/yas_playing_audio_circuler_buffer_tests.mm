@@ -50,8 +50,8 @@ struct cpp {
     auto &cpp = self->_cpp;
     std::shared_ptr<task_queue> const &queue = cpp.queue;
 
-    auto circular_buffer =
-        make_audio_circular_buffer(cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+    auto circular_buffer = audio_circular_buffer::make_shared(
+        cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) {
             int64_t const top_frame_idx = frag_idx * 3;
             int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
             data_ptr[0] = top_frame_idx;
@@ -104,15 +104,15 @@ struct cpp {
 
     int64_t offset = 0;
 
-    auto circular_buffer = make_audio_circular_buffer(cpp.format, 3, queue, 0,
-                                                      [&offset](audio::pcm_buffer &buffer, int64_t const frag_idx) {
-                                                          int64_t const top_frame_idx = frag_idx * 3 + offset;
-                                                          int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
-                                                          data_ptr[0] = top_frame_idx;
-                                                          data_ptr[1] = top_frame_idx + 1;
-                                                          data_ptr[2] = top_frame_idx + 2;
-                                                          return true;
-                                                      });
+    auto circular_buffer = audio_circular_buffer::make_shared(
+        cpp.format, 3, queue, 0, [&offset](audio::pcm_buffer &buffer, int64_t const frag_idx) {
+            int64_t const top_frame_idx = frag_idx * 3 + offset;
+            int16_t *data_ptr = buffer.data_ptr_at_index<int16_t>(0);
+            data_ptr[0] = top_frame_idx;
+            data_ptr[1] = top_frame_idx + 1;
+            data_ptr[2] = top_frame_idx + 2;
+            return true;
+        });
 
     circular_buffer->reload_all_buffers(-1);
     queue->wait_until_all_tasks_are_finished();
@@ -161,7 +161,7 @@ struct cpp {
     auto &cpp = self->_cpp;
     std::shared_ptr<task_queue> const &queue = cpp.queue;
 
-    auto circular_buffer = make_audio_circular_buffer(
+    auto circular_buffer = audio_circular_buffer::make_shared(
         cpp.format, 2, queue, 0, [](audio::pcm_buffer &buffer, int64_t const frag_idx) { return true; });
 
     XCTAssertEqual(circular_buffer->states().size(), 0);

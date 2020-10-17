@@ -82,8 +82,7 @@ struct audio_buffer {
     load_result_t load(fragment_index_t const frag_idx, load_f const &);
     read_result_t read_into_buffer(audio::pcm_buffer &to_buffer, frame_index_t const play_frame) const;
 
-   protected:
-    audio_buffer(audio::pcm_buffer &&, state_changed_f &&);
+    [[nodiscard]] static audio_buffer::ptr make_shared(audio::pcm_buffer &&, audio_buffer::state_changed_f);
 
    private:
     audio::pcm_buffer _buffer;
@@ -93,11 +92,11 @@ struct audio_buffer {
     std::recursive_mutex mutable _loading_mutex;
     std::recursive_mutex mutable _state_mutex;
 
+    audio_buffer(audio::pcm_buffer &&, state_changed_f &&);
+
     bool _set_state(fragment_index_t const, loading_kind const);
     [[nodiscard]] loading_state::ptr _try_get_state() const;
 };
-
-audio_buffer::ptr make_audio_buffer(audio::pcm_buffer &&, audio_buffer::state_changed_f);
 }  // namespace yas::playing
 
 namespace yas {

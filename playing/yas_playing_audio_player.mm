@@ -359,7 +359,7 @@ std::vector<audio_circular_buffer_ptr> audio_player::_make_circular_buffers(audi
         auto each = make_fast_each(channel_index_t(ch_count));
         while (yas_each_next(each)) {
             auto const ch_idx = ch_mapping.at(yas_each_index(each));
-            auto buffer = make_audio_circular_buffer(
+            auto buffer = audio_circular_buffer::make_shared(
                 format, 3, this->_queue, this->_priority,
                 [ch_path = path::channel{tl_path, ch_idx}](audio::pcm_buffer &buffer, fragment_index_t const frag_idx) {
                     buffer.clear();
