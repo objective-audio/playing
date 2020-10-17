@@ -26,7 +26,7 @@ std::vector<audio_buffer::ptr> make_audio_buffers(audio::format const &format, s
 
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {
-        result.emplace_back(make_audio_buffer(audio::pcm_buffer{format, length}, handler));
+        result.emplace_back(audio_buffer::make_shared(audio::pcm_buffer{format, length}, handler));
     }
 
     return result;
