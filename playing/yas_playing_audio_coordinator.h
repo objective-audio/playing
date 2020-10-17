@@ -21,8 +21,8 @@ struct audio_coordinator {
     void seek(frame_index_t const);
     void reload(proc::time::range const &);
 
-    bool is_playing() const;
-    frame_index_t play_frame() const;
+    [[nodiscard]] bool is_playing() const;
+    [[nodiscard]] frame_index_t play_frame() const;
 
     [[nodiscard]] proc::sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
@@ -32,7 +32,7 @@ struct audio_coordinator {
     [[nodiscard]] chaining::chain_sync_t<bool> chain_is_playing() const;
     [[nodiscard]] state_map_vector_holder_t::chain_t chain_state() const;
 
-    static audio_coordinator_ptr make_shared(std::string const &root_path, audio::io_device_ptr const &);
+    [[nodiscard]] static audio_coordinator_ptr make_shared(std::string const &root_path, audio::io_device_ptr const &);
 
    private:
     audio::io_device_ptr const _device;
