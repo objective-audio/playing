@@ -13,6 +13,17 @@ using namespace yas::playing;
 using namespace yas::playing::test_utils;
 
 test_audio_renderer::test_audio_renderer() {
+    this->_sample_rate->chain()
+        .to_null()
+        .merge(this->_pcm_format->chain().to_null())
+        .merge(this->_channel_count->chain().to_null())
+        .perform([this](auto const &) {
+            this->_configuration->set_value(audio_configuration{.sample_rate = this->_sample_rate->raw(),
+                                                                .pcm_format = this->_pcm_format->raw(),
+                                                                .channel_count = this->_channel_count->raw()});
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 void test_audio_renderer::set_pcm_format(audio::pcm_format const pcm_fomat) {
@@ -25,6 +36,18 @@ void test_audio_renderer::set_channel_count(uint32_t const ch_count) {
 
 void test_audio_renderer::set_sample_rate(double const sample_rate) {
     this->_sample_rate->set_value(sample_rate);
+}
+
+proc::sample_rate_t test_audio_renderer::sample_rate() const {
+    return this->_sample_rate->raw();
+}
+
+audio::pcm_format test_audio_renderer::pcm_format() const {
+    return this->_pcm_format->raw();
+}
+
+std::size_t test_audio_renderer::channel_count() const {
+    return this->_channel_count->raw();
 }
 
 bool test_audio_renderer::render_on_bg(audio::pcm_buffer *const buffer) {
@@ -62,6 +85,10 @@ chaining::chain_sync_t<audio::pcm_format> test_audio_renderer::chain_pcm_format(
 
 chaining::chain_sync_t<std::size_t> test_audio_renderer::chain_channel_count() {
     return this->_channel_count->chain();
+}
+
+chaining::chain_sync_t<audio_configuration> test_audio_renderer::configuration_chain() const {
+    return this->_configuration->chain();
 }
 
 void test_audio_renderer::set_is_rendering(bool const is_rendering) {

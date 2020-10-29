@@ -4,66 +4,53 @@
 
 #pragma once
 
-#include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_task.h>
-
-#include "yas_playing_audio_player_protocol.h"
-#include "yas_playing_loading_state.h"
-#include "yas_playing_ptr.h"
-#include "yas_playing_types.h"
+#include <cpp_utils/yas_worker.h>
+#include <playing/yas_playing_audio_player_protocol.h>
+#include <playing/yas_playing_ptr.h>
+#include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-class audio_circular_buffer;
+class audio_rendering;
 
-struct audio_player {
+struct audio_player : audio_playable {
     void set_ch_mapping(std::vector<int64_t>);
-    void set_playing(bool const);
-    void seek(frame_index_t const play_frame);
-    void reload(channel_index_t const ch_idx, fragment_index_t const frag_idx);
+    void set_playing(bool const) override;
+    void seek(frame_index_t const) override;
+    void reload(channel_index_t const, fragment_index_t const) override;
 
-    [[nodiscard]] std::string const &root_path() const;
     [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
-    [[nodiscard]] bool is_playing() const;
-    [[nodiscard]] frame_index_t play_frame() const;
+    [[nodiscard]] bool is_playing() const override;
+    [[nodiscard]] frame_index_t play_frame() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
-    [[nodiscard]] state_map_vector_holder_t::chain_t state_chain() const;
+    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
 
-    static audio_player_ptr make_shared(audio_renderable_ptr const &renderable, std::string const &root_path,
-                                        std::shared_ptr<task_queue> const &queue, task_priority_t const priority);
+    struct task_priority {
+        uint32_t setup;
+        uint32_t rendering;
+    };
+
+    static player_ptr make_shared(audio_renderable_ptr const &, std::string const &root_path, worker_ptr const &,
+                                  task_priority const &, audio_rendering_protocol_ptr const &,
+                                  audio_reading_protocol_ptr const &, audio_buffering_protocol_ptr const &);
 
    private:
-    std::string const _root_path;
+    audio_renderable_ptr const _renderable;
+    worker_ptr const _worker;
+    task_priority const _priority;
+
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
     chaining::value::holder_ptr<std::vector<channel_index_t>> const _ch_mapping =
         chaining::value::holder<std::vector<channel_index_t>>::make_shared(std::vector<channel_index_t>{});
-    state_map_vector_holder_ptr_t const _state_holder = state_map_vector_holder_t::make_shared();
-
     chaining::observer_pool _pool;
-    chaining::observer_pool _state_pool;
 
-    std::shared_ptr<task_queue> const _queue;
-    task_priority_t const _priority;
-    audio_renderable_ptr const _renderable;
-    chaining::value::holder_ptr<std::size_t> const _ch_count =
-        chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
-    chaining::value::holder_ptr<std::optional<audio::format>> const _format =
-        chaining::value::holder<std::optional<audio::format>>::make_shared(std::nullopt);
-    chaining::perform_receiver_ptr<> _update_rendering_receiver = nullptr;
-    audio_player_rendering_ptr _rendering = nullptr;
-    frame_index_t _last_play_frame = 0;
+    audio_rendering_protocol_ptr const _rendering;
+    audio_reading_protocol_ptr const _reading;
+    audio_buffering_protocol_ptr const _buffering;
 
-    audio_player(audio_renderable_ptr const &renderable, std::string const &root_path,
-                 std::shared_ptr<task_queue> const &queue, task_priority_t const priority);
-
-    void _prepare(audio_player_ptr const &);
-    void _setup_chaining(audio_player_ptr const &);
-    void _setup_rendering_handler(audio_player_ptr const &);
     void _update_playing(bool const);
-    void _update_rendering();
-    std::vector<std::shared_ptr<audio_circular_buffer>> _make_circular_buffers(audio::format const &format,
-                                                                               frame_index_t const play_frame);
-    std::vector<channel_index_t> _actually_ch_mapping();
-    channel_index_t _map_ch_idx(channel_index_t const ch_idx);
+
+    audio_player(audio_renderable_ptr const &, std::string const &root_path, worker_ptr const &, task_priority const &,
+                 audio_rendering_protocol_ptr const &, audio_reading_protocol_ptr const &,
+                 audio_buffering_protocol_ptr const &);
 };
 }  // namespace yas::playing

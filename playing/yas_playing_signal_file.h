@@ -6,13 +6,12 @@
 
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_result.h>
+#include <playing/yas_playing_signal_file_info.h>
+#include <playing/yas_playing_types.h>
 #include <processing/yas_processing_signal_event.h>
 #include <processing/yas_processing_time.h>
 
 #include <string>
-
-#include "yas_playing_signal_file_info.h"
-#include "yas_playing_types.h"
 
 namespace yas::playing::signal_file {
 enum class write_error {

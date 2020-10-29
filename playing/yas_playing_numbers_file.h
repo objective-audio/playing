@@ -5,11 +5,10 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
+#include <playing/yas_playing_types.h>
 #include <processing/yas_processing_number_event.h>
 
 #include <string>
-
-#include "yas_playing_types.h"
 
 namespace yas::playing::numbers_file {
 enum class write_error {

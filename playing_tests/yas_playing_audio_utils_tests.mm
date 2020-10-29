@@ -3,11 +3,18 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <playing/yas_playing_audio_buffering_channel.h>
+#import <playing/yas_playing_audio_buffering_element.h>
 #import <playing/yas_playing_audio_utils.h>
 
 using namespace yas;
 using namespace yas::playing;
-using namespace yas::playing::audio_utils;
+
+namespace yas::playing::test {
+static audio_buffering_element_ptr cast_to_element(audio_buffering_element_protocol_ptr const &protocol) {
+    return std::dynamic_pointer_cast<audio_buffering_element>(protocol);
+}
+}
 
 @interface yas_playing_audio_utils_tests : XCTestCase
 
@@ -15,83 +22,28 @@ using namespace yas::playing::audio_utils;
 
 @implementation yas_playing_audio_utils_tests
 
-- (void)setUp {
-}
+- (void)test_make_channels {
+    audio::format const format{
+        {.sample_rate = 4, .channel_count = 2, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
+    auto const channel = audio_utils::make_channel(3, format, 5);
 
-- (void)tearDown {
-}
+    auto const &elements = channel->elements_for_test();
+    XCTAssertEqual(elements.size(), 3);
 
-- (void)test_processing_info_1 {
-    {
-        // ファイルの終わりに隣接しない
-        processing_info info{0, 2, 3};
+    auto const casted_element0 = test::cast_to_element(elements.at(0));
+    auto const &buffer0 = casted_element0->buffer_for_test();
+    XCTAssertEqual(buffer0.frame_length(), 5);
+    XCTAssertEqual(buffer0.format(), format);
 
-        XCTAssertEqual(info.length, 2);
-        XCTAssertFalse(info.next_frag_idx);
-    }
+    auto const casted_element1 = test::cast_to_element(elements.at(1));
+    auto const &buffer1 = casted_element1->buffer_for_test();
+    XCTAssertEqual(buffer1.frame_length(), 5);
+    XCTAssertEqual(buffer1.format(), format);
 
-    {
-        // ファイルの終わりに隣接する（1個目の前）
-        processing_info info{1, 3, 3};
-
-        XCTAssertEqual(info.length, 2);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, 1);
-    }
-
-    {
-        // ファイルの終わりに隣接する（2個目の前）
-        processing_info info{3, 6, 3};
-
-        XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, 2);
-    }
-
-    {
-        // ファイルの終わりに隣接する（0個目の前）
-        processing_info info{-3, 0, 3};
-
-        XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, 0);
-    }
-
-    {
-        // ファイルの終わりに隣接する（-1個目の前）
-        processing_info info{-6, -3, 3};
-
-        XCTAssertEqual(info.length, 3);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, -1);
-    }
-
-    {
-        // プラスのファイルの境界をまたぐ
-        processing_info info{2, 4, 3};
-
-        XCTAssertEqual(info.length, 1);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, 1);
-    }
-
-    {
-        // 0のファイルの境界をまたぐ
-        processing_info info{-1, 1, 3};
-
-        XCTAssertEqual(info.length, 1);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, 0);
-    }
-
-    {
-        // マイナスのファイルの境界をまたぐ
-        processing_info info{-4, -2, 3};
-
-        XCTAssertEqual(info.length, 1);
-        XCTAssertTrue(info.next_frag_idx);
-        XCTAssertEqual(*info.next_frag_idx, -1);
-    }
+    auto const casted_element2 = test::cast_to_element(elements.at(2));
+    auto const &buffer2 = casted_element2->buffer_for_test();
+    XCTAssertEqual(buffer2.frame_length(), 5);
+    XCTAssertEqual(buffer2.format(), format);
 }
 
 @end

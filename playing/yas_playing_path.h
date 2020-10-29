@@ -6,55 +6,59 @@
 
 #include <cpp_utils/yas_file_path.h>
 #include <cpp_utils/yas_url.h>
+#include <playing/yas_playing_types.h>
 #include <processing/yas_processing_time.h>
-
-#include "yas_playing_types.h"
 
 namespace yas::playing::path {
 struct [[nodiscard]] timeline {
-    std::string const root_path;
-    std::string const identifier;
-    proc::sample_rate_t const sample_rate;
-
-    timeline(std::string const &root_path, std::string const identifier, proc::sample_rate_t const);
+    std::string root_path;
+    std::string identifier;
+    sample_rate_t sample_rate;
 
     [[nodiscard]] std::string string() const;
+
+    bool operator==(timeline const &rhs) const;
+    bool operator!=(timeline const &rhs) const;
 };
 
 struct [[nodiscard]] channel {
-    timeline const timeline_path;
-    channel_index_t const channel_index;
-
-    channel(timeline const &, channel_index_t const);
+    timeline timeline_path;
+    channel_index_t channel_index;
 
     [[nodiscard]] std::string string() const;
+
+    bool operator==(channel const &rhs) const;
+    bool operator!=(channel const &rhs) const;
 };
 
 struct [[nodiscard]] fragment {
-    channel const channel_path;
-    fragment_index_t const fragment_index;
-
-    fragment(path::channel const &, fragment_index_t const);
+    channel channel_path;
+    fragment_index_t fragment_index;
 
     [[nodiscard]] std::string string() const;
+
+    bool operator==(fragment const &rhs) const;
+    bool operator!=(fragment const &rhs) const;
 };
 
 struct [[nodiscard]] signal_event {
-    fragment const fragment_path;
-    proc::time::range const range;
+    fragment fragment_path;
+    proc::time::range range;
     std::type_info const &sample_type;
 
-    signal_event(path::fragment const &, proc::time::range const &, std::type_info const &);
-
     [[nodiscard]] std::string string() const;
+
+    bool operator==(signal_event const &rhs) const;
+    bool operator!=(signal_event const &rhs) const;
 };
 
 struct [[nodiscard]] number_events {
-    fragment const fragment_path;
-
-    number_events(path::fragment const &);
+    fragment fragment_path;
 
     [[nodiscard]] std::string string() const;
+
+    bool operator==(number_events const &rhs) const;
+    bool operator!=(number_events const &rhs) const;
 };
 
 [[nodiscard]] std::string timeline_name(std::string const &identifier, sample_rate_t const);

@@ -4,8 +4,6 @@
 
 #include "yas_playing_sample_controller.hpp"
 
-#include <iostream>
-
 using namespace yas;
 using namespace yas::playing;
 

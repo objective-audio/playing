@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <playing/yas_playing_timeline_canceling.h>
+#import <playing/playing.h>
 
 using namespace yas;
 

@@ -18,11 +18,11 @@ struct view_controller_cpp {
     chaining::value::holder_ptr<audio_configuration> configuration =
         chaining::value::holder<audio_configuration>::make_shared(
             audio_configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
-    playing::state_map_vector_holder_ptr_t playing_buffer_state = state_map_vector_holder_t::make_shared();
 
     chaining::observer_pool pool;
 
-    objc_ptr<CADisplayLink *> display_link;
+    objc_ptr<CADisplayLink *> frame_display_link;
+    objc_ptr<CADisplayLink *> status_display_link;
 };
 }
 
@@ -41,16 +41,6 @@ struct view_controller_cpp {
     sample::view_controller_cpp _cpp;
 }
 
-- (void)dealloc {
-    yas_release(_playButton);
-    yas_release(_minusButton);
-    yas_release(_plusButton);
-    yas_release(_playFrameLabel);
-    yas_release(_configurationLabel);
-    yas_release(_stateLabel);
-    yas_super_dealloc();
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
 
@@ -61,9 +51,8 @@ struct view_controller_cpp {
 
     auto const &controller = self->_cpp.controller;
 
-    controller->pool += controller->coordinator->chain_is_playing().send_to(self->_cpp.is_playing).sync();
-    controller->pool += controller->coordinator->chain_configuration().send_to(self->_cpp.configuration).sync();
-    controller->pool += controller->coordinator->chain_state().send_to(self->_cpp.playing_buffer_state).sync();
+    controller->pool += controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync();
+    controller->pool += controller->coordinator->configuration_chain().send_to(self->_cpp.configuration).sync();
 
     controller->pool += self->_cpp.is_playing->chain()
                             .perform([unowned_self](bool const &is_playing) {
@@ -78,16 +67,17 @@ struct view_controller_cpp {
                                 [viewController _update_configuration_label];
                             })
                             .sync();
-    controller->pool += self->_cpp.playing_buffer_state->chain()
-                            .perform([unowned_self](auto const &) {
-                                ViewController *viewController = [unowned_self.object() object];
-                                [viewController _update_state_label];
-                            })
-                            .sync();
 
-    self->_cpp.display_link = objc_ptr<CADisplayLink *>([self]() {
+    self->_cpp.frame_display_link = objc_ptr<CADisplayLink *>([self]() {
         CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update_play_frame:)];
         displayLink.preferredFramesPerSecond = 30;
+        [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+        return displayLink;
+    });
+
+    self->_cpp.frame_display_link = objc_ptr<CADisplayLink *>([self]() {
+        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update_state_label:)];
+        displayLink.preferredFramesPerSecond = 10;
         [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
         return displayLink;
     });
@@ -125,26 +115,8 @@ struct view_controller_cpp {
     self.configurationLabel.text = (__bridge NSString *)to_cf_object(text);
 }
 
-- (void)_update_state_label {
+- (void)update_state_label:(CADisplayLink *)displayLink {
     std::vector<std::string> ch_texts;
-
-    auto const &state = self->_cpp.playing_buffer_state;
-    channel_index_t ch_idx = 0;
-
-    for (auto const &ch_state : state->raw()) {
-        std::vector<std::string> buf_texts;
-        buf_texts.emplace_back("channel : " + std::to_string(ch_idx++));
-        for (auto &buf_pair : ch_state->raw()) {
-            auto buf_idx_str = std::to_string(buf_pair.first);
-            auto &buf_state = buf_pair.second;
-            auto frag_idx_str = buf_state.frag_idx ? std::to_string(*buf_state.frag_idx) : "-";
-            auto frag_kind_str = to_string(buf_state.kind);
-            buf_texts.emplace_back("  buffer:" + buf_idx_str + ", fragment:" + frag_idx_str +
-                                   ", kind:" + frag_kind_str);
-        }
-        ch_texts.emplace_back(buf_texts.size() > 0 ? joined(buf_texts, "\n") : "empty");
-    }
-
     self.stateLabel.text = (__bridge NSString *)to_cf_object(joined(ch_texts, "\n"));
 }
 

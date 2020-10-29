@@ -4,7 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_boolean.h>
-#import <playing/yas_playing_signal_file_info.h>
+#import <playing/playing.h>
 
 using namespace yas;
 using namespace yas::playing;
