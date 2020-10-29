@@ -28,12 +28,12 @@ struct view_controller_cpp {
 
 @interface ViewController ()
 
-@property (nonatomic, retain) IBOutlet UIButton *playButton;
-@property (nonatomic, retain) IBOutlet UIButton *minusButton;
-@property (nonatomic, retain) IBOutlet UIButton *plusButton;
-@property (nonatomic, retain) IBOutlet UILabel *playFrameLabel;
-@property (nonatomic, retain) IBOutlet UILabel *configurationLabel;
-@property (nonatomic, retain) IBOutlet UILabel *stateLabel;
+@property (nonatomic, weak) IBOutlet UIButton *playButton;
+@property (nonatomic, weak) IBOutlet UIButton *minusButton;
+@property (nonatomic, weak) IBOutlet UIButton *plusButton;
+@property (nonatomic, weak) IBOutlet UILabel *playFrameLabel;
+@property (nonatomic, weak) IBOutlet UILabel *configurationLabel;
+@property (nonatomic, weak) IBOutlet UILabel *stateLabel;
 
 @end
 
@@ -42,13 +42,13 @@ struct view_controller_cpp {
 }
 
 - (void)dealloc {
-    [_playButton release];
-    [_minusButton release];
-    [_plusButton release];
-    [_playFrameLabel release];
-    [_configurationLabel release];
-    [_stateLabel release];
-    [super dealloc];
+    yas_release(_playButton);
+    yas_release(_minusButton);
+    yas_release(_plusButton);
+    yas_release(_playFrameLabel);
+    yas_release(_configurationLabel);
+    yas_release(_stateLabel);
+    yas_super_dealloc();
 }
 
 - (void)viewDidLoad {
@@ -122,7 +122,7 @@ struct view_controller_cpp {
 
     std::string text = joined(texts, "\n");
 
-    self.configurationLabel.text = (NSString *)to_cf_object(text);
+    self.configurationLabel.text = (__bridge NSString *)to_cf_object(text);
 }
 
 - (void)_update_state_label {
@@ -145,12 +145,12 @@ struct view_controller_cpp {
         ch_texts.emplace_back(buf_texts.size() > 0 ? joined(buf_texts, "\n") : "empty");
     }
 
-    self.stateLabel.text = (NSString *)to_cf_object(joined(ch_texts, "\n"));
+    self.stateLabel.text = (__bridge NSString *)to_cf_object(joined(ch_texts, "\n"));
 }
 
 - (void)update_play_frame:(CADisplayLink *)displayLink {
     std::string const play_frame_str =
         "play_frame : " + std::to_string(self->_cpp.controller->coordinator->play_frame());
-    self.playFrameLabel.text = (NSString *)to_cf_object(play_frame_str);
+    self.playFrameLabel.text = (__bridge NSString *)to_cf_object(play_frame_str);
 }
 @end
