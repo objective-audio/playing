@@ -10,13 +10,11 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-class audio_rendering;
-
 struct audio_player : audio_playable {
     void set_ch_mapping(std::vector<int64_t>);
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
-    void reload(channel_index_t const, fragment_index_t const) override;
+    void overwrite(channel_index_t const, fragment_index_t const) override;
 
     [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
     [[nodiscard]] bool is_playing() const override;

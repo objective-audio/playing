@@ -13,7 +13,7 @@ struct audio_playable {
 
     virtual void set_playing(bool const) = 0;
     virtual void seek(frame_index_t const) = 0;
-    virtual void reload(channel_index_t const, fragment_index_t const) = 0;
+    virtual void overwrite(channel_index_t const, fragment_index_t const) = 0;
 
     [[nodiscard]] virtual bool is_playing() const = 0;
     [[nodiscard]] virtual frame_index_t play_frame() const = 0;

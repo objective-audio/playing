@@ -39,7 +39,7 @@ void audio_coordinator::seek(frame_index_t const frame) {
     this->_player->seek(frame);
 }
 
-void audio_coordinator::reload(proc::time::range const &range) {
+void audio_coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
     auto const sample_rate = static_cast<proc::sample_rate_t>(this->sample_rate());
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
@@ -50,7 +50,7 @@ void audio_coordinator::reload(proc::time::range const &range) {
     while (yas_each_next(frag_each)) {
         auto ch_each = make_fast_each(ch_count);
         while (yas_each_next(ch_each)) {
-            player->reload(yas_each_index(ch_each), yas_each_index(frag_each));
+            player->overwrite(yas_each_index(ch_each), yas_each_index(frag_each));
         }
     }
 }
