@@ -5,8 +5,6 @@
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
 #import <playing/playing.h>
-#import <playing/yas_playing_numbers_file.h>
-#import <playing/yas_playing_signal_file.h>
 #import <processing/processing.h>
 #import <fstream>
 #import "yas_playing_test_utils.h"

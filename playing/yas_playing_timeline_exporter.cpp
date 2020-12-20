@@ -412,7 +412,7 @@ struct timeline_exporter::impl {
                 return std::nullopt;
             }
 
-            auto create_result = file_manager::create_directory_if_not_exists(frag_path_str);
+            auto const create_result = file_manager::create_directory_if_not_exists(frag_path_str);
             if (!create_result) {
                 return error::create_directory_failed;
             }

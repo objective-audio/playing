@@ -4,9 +4,8 @@
 
 #pragma once
 
+#include <playing/yas_playing_ptr.h>
 #include <processing/yas_processing_timeline.h>
-
-#include "yas_playing_ptr.h"
 
 namespace yas::playing {
 struct timeline_container final {

@@ -6,21 +6,26 @@
 
 #include <audio/yas_audio_graph.h>
 #include <audio/yas_audio_graph_tap.h>
+#include <playing/yas_playing_audio_renderer_protocol.h>
+#include <playing/yas_playing_ptr.h>
 #include <processing/yas_processing_types.h>
 
-#include "yas_playing_audio_configulation.h"
-#include "yas_playing_audio_player_protocol.h"
-#include "yas_playing_ptr.h"
-
 namespace yas::playing {
-struct audio_renderer : audio_renderable {
+struct audio_renderer : audio_coordinator_renderable {
     audio::graph_ptr const graph;
 
-    [[nodiscard]] proc::sample_rate_t sample_rate() const;
-    [[nodiscard]] audio::pcm_format pcm_format() const;
-    [[nodiscard]] std::size_t channel_count() const;
+    void set_rendering_handler(audio_renderable::rendering_f &&) override;
+    void set_is_rendering(bool const) override;
 
-    [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const;
+    [[nodiscard]] proc::sample_rate_t sample_rate() const override;
+    [[nodiscard]] audio::pcm_format pcm_format() const override;
+    [[nodiscard]] std::size_t channel_count() const override;
+
+    [[nodiscard]] chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
+    [[nodiscard]] chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
+    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_channel_count() override;
+
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const override;
 
     static audio_renderer_ptr make_shared(audio::io_device_ptr const &);
 
@@ -46,12 +51,6 @@ struct audio_renderer : audio_renderable {
     chaining::value::holder_ptr<bool> _is_rendering = chaining::value::holder<bool>::make_shared(false);
 
     audio_renderer(audio::io_device_ptr const &);
-
-    void set_rendering_handler(audio_renderable::rendering_f &&) override;
-    chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
-    chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
-    chaining::chain_sync_t<std::size_t> chain_channel_count() override;
-    void set_is_rendering(bool const) override;
 
     void _update_configuration();
     void _update_connection();

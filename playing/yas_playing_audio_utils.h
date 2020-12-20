@@ -4,16 +4,17 @@
 
 #pragma once
 
-#include <cstdint>
-#include <optional>
+#include <audio/yas_audio_format.h>
+#include <playing/yas_playing_types.h>
 
-#include "yas_playing_types.h"
+#include <memory>
+
+namespace yas::playing {
+class audio_buffering_channel;
+}
 
 namespace yas::playing::audio_utils {
-struct processing_info {
-    uint32_t const length;
-    std::optional<fragment_index_t> const next_frag_idx;
-
-    processing_info(frame_index_t const play_frame, frame_index_t const next_frame, uint32_t const file_length);
-};
+[[nodiscard]] std::shared_ptr<playing::audio_buffering_channel> make_channel(std::size_t const element_count,
+                                                                             audio::format const &format,
+                                                                             sample_rate_t const frag_length);
 }  // namespace yas::playing::audio_utils

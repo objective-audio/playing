@@ -11,10 +11,23 @@ namespace yas::playing::test_utils {
 class test_audio_renderer;
 using test_audio_renderer_ptr = std::shared_ptr<test_audio_renderer>;
 
-struct test_audio_renderer : audio_renderable {
+struct test_audio_renderer : audio_coordinator_renderable {
     void set_pcm_format(audio::pcm_format const);
     void set_channel_count(uint32_t const);
     void set_sample_rate(double const);
+
+    void set_rendering_handler(rendering_f &&) override;
+    void set_is_rendering(bool const) override;
+
+    [[nodiscard]] proc::sample_rate_t sample_rate() const override;
+    [[nodiscard]] audio::pcm_format pcm_format() const override;
+    [[nodiscard]] std::size_t channel_count() const override;
+
+    [[nodiscard]] chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
+    [[nodiscard]] chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
+    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_channel_count() override;
+
+    [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const override;
 
     [[nodiscard]] bool render_on_bg(audio::pcm_buffer *const);
 
@@ -27,15 +40,14 @@ struct test_audio_renderer : audio_renderable {
         chaining::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
     chaining::value::holder_ptr<std::size_t> _channel_count =
         chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
+    chaining::value::holder_ptr<audio_configuration> const _configuration =
+        chaining::value::holder<audio_configuration>::make_shared(
+            {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
     std::atomic<bool> _is_rendering = false;
     audio_renderable::rendering_f _rendering_handler;
 
-    test_audio_renderer();
+    chaining::observer_pool _pool;
 
-    void set_rendering_handler(rendering_f &&) override;
-    chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
-    chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
-    chaining::chain_sync_t<std::size_t> chain_channel_count() override;
-    void set_is_rendering(bool const) override;
+    test_audio_renderer();
 };
 }  // namespace yas::playing::test_utils

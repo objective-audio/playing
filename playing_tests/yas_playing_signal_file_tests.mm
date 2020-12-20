@@ -8,41 +8,33 @@
 #import <cpp_utils/yas_file_manager.h>
 #import <cpp_utils/yas_file_path.h>
 #import <cpp_utils/yas_system_path_utils.h>
-#import <playing/yas_playing_signal_file.h>
-#import <processing/yas_processing_signal_event.h>
+#import <playing/playing.h>
+#import <processing/processing.h>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::signal_file_test {
-struct cpp {
-    std::string const root_path = test_utils::root_path();
-};
-}
-
 @interface yas_playing_signal_file_tests : XCTestCase
 
 @end
 
-@implementation yas_playing_signal_file_tests {
-    signal_file_test::cpp _cpp;
-}
+@implementation yas_playing_signal_file_tests
 
 - (void)setUp {
-    file_manager::remove_content(self->_cpp.root_path);
+    file_manager::remove_content(test_utils::root_path());
 }
 
 - (void)tearDown {
-    file_manager::remove_content(self->_cpp.root_path);
+    file_manager::remove_content(test_utils::root_path());
 }
 
 - (void)test_read_with_data_ptr {
-    auto dir_result = file_manager::create_directory_if_not_exists(self->_cpp.root_path);
+    auto dir_result = file_manager::create_directory_if_not_exists(test_utils::root_path());
 
     XCTAssertTrue(dir_result);
 
-    auto const path = file_path{self->_cpp.root_path}.appending("signal").string();
+    auto const path = file_path{test_utils::root_path()}.appending("signal").string();
 
     auto write_event = proc::signal_event::make_shared<int64_t>(2);
     write_event->data<int64_t>()[0] = 10;
@@ -63,11 +55,11 @@ struct cpp {
 }
 
 - (void)test_read_with_buffer {
-    auto dir_result = file_manager::create_directory_if_not_exists(self->_cpp.root_path);
+    auto dir_result = file_manager::create_directory_if_not_exists(test_utils::root_path());
 
     XCTAssertTrue(dir_result);
 
-    auto const path = file_path{self->_cpp.root_path}.appending("signal").string();
+    auto const path = file_path{test_utils::root_path()}.appending("signal").string();
     signal_file_info const file_info{path, proc::time::range{0, 2}, typeid(double)};
 
     auto write_event = proc::signal_event::make_shared<double>(2);

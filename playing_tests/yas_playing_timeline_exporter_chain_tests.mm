@@ -4,8 +4,7 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/cpp_utils.h>
-#import <playing/yas_playing_timeline_exporter.h>
-#import <playing/yas_playing_types.h>
+#import <playing/playing.h>
 #import <processing/processing.h>
 #import "yas_playing_test_utils.h"
 
