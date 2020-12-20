@@ -259,7 +259,7 @@ void audio_player::seek(frame_index_t const frame) {
     this->_rendering->seek_on_main(frame);
 }
 
-void audio_player::reload(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
+void audio_player::overwrite(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
     this->_rendering->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
 }
 

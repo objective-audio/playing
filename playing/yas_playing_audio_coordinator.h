@@ -18,7 +18,7 @@ namespace yas::playing {
 struct audio_coordinator {
     void set_playing(bool const);
     void seek(frame_index_t const);
-    void reload(proc::time::range const &);
+    void overwrite(proc::time::range const &);
 
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t play_frame() const;
