@@ -533,10 +533,10 @@ void timeline_exporter::_prepare(timeline_exporter_ptr const &shared) {
     this->_impl->prepare(shared);
 }
 
-playing::timeline_exporter_ptr playing::timeline_exporter::make_shared(std::string const &root_path,
-                                                                       std::shared_ptr<task_queue> const &task_queue,
-                                                                       task_priority const &task_priority,
-                                                                       proc::sample_rate_t const sample_rate) {
+timeline_exporter_ptr timeline_exporter::make_shared(std::string const &root_path,
+                                                     std::shared_ptr<task_queue> const &task_queue,
+                                                     task_priority const &task_priority,
+                                                     proc::sample_rate_t const sample_rate) {
     auto shared = timeline_exporter_ptr(new timeline_exporter{root_path, task_queue, task_priority, sample_rate});
     shared->_prepare(shared);
     return shared;
@@ -568,12 +568,12 @@ std::string yas::to_string(timeline_exporter::error const &error) {
     }
 }
 
-std::ostream &operator<<(std::ostream &stream, yas::playing::timeline_exporter::method const &value) {
+std::ostream &operator<<(std::ostream &stream, timeline_exporter::method const &value) {
     stream << to_string(value);
     return stream;
 }
 
-std::ostream &operator<<(std::ostream &stream, yas::playing::timeline_exporter::error const &value) {
+std::ostream &operator<<(std::ostream &stream, timeline_exporter::error const &value) {
     stream << to_string(value);
     return stream;
 }

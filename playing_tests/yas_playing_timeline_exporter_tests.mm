@@ -115,7 +115,7 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, -1}, {-2, 2}, typeid(int64_t)}.string();
-        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        auto result = signal_file::read(signal_path_str, &values, sizeof(values));
         XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
@@ -125,7 +125,7 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 0}, {0, 2}, typeid(int64_t)}.string();
-        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        auto result = signal_file::read(signal_path_str, &values, sizeof(values));
         XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
@@ -135,14 +135,14 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 1}, {2, 1}, typeid(int64_t)}.string();
-        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(int64_t));
+        auto result = signal_file::read(signal_path_str, &values, sizeof(int64_t));
         XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 0);
     }
 
     {
-        auto result = playing::numbers_file::read(path::number_events{path::fragment{ch1_path, 5}}.string());
+        auto result = numbers_file::read(path::number_events{path::fragment{ch1_path, 5}}.string());
         XCTAssertTrue(result);
         auto const &event_pairs = result.value();
         XCTAssertEqual(event_pairs.size(), 1);
@@ -220,7 +220,7 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, -1}, {-2, 2}, typeid(int64_t)}.string();
-        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(int64_t) * 2);
+        auto result = signal_file::read(signal_path_str, &values, sizeof(int64_t) * 2);
         XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
@@ -231,7 +231,7 @@ struct cpp {
 
     {
         auto signal_path_str = path::signal_event{path::fragment{ch0_path, 0}, {0, 3}, typeid(int64_t)}.string();
-        auto result = playing::signal_file::read(signal_path_str, &values, sizeof(values));
+        auto result = signal_file::read(signal_path_str, &values, sizeof(values));
         XCTAssertTrue(result);
         XCTAssertEqual(values[0], 10);
         XCTAssertEqual(values[1], 10);
@@ -241,7 +241,7 @@ struct cpp {
     values[0] = values[1] = values[2] = 0;
 
     {
-        auto result = playing::numbers_file::read(numbers_1_3_path_str);
+        auto result = numbers_file::read(numbers_1_3_path_str);
         XCTAssertTrue(result);
         auto const &event_pairs = result.value();
         XCTAssertEqual(event_pairs.size(), 1);
@@ -286,7 +286,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     auto const frag_0_0_path_str = path::number_events{path::fragment{ch0_path, 0}}.string();
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
+    if (auto result = numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second->get<int64_t>(), 100);
@@ -305,7 +305,7 @@ struct cpp {
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch1_path, 1}.string()));
     auto const frag_1_1_path_str = path::number_events{path::fragment{ch1_path, 1}}.string();
     XCTAssertTrue(file_manager::content_exists(frag_1_1_path_str));
-    if (auto result = playing::numbers_file::read(frag_1_1_path_str)) {
+    if (auto result = numbers_file::read(frag_1_1_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 2);
         XCTAssertEqual(result.value().begin()->second->get<Float64>(), 1.0);
@@ -321,7 +321,7 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
+    if (auto result = numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 2);
         auto iterator = result.value().begin();
         XCTAssertEqual(iterator->first, 0);
@@ -339,7 +339,7 @@ struct cpp {
 
     XCTAssertTrue(file_manager::content_exists(path::fragment{ch0_path, 0}.string()));
     XCTAssertTrue(file_manager::content_exists(frag_0_0_path_str));
-    if (auto result = playing::numbers_file::read(frag_0_0_path_str)) {
+    if (auto result = numbers_file::read(frag_0_0_path_str)) {
         XCTAssertEqual(result.value().size(), 1);
         XCTAssertEqual(result.value().begin()->first, 0);
         XCTAssertEqual(result.value().begin()->second->get<int64_t>(), 100);

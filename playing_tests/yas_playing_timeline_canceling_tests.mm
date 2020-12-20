@@ -6,6 +6,7 @@
 #import <playing/playing.h>
 
 using namespace yas;
+using namespace yas::playing;
 
 @interface yas_playing_timeline_canceling_tests : XCTestCase
 
@@ -20,10 +21,10 @@ using namespace yas;
 }
 
 - (void)test_range_cancel_request {
-    auto matcher = playing::timeline_cancel_matcher::make_shared(proc::time::range{1, 2});
-    auto range_request_a = playing::timeline_range_cancel_request::make_shared({1, 2});
-    auto range_request_b = playing::timeline_range_cancel_request::make_shared({0, 3});
-    auto range_request_c = playing::timeline_range_cancel_request::make_shared({1, 3});
+    auto matcher = timeline_cancel_matcher::make_shared(proc::time::range{1, 2});
+    auto range_request_a = timeline_range_cancel_request::make_shared({1, 2});
+    auto range_request_b = timeline_range_cancel_request::make_shared({0, 3});
+    auto range_request_c = timeline_range_cancel_request::make_shared({1, 3});
 
     XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_a));
     XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_b));
@@ -32,10 +33,10 @@ using namespace yas;
     XCTAssertTrue(task_cancel_id::cast(range_request_b)->is_equal(matcher));
     XCTAssertTrue(task_cancel_id::cast(range_request_c)->is_equal(matcher));
 
-    auto range_request_d = playing::timeline_range_cancel_request::make_shared({1, 1});
-    auto range_request_e = playing::timeline_range_cancel_request::make_shared({2, 1});
-    auto range_request_f = playing::timeline_range_cancel_request::make_shared({0, 2});
-    auto range_request_g = playing::timeline_range_cancel_request::make_shared({2, 2});
+    auto range_request_d = timeline_range_cancel_request::make_shared({1, 1});
+    auto range_request_e = timeline_range_cancel_request::make_shared({2, 1});
+    auto range_request_f = timeline_range_cancel_request::make_shared({0, 2});
+    auto range_request_g = timeline_range_cancel_request::make_shared({2, 2});
 
     XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_d));
     XCTAssertFalse(task_cancel_id::cast(matcher)->is_equal(range_request_e));

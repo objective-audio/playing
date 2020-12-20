@@ -61,7 +61,7 @@ signal_file::read_result_t signal_file::read(std::string const &path, void *data
 }
 
 signal_file::read_result_t signal_file::read(signal_file_info const &info, audio::pcm_buffer &buffer,
-                                             playing::frame_index_t const buf_top_frame) {
+                                             frame_index_t const buf_top_frame) {
     if (info.sample_type != yas::to_sample_type(buffer.format().pcm_format())) {
         return read_result_t{read_error::invalid_sample_type};
     }
@@ -80,30 +80,30 @@ signal_file::read_result_t signal_file::read(signal_file_info const &info, audio
     return read(info.path, &data_ptr[frame], length);
 }
 
-std::string yas::to_string(playing::signal_file::write_error const &error) {
+std::string yas::to_string(signal_file::write_error const &error) {
     switch (error) {
-        case playing::signal_file::write_error::open_stream_failed:
+        case signal_file::write_error::open_stream_failed:
             return "open_stream_failed";
-        case playing::signal_file::write_error::write_to_stream_failed:
+        case signal_file::write_error::write_to_stream_failed:
             return "write_to_stream_failed";
-        case playing::signal_file::write_error::close_stream_failed:
+        case signal_file::write_error::close_stream_failed:
             return "close_stream_failed";
     }
 }
 
-std::string yas::to_string(playing::signal_file::read_error const &error) {
+std::string yas::to_string(signal_file::read_error const &error) {
     switch (error) {
-        case playing::signal_file::read_error::invalid_sample_type:
+        case signal_file::read_error::invalid_sample_type:
             return "invalid_sample_type";
-        case playing::signal_file::read_error::out_of_range:
+        case signal_file::read_error::out_of_range:
             return "out_of_range";
-        case playing::signal_file::read_error::open_stream_failed:
+        case signal_file::read_error::open_stream_failed:
             return "open_stream_failed";
-        case playing::signal_file::read_error::read_from_stream_failed:
+        case signal_file::read_error::read_from_stream_failed:
             return "read_from_stream_failed";
-        case playing::signal_file::read_error::read_count_not_match:
+        case signal_file::read_error::read_count_not_match:
             return "read_count_not_match";
-        case playing::signal_file::read_error::close_stream_failed:
+        case signal_file::read_error::close_stream_failed:
             return "close_stream_failed";
     }
 }

@@ -11,17 +11,17 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::test {
-static playing::sample_rate_t const sample_rate = 2;
+static sample_rate_t const sample_rate = 2;
 static audio::format const format{
     {.sample_rate = sample_rate, .pcm_format = audio::pcm_format::int16, .channel_count = 1, .interleaved = false}};
 
-static playing::path::channel channel_path(playing::sample_rate_t const sample_rate) {
-    auto const root_path = playing::test_utils::root_path();
-    playing::path::timeline const tl_path{.root_path = root_path, .identifier = "0", .sample_rate = sample_rate};
-    return playing::path::channel{.timeline_path = tl_path, .channel_index = 0};
+static path::channel channel_path(sample_rate_t const sample_rate) {
+    auto const root_path = test_utils::root_path();
+    path::timeline const tl_path{.root_path = root_path, .identifier = "0", .sample_rate = sample_rate};
+    return path::channel{.timeline_path = tl_path, .channel_index = 0};
 }
 
-static playing::path::channel channel_path() {
+static path::channel channel_path() {
     return channel_path(sample_rate);
 }
 
@@ -87,7 +87,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
 - (void)test_initial_elements {
     auto const element0 = test::element::make_shared();
     auto const element1 = test::element::make_shared();
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1});
 
     auto const &elements = channel->elements_for_test();
     XCTAssertEqual(elements.size(), 2);
@@ -111,7 +111,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
         called1.emplace_back(ch_path, frag_idx);
     };
 
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1});
     auto const ch_path = test::channel_path();
 
     std::thread{[&ch_path, &channel] { channel->write_all_elements_on_task(ch_path, 0); }}.join();
@@ -143,7 +143,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
         return result1;
     };
 
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1});
     auto const ch_path = test::channel_path();
 
     std::thread{[&channel, &ch_path] { channel->write_all_elements_on_task(ch_path, 0); }}.join();
@@ -197,7 +197,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     element1->fragment_index_handler = [] { return 1; };
     element1->advance_handler = [&called1](fragment_index_t const frag_idx) { called1.emplace_back(frag_idx); };
 
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1});
 
     channel->advance_on_render(0, 2);
 
@@ -218,7 +218,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     element1->fragment_index_handler = [] { return 1; };
     element1->overwrite_handler = [&called1]() { ++called1; };
 
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1});
 
     channel->overwrite_element_on_render(1);
 
@@ -274,7 +274,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
         return false;
     };
 
-    auto const channel = playing::audio_buffering_channel::make_shared({element0, element1, element2});
+    auto const channel = audio_buffering_channel::make_shared({element0, element1, element2});
 
     audio::pcm_buffer buffer{test::format, test::sample_rate};
     int16_t const *const data = buffer.data_ptr_at_index<int16_t>(0);
