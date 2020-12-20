@@ -34,7 +34,7 @@ using read_result_t = result<std::nullptr_t, read_error>;
 
 write_result_t write(std::string const &path, proc::signal_event const &event);
 read_result_t read(std::string const &path, void *data_ptr, std::size_t const byte_length);
-read_result_t read(signal_file_info const &, audio::pcm_buffer &, playing::frame_index_t const buf_top_frame);
+read_result_t read(signal_file_info const &, audio::pcm_buffer &, frame_index_t const buf_top_frame);
 }  // namespace yas::playing::signal_file
 
 namespace yas {

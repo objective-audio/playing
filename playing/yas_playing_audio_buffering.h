@@ -22,7 +22,7 @@ struct audio_buffering final : audio_buffering_protocol {
     void create_buffer_on_task() override;
 
     void set_all_writing_on_render(frame_index_t const,
-                                   std::optional<std::vector<playing::channel_index_t>> &&ch_mapping) override;
+                                   std::optional<std::vector<channel_index_t>> &&ch_mapping) override;
     void write_all_elements_on_task() override;
     void advance_on_render(fragment_index_t const) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
@@ -38,7 +38,7 @@ struct audio_buffering final : audio_buffering_protocol {
                                            make_channel_f &&);
 
     frame_index_t all_writing_frame_for_test() const;
-    std::vector<playing::channel_index_t> const &ch_mapping_for_test() const;
+    std::vector<channel_index_t> const &ch_mapping_for_test() const;
 
    private:
     std::size_t const _element_count;
@@ -55,13 +55,13 @@ struct audio_buffering final : audio_buffering_protocol {
 
     std::atomic<rendering_state_t> _rendering_state{rendering_state_t::waiting};
     frame_index_t _all_writing_frame = 0;
-    std::vector<playing::channel_index_t> _ch_mapping;
+    std::vector<channel_index_t> _ch_mapping;
 
     std::vector<audio_buffering_channel_protocol_ptr> _channels;
 
     audio_buffering(std::size_t const element_count, std::string const &root_path, make_channel_f &&);
 
-    playing::channel_index_t _mapped_ch_idx_on_task(playing::channel_index_t const) const;
-    std::optional<playing::channel_index_t> _unmapped_ch_idx_on_task(playing::channel_index_t const) const;
+    channel_index_t _mapped_ch_idx_on_task(channel_index_t const) const;
+    std::optional<channel_index_t> _unmapped_ch_idx_on_task(channel_index_t const) const;
 };
 }  // namespace yas::playing

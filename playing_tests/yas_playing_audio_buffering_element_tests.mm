@@ -15,22 +15,22 @@ using namespace yas::playing;
 
 namespace yas::playing::test {
 static audio::pcm_format const pcm_format = audio::pcm_format::float32;
-static playing::sample_rate_t const sample_rate = 2;
+static sample_rate_t const sample_rate = 2;
 static audio::format const format{
     {.sample_rate = test::sample_rate, .pcm_format = test::pcm_format, .channel_count = 1}};
 
-static playing::path::channel channel_path(playing::sample_rate_t const sample_rate) {
-    auto const root_path = playing::test_utils::root_path();
-    playing::path::timeline const tl_path{.root_path = root_path, .identifier = "0", .sample_rate = sample_rate};
-    return playing::path::channel{.timeline_path = tl_path, .channel_index = 0};
+static path::channel channel_path(sample_rate_t const sample_rate) {
+    auto const root_path = test_utils::root_path();
+    path::timeline const tl_path{.root_path = root_path, .identifier = "0", .sample_rate = sample_rate};
+    return path::channel{.timeline_path = tl_path, .channel_index = 0};
 }
 
-static playing::path::channel channel_path() {
+static path::channel channel_path() {
     return channel_path(sample_rate);
 }
 
-static playing::audio_buffering_element_ptr make_element() {
-    return playing::audio_buffering_element::make_shared(test::format, sample_rate);
+static audio_buffering_element_ptr make_element() {
+    return audio_buffering_element::make_shared(test::format, sample_rate);
 }
 
 static bool write_signal_to_file(proc::signal_event_ptr const &write_event, fragment_index_t const frag_idx) {
@@ -69,23 +69,23 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 - (void)test_initial_buffer {
     audio::format const format{
         {.sample_rate = 16, .pcm_format = audio::pcm_format::float64, .channel_count = 1, .interleaved = false}};
-    playing::sample_rate_t const length = 8;
+    sample_rate_t const length = 8;
 
-    auto const element = playing::audio_buffering_element::make_shared(format, length);
+    auto const element = audio_buffering_element::make_shared(format, length);
 
     XCTAssertEqual(element->buffer_for_test().format(), format);
     XCTAssertEqual(element->buffer_for_test().frame_length(), length);
 }
 
 - (void)test_state {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::initial);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::initial);
 
     std::thread{[&element, &ch_path] { element->force_write_on_task(ch_path, 10); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
     XCTAssertEqual(element->fragment_index_on_render(), 10);
     XCTAssertEqual(element->begin_frame_on_render(), 20);
 
@@ -93,7 +93,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
     element->advance_on_render(13);
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::writable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::writable);
     XCTAssertEqual(element->fragment_index_on_render(), 13);
     XCTAssertThrows(element->begin_frame_on_render());
 
@@ -102,14 +102,14 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         XCTAssertTrue(load_result);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
     XCTAssertEqual(element->fragment_index_on_render(), 13);
     XCTAssertEqual(element->begin_frame_on_render(), 26);
 }
 
 - (void)test_begin_frame {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     std::thread{[&element, &ch_path] { element->force_write_on_task(ch_path, 0); }}.join();
 
@@ -121,8 +121,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_contains_frame {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     std::thread{[&element] {
         XCTAssertFalse(element->contains_frame_on_render(0));
@@ -154,11 +154,11 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_read_into_buffer {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
-    audio::format const format{{.sample_rate = playing::test::sample_rate, .channel_count = 1}};
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
+    audio::format const format{{.sample_rate = test::sample_rate, .channel_count = 1}};
 
-    playing::path::fragment const frag_path{.channel_path = ch_path, .fragment_index = 1000};
+    path::fragment const frag_path{.channel_path = ch_path, .fragment_index = 1000};
     auto const create_result = file_manager::create_directory_if_not_exists(frag_path.string());
     XCTAssertTrue(create_result);
 
@@ -168,14 +168,14 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
     data[1] = 0.5f;
 
     proc::time::range const range{2000, 2};
-    auto const signal_path_str = playing::path::signal_event{frag_path, range, signal_event->sample_type()}.string();
+    auto const signal_path_str = path::signal_event{frag_path, range, signal_event->sample_type()}.string();
 
-    auto const write_result = playing::signal_file::write(signal_path_str, *signal_event);
+    auto const write_result = signal_file::write(signal_path_str, *signal_event);
     XCTAssertTrue(write_result);
 
     std::thread{[&element, &ch_path] { element->force_write_on_task(ch_path, 1000); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element, &format] {
         audio::pcm_buffer buffer{format, 2};
@@ -222,12 +222,12 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_advance {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     std::thread{[&ch_path, &element] { element->force_write_on_task(ch_path, 0); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element] {
         XCTAssertEqual(element->fragment_index_on_render(), 0);
@@ -237,35 +237,35 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         XCTAssertEqual(element->fragment_index_on_render(), 3);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::writable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::writable);
 }
 
 - (void)test_overwrite {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     std::thread{[&ch_path, &element] { element->force_write_on_task(ch_path, 0); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element] { element->overwrite_on_render(); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::writable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::writable);
 }
 
 - (void)test_write_if_needed {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     if (auto const signal = proc::signal_event::make_shared<float>(test::sample_rate)) {
         float *data = signal->data<float>();
         data[0] = 2.0f;
         data[1] = 4.0f;
 
-        XCTAssertTrue(playing::test::write_signal_to_file(signal, 3));
+        XCTAssertTrue(test::write_signal_to_file(signal, 3));
     }
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::initial);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::initial);
 
     std::thread{[&ch_path, &element] {
         // initialは書き込みできない
@@ -274,7 +274,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         element->force_write_on_task(ch_path, 0);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&ch_path, &element] {
         // readableは書き込みできない
@@ -283,14 +283,14 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
     std::thread{[&ch_path, &element] { element->advance_on_render(3); }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::writable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::writable);
 
     std::thread{[&ch_path, &element] {
         // writableは書き込みできる
         XCTAssertTrue(element->write_if_needed_on_task(ch_path));
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element] {
         // バッファに書き込まれたデータを確認
@@ -309,8 +309,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_write {
-    auto const ch_path = playing::test::channel_path();
-    auto const element = playing::test::make_element();
+    auto const ch_path = test::channel_path();
+    auto const element = test::make_element();
 
     if (auto const signal = proc::signal_event::make_shared<float>(test::sample_rate)) {
         float *data = signal->data<float>();
@@ -318,29 +318,29 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         data[0] = 8.0f;
         data[1] = 16.0f;
 
-        XCTAssertTrue(playing::test::write_signal_to_file(signal, 0));
+        XCTAssertTrue(test::write_signal_to_file(signal, 0));
 
         data[0] = 32.0f;
         data[1] = 64.0f;
 
-        XCTAssertTrue(playing::test::write_signal_to_file(signal, 1));
+        XCTAssertTrue(test::write_signal_to_file(signal, 1));
 
         data[0] = 128.0f;
         data[1] = 256.0f;
 
-        XCTAssertTrue(playing::test::write_signal_to_file(signal, 5));
+        XCTAssertTrue(test::write_signal_to_file(signal, 5));
     }
 
     audio::pcm_buffer buffer{test::format, test::sample_rate};
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::initial);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::initial);
 
     std::thread{[&ch_path, &element] {
         // initialでも書き込める
         element->force_write_on_task(ch_path, 0);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element, &buffer] {
         XCTAssertEqual(element->fragment_index_on_render(), 0);
@@ -359,7 +359,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         element->force_write_on_task(ch_path, 1);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element, &buffer] {
         XCTAssertEqual(element->fragment_index_on_render(), 1);
@@ -377,14 +377,14 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
         XCTAssertEqual(element->fragment_index_on_render(), 4);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::writable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::writable);
 
     std::thread{[&ch_path, &element] {
         // 現在のfragment_indexに関係なく書き込む
         element->force_write_on_task(ch_path, 5);
     }}.join();
 
-    XCTAssertEqual(element->state(), playing::audio_buffering_element::state_t::readable);
+    XCTAssertEqual(element->state(), audio_buffering_element::state_t::readable);
 
     std::thread{[&element, &buffer] {
         XCTAssertEqual(element->fragment_index_on_render(), 5);

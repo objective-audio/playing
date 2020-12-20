@@ -64,7 +64,7 @@ struct audio_buffering_protocol {
     virtual void create_buffer_on_task() = 0;
 
     virtual void set_all_writing_on_render(frame_index_t const,
-                                           std::optional<std::vector<playing::channel_index_t>> &&ch_mapping) = 0;
+                                           std::optional<std::vector<channel_index_t>> &&ch_mapping) = 0;
     virtual void write_all_elements_on_task() = 0;
     virtual void advance_on_render(fragment_index_t const) = 0;
     [[nodiscard]] virtual bool write_elements_if_needed_on_task() = 0;

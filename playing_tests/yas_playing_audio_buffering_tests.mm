@@ -13,11 +13,11 @@ using namespace yas::playing;
 namespace yas::playing::test {
 static uint32_t const ch_count = 2;
 static uint32_t const element_count = 3;
-static playing::sample_rate_t const sample_rate = 4;
+static sample_rate_t const sample_rate = 4;
 static audio::pcm_format const pcm_format = audio::pcm_format::int16;
 static audio::format const format{
     {.sample_rate = sample_rate, .pcm_format = pcm_format, .channel_count = 1, .interleaved = false}};
-static playing::path::timeline tl_path{
+static path::timeline tl_path{
     .root_path = test_utils::root_path(), .identifier = "0", .sample_rate = static_cast<sample_rate_t>(sample_rate)};
 
 static path::channel channel_path(channel_index_t const ch_idx) {
@@ -61,14 +61,14 @@ struct channel : audio_buffering_channel_protocol {
 };
 
 struct audio_buffering_cpp {
-    std::shared_ptr<playing::audio_buffering> buffering = nullptr;
+    std::shared_ptr<audio_buffering> buffering = nullptr;
     std::vector<std::shared_ptr<test::channel>> channels;
 
     void setup_rendering() {
         std::vector<std::shared_ptr<test::channel>> channels;
 
-        auto const buffering = playing::audio_buffering::make_shared(
-            test::element_count, playing::test_utils::root_path(),
+        auto const buffering = audio_buffering::make_shared(
+            test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -90,8 +90,8 @@ struct audio_buffering_cpp {
     void setup_advancing() {
         std::vector<std::shared_ptr<test::channel>> channels;
 
-        auto const buffering = playing::audio_buffering::make_shared(
-            test::element_count, playing::test_utils::root_path(),
+        auto const buffering = audio_buffering::make_shared(
+            test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -138,8 +138,8 @@ struct audio_buffering_cpp {
 - (void)test_setup_state {
     std::vector<std::shared_ptr<test::channel>> channels;
 
-    auto const buffering = playing::audio_buffering::make_shared(
-        test::element_count, playing::test_utils::root_path(),
+    auto const buffering = audio_buffering::make_shared(
+        test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
@@ -180,8 +180,8 @@ struct audio_buffering_cpp {
 - (void)test_rendering_state {
     std::vector<std::shared_ptr<test::channel>> channels;
 
-    auto const buffering = playing::audio_buffering::make_shared(
-        test::element_count, playing::test_utils::root_path(),
+    auto const buffering = audio_buffering::make_shared(
+        test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
@@ -261,13 +261,11 @@ struct audio_buffering_cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
-    std::thread{[&buffering] {
-        buffering->set_all_writing_on_render(200, std::vector<playing::channel_index_t>{1, 0});
-    }}.join();
+    std::thread{[&buffering] { buffering->set_all_writing_on_render(200, std::vector<channel_index_t>{1, 0}); }}.join();
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 200);
-    XCTAssertEqual(buffering->ch_mapping_for_test(), (std::vector<playing::channel_index_t>{1, 0}));
+    XCTAssertEqual(buffering->ch_mapping_for_test(), (std::vector<channel_index_t>{1, 0}));
 }
 
 - (void)test_advance {
