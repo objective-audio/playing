@@ -23,10 +23,6 @@ struct test_audio_renderer : audio_coordinator_renderable {
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() override;
-    [[nodiscard]] chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() override;
-    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_channel_count() override;
-
     [[nodiscard]] chaining::chain_sync_t<audio_configuration> configuration_chain() const override;
 
     [[nodiscard]] bool render_on_bg(audio::pcm_buffer *const);

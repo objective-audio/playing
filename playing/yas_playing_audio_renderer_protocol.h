@@ -21,21 +21,13 @@ struct audio_renderable {
 
     virtual void set_rendering_handler(rendering_f &&) = 0;
     virtual void set_is_rendering(bool const) = 0;
+};
 
+struct audio_coordinator_renderable : audio_renderable {
     [[nodiscard]] virtual proc::sample_rate_t sample_rate() const = 0;
     [[nodiscard]] virtual audio::pcm_format pcm_format() const = 0;
     [[nodiscard]] virtual std::size_t channel_count() const = 0;
 
-    [[nodiscard]] virtual chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate() = 0;
-    [[nodiscard]] virtual chaining::chain_sync_t<audio::pcm_format> chain_pcm_format() = 0;
-    [[nodiscard]] virtual chaining::chain_sync_t<std::size_t> chain_channel_count() = 0;
-
-    audio_renderable_ptr cast(audio_renderable_ptr const &renderable) {
-        return renderable;
-    }
-};
-
-struct audio_coordinator_renderable : audio_renderable {
     [[nodiscard]] virtual chaining::chain_sync_t<audio_configuration> configuration_chain() const = 0;
 };
 }  // namespace yas::playing

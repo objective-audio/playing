@@ -75,18 +75,6 @@ void test_audio_renderer::set_rendering_handler(rendering_f &&handler) {
     this->_rendering_handler = std::move(handler);
 }
 
-chaining::chain_sync_t<proc::sample_rate_t> test_audio_renderer::chain_sample_rate() {
-    return this->_sample_rate->chain();
-}
-
-chaining::chain_sync_t<audio::pcm_format> test_audio_renderer::chain_pcm_format() {
-    return this->_pcm_format->chain();
-}
-
-chaining::chain_sync_t<std::size_t> test_audio_renderer::chain_channel_count() {
-    return this->_channel_count->chain();
-}
-
 chaining::chain_sync_t<audio_configuration> test_audio_renderer::configuration_chain() const {
     return this->_configuration->chain();
 }
