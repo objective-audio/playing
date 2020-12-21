@@ -29,6 +29,10 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
       _rendering(rendering),
       _reading(reading),
       _buffering(buffering) {
+    if (priority.rendering <= priority.setup) {
+        throw std::invalid_argument("invalid priority");
+    }
+
     // setup worker
 
     worker->add_task(priority.setup,
