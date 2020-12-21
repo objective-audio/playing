@@ -60,11 +60,7 @@ void audio_rendering::set_play_frame_on_render(frame_index_t const frame) {
     this->_play_frame = frame;
 }
 
-frame_index_t audio_rendering::play_frame_on_main() const {
-    return this->_play_frame.load();
-}
-
-frame_index_t audio_rendering::play_frame_on_render() const {
+frame_index_t audio_rendering::play_frame() const {
     return this->_play_frame.load();
 }
 

@@ -27,8 +27,7 @@ struct audio_rendering_protocol {
     [[nodiscard]] virtual std::optional<std::vector<channel_index_t>> pull_ch_mapping_on_render() = 0;
 
     virtual void set_play_frame_on_render(frame_index_t const) = 0;
-    [[nodiscard]] virtual frame_index_t play_frame_on_main() const = 0;
-    [[nodiscard]] virtual frame_index_t play_frame_on_render() const = 0;
+    [[nodiscard]] virtual frame_index_t play_frame() const = 0;
 
     virtual void add_overwrite_request_on_main(element_address &&) = 0;
     virtual void perform_overwrite_requests_on_render(overwrite_requests_f const &) = 0;
