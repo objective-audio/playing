@@ -29,6 +29,10 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
       _rendering(rendering),
       _reading(reading),
       _buffering(buffering) {
+    if (priority.rendering <= priority.setup) {
+        throw std::invalid_argument("invalid priority");
+    }
+
     // setup worker
 
     worker->add_task(priority.setup,
@@ -153,8 +157,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
                     // 書き込み待機状態なので全バッファ書き込み開始
                     rendering->reset_overwrite_requests_on_render();
                     auto const seek_frame = rendering->pull_seek_frame_on_render();
-                    frame_index_t const frame =
-                        seek_frame.has_value() ? seek_frame.value() : rendering->play_frame_on_render();
+                    frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : rendering->play_frame();
                     buffering->set_all_writing_on_render(frame, rendering->pull_ch_mapping_on_render());
                 }
                     return;
@@ -180,7 +183,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
             if (auto ch_mapping = rendering->pull_ch_mapping_on_render(); ch_mapping.has_value()) {
                 // 全バッファ再書き込み開始
                 rendering->reset_overwrite_requests_on_render();
-                buffering->set_all_writing_on_render(rendering->play_frame_on_render(), std::move(ch_mapping));
+                buffering->set_all_writing_on_render(rendering->play_frame(), std::move(ch_mapping));
                 return;
             }
 
@@ -194,7 +197,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
 
             // 以下レンダリング
 
-            frame_index_t const begin_frame = rendering->play_frame_on_render();
+            frame_index_t const begin_frame = rendering->play_frame();
             frame_index_t current_frame = begin_frame;
             frame_index_t const next_frame = current_frame + out_length;
             uint32_t const frag_length = buffering->fragment_length_on_render();
@@ -272,7 +275,7 @@ bool audio_player::is_playing() const {
 }
 
 frame_index_t audio_player::play_frame() const {
-    return this->_rendering->play_frame_on_main();
+    return this->_rendering->play_frame();
 }
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
