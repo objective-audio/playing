@@ -37,10 +37,6 @@ audio_buffering::rendering_state_t audio_buffering::rendering_state() const {
     return this->_rendering_state.load();
 }
 
-std::size_t audio_buffering::channel_count_on_task() const {
-    return this->_channels.size();
-}
-
 std::size_t audio_buffering::channel_count_on_render() const {
     return this->_ch_count;
 }
