@@ -9,21 +9,18 @@
 namespace yas::playing {
 class timeline_exporter;
 class timeline_container;
-class audio_coordinator;
 class timeline_cancel_matcher;
 class timeline_range_cancel_request;
+class cancel_id;
+class audio_coordinator;
 class audio_renderer;
 class audio_player;
-class audio_player;
-class cancel_id;
 class audio_player_rendering;
-class audio_circular_buffer;
 class audio_buffering;
 class audio_buffering_channel;
 class audio_buffering_element;
 class audio_reading;
 class audio_rendering;
-class background_queue;
 
 class audio_playable;
 class audio_renderable;
@@ -45,8 +42,6 @@ using audio_player_ptr = std::shared_ptr<audio_player>;
 using player_ptr = std::shared_ptr<audio_player>;
 using cancel_id_ptr = std::shared_ptr<cancel_id>;
 using audio_player_rendering_ptr = std::shared_ptr<audio_player_rendering>;
-using audio_circular_buffer_ptr = std::shared_ptr<audio_circular_buffer>;
-using audio_circular_buffer_wptr = std::weak_ptr<audio_circular_buffer>;
 using audio_buffering_ptr = std::shared_ptr<audio_buffering>;
 using audio_buffering_channel_ptr = std::shared_ptr<audio_buffering_channel>;
 using audio_buffering_element_ptr = std::shared_ptr<audio_buffering_element>;
