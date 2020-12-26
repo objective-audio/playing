@@ -68,14 +68,12 @@ using namespace yas::playing;
     std::thread{[&reading] { reading->set_creating_on_render(4, audio::pcm_format::int16, 2); }}.join();
     std::thread{[&reading] { reading->create_buffer_on_task(); }}.join();
 
-    std::thread{[&reading] {
-        XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::int16, 2), @"元と同じ");
-        XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::int16, 1), @"lengthが小さくなった");
+    XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::int16, 2), @"元と同じ");
+    XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::int16, 1), @"lengthが小さくなった");
 
-        XCTAssertTrue(reading->needs_create_on_render(5, audio::pcm_format::int16, 2), @"sample_rateが変わった");
-        XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::float32, 2), @"pcm_formatが変わった");
-        XCTAssertTrue(reading->needs_create_on_render(4, audio::pcm_format::int16, 3), @"lengthが大きくなった");
-    }}.join();
+    XCTAssertTrue(reading->needs_create_on_render(5, audio::pcm_format::int16, 2), @"sample_rateが変わった");
+    XCTAssertFalse(reading->needs_create_on_render(4, audio::pcm_format::float32, 2), @"pcm_formatが変わった");
+    XCTAssertTrue(reading->needs_create_on_render(4, audio::pcm_format::int16, 3), @"lengthが大きくなった");
 }
 
 @end

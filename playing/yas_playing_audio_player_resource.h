@@ -1,17 +1,20 @@
 //
-//  yas_playing_audio_rendering.h
+//  yas_playing_audio_player_resource.h
 //
 
 #pragma once
 
-#include <playing/yas_playing_audio_rendering_protocol.h>
+#include <playing/yas_playing_audio_player_resource_protocol.h>
 #include <playing/yas_playing_ptr.h>
 
 #include <mutex>
 
 namespace yas::playing {
-struct audio_rendering : audio_rendering_protocol {
-    void set_is_playing_on_main(bool const) override;
+struct audio_player_resource : audio_player_resource_protocol {
+    audio_reading_protocol_ptr const &reading() const override;
+    audio_buffering_protocol_ptr const &buffering() const override;
+
+    void set_playing_on_main(bool const) override;
     [[nodiscard]] bool is_playing_on_render() const override;
 
     void seek_on_main(frame_index_t const frame) override;
@@ -27,9 +30,12 @@ struct audio_rendering : audio_rendering_protocol {
     void perform_overwrite_requests_on_render(overwrite_requests_f const &) override;
     void reset_overwrite_requests_on_render() override;
 
-    static audio_rendering_ptr make_shared();
+    static audio_player_resource_ptr make_shared(audio_reading_ptr const &, audio_buffering_ptr const &);
 
    private:
+    audio_reading_protocol_ptr const _reading;
+    audio_buffering_protocol_ptr const _buffering;
+
     std::atomic<bool> _is_playing{false};
     std::atomic<frame_index_t> _play_frame{0};
 
@@ -44,6 +50,6 @@ struct audio_rendering : audio_rendering_protocol {
     overwrite_requests_t _overwrite_requests;
     bool _is_overwritten = false;
 
-    audio_rendering();
+    audio_player_resource(audio_reading_ptr const &, audio_buffering_ptr const &);
 };
 }  // namespace yas::playing

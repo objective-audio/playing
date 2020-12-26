@@ -17,6 +17,10 @@ audio_reading::state_t audio_reading::state() const {
 }
 
 audio::pcm_buffer *audio_reading::buffer_on_render() {
+    if (this->_current_state != state_t::rendering) {
+        throw std::runtime_error("state is not rendering");
+    }
+
     return this->_buffer.get();
 }
 

@@ -11,13 +11,16 @@
 #include <vector>
 
 namespace yas::playing {
-struct audio_rendering_protocol {
+struct audio_player_resource_protocol {
     using overwrite_requests_t = std::vector<element_address>;
     using overwrite_requests_f = std::function<void(const overwrite_requests_t &)>;
 
-    virtual ~audio_rendering_protocol() = default;
+    virtual ~audio_player_resource_protocol() = default;
 
-    virtual void set_is_playing_on_main(bool const) = 0;
+    virtual audio_reading_protocol_ptr const &reading() const = 0;
+    virtual audio_buffering_protocol_ptr const &buffering() const = 0;
+
+    virtual void set_playing_on_main(bool const) = 0;
     [[nodiscard]] virtual bool is_playing_on_render() const = 0;
 
     virtual void seek_on_main(frame_index_t const frame) = 0;

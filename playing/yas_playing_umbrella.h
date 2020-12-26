@@ -8,9 +8,9 @@
 #include <playing/yas_playing_audio_buffering_element.h>
 #include <playing/yas_playing_audio_coordinator.h>
 #include <playing/yas_playing_audio_player.h>
+#include <playing/yas_playing_audio_player_resource.h>
 #include <playing/yas_playing_audio_reading.h>
 #include <playing/yas_playing_audio_renderer.h>
-#include <playing/yas_playing_audio_rendering.h>
 #include <playing/yas_playing_audio_rendering_info.h>
 #include <playing/yas_playing_math.h>
 #include <playing/yas_playing_numbers_file.h>
