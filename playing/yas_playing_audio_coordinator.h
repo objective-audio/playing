@@ -42,7 +42,7 @@ struct audio_coordinator {
 
     chaining::observer_pool _pool;
 
-    explicit audio_coordinator(std::string const &root_path, audio::io_device_ptr const &);
+    audio_coordinator(std::string const &root_path, audio::io_device_ptr const &);
 
     audio_coordinator(audio_coordinator const &) = delete;
     audio_coordinator(audio_coordinator &&) = delete;
