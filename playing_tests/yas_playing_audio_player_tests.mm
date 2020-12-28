@@ -74,7 +74,7 @@ using namespace yas::playing;
 
     player->set_channel_mapping({10, 11, 12});
 
-    XCTAssertEqual(player->ch_mapping(), (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(player->channel_mapping(), (std::vector<channel_index_t>{10, 11, 12}));
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0), (std::vector<channel_index_t>{10, 11, 12}));

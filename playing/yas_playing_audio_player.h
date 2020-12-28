@@ -11,12 +11,12 @@
 
 namespace yas::playing {
 struct audio_player : audio_playable {
-    void set_channel_mapping(std::vector<int64_t>);
+    void set_channel_mapping(std::vector<channel_index_t>) override;
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
     void overwrite(channel_index_t const, fragment_index_t const) override;
 
-    [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
+    [[nodiscard]] std::vector<channel_index_t> const &channel_mapping() const override;
     [[nodiscard]] bool is_playing() const override;
     [[nodiscard]] frame_index_t current_frame() const override;
 

@@ -71,9 +71,10 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
 
     // setup chaining
 
-    this->_pool += this->_ch_mapping->chain()
-                       .perform([this](auto const &ch_mapping) { this->_resource->set_ch_mapping_on_main(ch_mapping); })
-                       .sync();
+    this->_pool +=
+        this->_ch_mapping->chain()
+            .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
+            .sync();
 
     this->_pool += this->_is_playing->chain()
                        .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
@@ -156,7 +157,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
                     resource->reset_overwrite_requests_on_render();
                     auto const seek_frame = resource->pull_seek_frame_on_render();
                     frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
-                    buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
+                    buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render());
                 }
                     return;
                 case audio_buffering::rendering_state_t::all_writing:
@@ -173,12 +174,12 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
                 resource->reset_overwrite_requests_on_render();
                 auto const &frame = seek_frame.value();
                 resource->set_current_frame_on_render(frame);
-                buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
+                buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render());
                 return;
             }
 
             // チャンネルマッピングが変更されたかチェック
-            if (auto ch_mapping = resource->pull_ch_mapping_on_render(); ch_mapping.has_value()) {
+            if (auto ch_mapping = resource->pull_channel_mapping_on_render(); ch_mapping.has_value()) {
                 // 全バッファ再書き込み開始
                 resource->reset_overwrite_requests_on_render();
                 buffering->set_all_writing_on_render(resource->current_frame(), std::move(ch_mapping));
@@ -248,7 +249,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
     this->_renderer->set_is_rendering(true);
 }
 
-void audio_player::set_channel_mapping(std::vector<int64_t> ch_mapping) {
+void audio_player::set_channel_mapping(std::vector<channel_index_t> ch_mapping) {
     this->_ch_mapping->set_value(std::move(ch_mapping));
 }
 
@@ -264,7 +265,7 @@ void audio_player::overwrite(channel_index_t const ch_idx, fragment_index_t cons
     this->_resource->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
 }
 
-std::vector<channel_index_t> const &audio_player::ch_mapping() const {
+std::vector<channel_index_t> const &audio_player::channel_mapping() const {
     return this->_ch_mapping->raw();
 }
 

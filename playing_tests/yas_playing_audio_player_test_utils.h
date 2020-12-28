@@ -67,11 +67,11 @@ struct resource : audio_player_resource_protocol {
         return this->pull_seek_frame_handler();
     }
 
-    void set_ch_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) override {
+    void set_channel_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) override {
         this->set_ch_mapping_handler(ch_mapping);
     }
 
-    std::optional<std::vector<channel_index_t>> pull_ch_mapping_on_render() override {
+    std::optional<std::vector<channel_index_t>> pull_channel_mapping_on_render() override {
         return this->pull_ch_mapping_handler();
     }
 

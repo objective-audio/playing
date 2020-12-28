@@ -48,13 +48,13 @@ std::optional<frame_index_t> audio_player_resource::pull_seek_frame_on_render() 
     return std::nullopt;
 }
 
-void audio_player_resource::set_ch_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) {
+void audio_player_resource::set_channel_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) {
     std::lock_guard<std::recursive_mutex> lock(this->_ch_mapping_mutex);
     this->_ch_mapping = ch_mapping;
     this->_ch_mapping_changed = true;
 }
 
-std::optional<std::vector<channel_index_t>> audio_player_resource::pull_ch_mapping_on_render() {
+std::optional<std::vector<channel_index_t>> audio_player_resource::pull_channel_mapping_on_render() {
     if (auto lock = std::unique_lock<std::recursive_mutex>(this->_ch_mapping_mutex, std::try_to_lock);
         lock.owns_lock()) {
         if (this->_ch_mapping_changed) {

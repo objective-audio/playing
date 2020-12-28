@@ -26,8 +26,8 @@ struct audio_player_resource_protocol {
     virtual void seek_on_main(frame_index_t const frame) = 0;
     [[nodiscard]] virtual std::optional<frame_index_t> pull_seek_frame_on_render() = 0;
 
-    virtual void set_ch_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) = 0;
-    [[nodiscard]] virtual std::optional<std::vector<channel_index_t>> pull_ch_mapping_on_render() = 0;
+    virtual void set_channel_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) = 0;
+    [[nodiscard]] virtual std::optional<std::vector<channel_index_t>> pull_channel_mapping_on_render() = 0;
 
     virtual void set_current_frame_on_render(frame_index_t const) = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;
