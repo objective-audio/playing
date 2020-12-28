@@ -52,7 +52,6 @@ struct audio_buffering_protocol {
     [[nodiscard]] virtual setup_state_t setup_state() const = 0;
     [[nodiscard]] virtual rendering_state_t rendering_state() const = 0;
     [[nodiscard]] virtual std::size_t element_count() const = 0;
-    [[nodiscard]] virtual std::size_t channel_count_on_task() const = 0;
     [[nodiscard]] virtual std::size_t channel_count_on_render() const = 0;
     [[nodiscard]] virtual sample_rate_t fragment_length_on_render() const = 0;
 

@@ -12,7 +12,6 @@ struct audio_buffering final : audio_buffering_protocol {
     [[nodiscard]] setup_state_t setup_state() const override;
     [[nodiscard]] rendering_state_t rendering_state() const override;
     [[nodiscard]] std::size_t element_count() const override;
-    [[nodiscard]] std::size_t channel_count_on_task() const override;
     [[nodiscard]] std::size_t channel_count_on_render() const override;
     [[nodiscard]] sample_rate_t fragment_length_on_render() const override;
 

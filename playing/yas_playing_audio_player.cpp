@@ -9,9 +9,9 @@
 #include "yas_playing_audio_buffering.h"
 #include "yas_playing_audio_buffering_channel.h"
 #include "yas_playing_audio_buffering_element.h"
+#include "yas_playing_audio_player_resource.h"
 #include "yas_playing_audio_player_utils.h"
 #include "yas_playing_audio_reading.h"
-#include "yas_playing_audio_rendering.h"
 #include "yas_playing_audio_rendering_info.h"
 #include "yas_playing_path.h"
 #include "yas_playing_ptr.h"
@@ -19,44 +19,40 @@
 using namespace yas;
 using namespace yas::playing;
 
-audio_player::audio_player(audio_renderable_ptr const &renderable, std::string const &root_path,
-                           worker_ptr const &worker, task_priority const &priority,
-                           audio_rendering_protocol_ptr const &rendering, audio_reading_protocol_ptr const &reading,
-                           audio_buffering_protocol_ptr const &buffering)
-    : _renderable(renderable),
-      _worker(worker),
-      _priority(priority),
-      _rendering(rendering),
-      _reading(reading),
-      _buffering(buffering) {
+audio_player::audio_player(audio_renderable_ptr const &renderer, std::string const &root_path,
+                           workable_ptr const &worker, task_priority const &priority,
+                           audio_player_resource_protocol_ptr const &rendering)
+    : _renderer(renderer), _worker(worker), _priority(priority), _resource(rendering) {
     if (priority.rendering <= priority.setup) {
         throw std::invalid_argument("invalid priority");
     }
 
     // setup worker
 
-    worker->add_task(priority.setup,
-                     [reading = this->_reading, buffering = this->_buffering, rendering = this->_rendering] {
-                         auto result = worker::task_result::unprocessed;
+    worker->add_task(priority.setup, [resource = this->_resource] {
+        auto const &reading = resource->reading();
+        auto const &buffering = resource->buffering();
 
-                         if (reading->state() == audio_reading::state_t::creating) {
-                             reading->create_buffer_on_task();
-                             std::this_thread::yield();
-                             result = worker::task_result::processed;
-                             std::this_thread::yield();
-                         }
+        auto result = worker::task_result::unprocessed;
 
-                         if (buffering->setup_state() == audio_buffering::setup_state_t::creating) {
-                             buffering->create_buffer_on_task();
-                             std::this_thread::yield();
-                             result = worker::task_result::processed;
-                             std::this_thread::yield();
-                         }
+        if (reading->state() == audio_reading::state_t::creating) {
+            reading->create_buffer_on_task();
+            std::this_thread::yield();
+            result = worker::task_result::processed;
+            std::this_thread::yield();
+        }
 
-                         return result;
-                     });
+        if (buffering->setup_state() == audio_buffering::setup_state_t::creating) {
+            buffering->create_buffer_on_task();
+            std::this_thread::yield();
+            result = worker::task_result::processed;
+            std::this_thread::yield();
+        }
 
-    worker->add_task(priority.rendering, [buffering = this->_buffering, rendering = this->_rendering] {
+        return result;
+    });
+
+    worker->add_task(priority.rendering, [buffering = this->_resource->buffering()] {
 #warning 細かく処理を分ける&他のステートを見て途中でやめる
         switch (buffering->rendering_state()) {
             case audio_buffering::rendering_state_t::waiting:
@@ -75,27 +71,29 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
 
     // setup chaining
 
-    this->_pool +=
-        this->_ch_mapping->chain()
-            .perform([this](auto const &ch_mapping) { this->_rendering->set_ch_mapping_on_main(ch_mapping); })
-            .sync();
+    this->_pool += this->_ch_mapping->chain()
+                       .perform([this](auto const &ch_mapping) { this->_resource->set_ch_mapping_on_main(ch_mapping); })
+                       .sync();
 
     this->_pool += this->_is_playing->chain()
-                       .perform([this](bool const &is_playing) { this->_update_playing(is_playing); })
+                       .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
                        .sync();
 
     // setup renderable
 
-    audio_rendering::overwrite_requests_f overwrite_requests_handler =
-        [buffering = this->_buffering](audio_rendering::overwrite_requests_t const &requests) {
+    audio_player_resource::overwrite_requests_f overwrite_requests_handler =
+        [buffering = this->_resource->buffering()](audio_player_resource::overwrite_requests_t const &requests) {
             for (auto const &request : requests) {
                 buffering->overwrite_element_on_render(request);
             }
         };
 
-    this->_renderable->set_rendering_handler(
-        [rendering = this->_rendering, reading = this->_reading, buffering = this->_buffering,
+    this->_renderer->set_rendering_handler(
+        [resource = this->_resource,
          overwrite_requests_handler = std::move(overwrite_requests_handler)](audio::pcm_buffer *const out_buffer) {
+            auto const &reading = resource->reading();
+            auto const &buffering = resource->buffering();
+
             auto const &out_format = out_buffer->format();
             auto const sample_rate = out_format.sample_rate();
             auto const pcm_format = out_format.pcm_format();
@@ -155,10 +153,10 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
             switch (buffering->rendering_state()) {
                 case audio_buffering::rendering_state_t::waiting: {
                     // 書き込み待機状態なので全バッファ書き込み開始
-                    rendering->reset_overwrite_requests_on_render();
-                    auto const seek_frame = rendering->pull_seek_frame_on_render();
-                    frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : rendering->play_frame();
-                    buffering->set_all_writing_on_render(frame, rendering->pull_ch_mapping_on_render());
+                    resource->reset_overwrite_requests_on_render();
+                    auto const seek_frame = resource->pull_seek_frame_on_render();
+                    frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->play_frame();
+                    buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
                 }
                     return;
                 case audio_buffering::rendering_state_t::all_writing:
@@ -170,42 +168,42 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
             }
 
             // シークされたかチェック
-            if (auto const seek_frame = rendering->pull_seek_frame_on_render(); seek_frame.has_value()) {
+            if (auto const seek_frame = resource->pull_seek_frame_on_render(); seek_frame.has_value()) {
                 // 全バッファ再書き込み開始
-                rendering->reset_overwrite_requests_on_render();
+                resource->reset_overwrite_requests_on_render();
                 auto const &frame = seek_frame.value();
-                rendering->set_play_frame_on_render(frame);
-                buffering->set_all_writing_on_render(frame, rendering->pull_ch_mapping_on_render());
+                resource->set_play_frame_on_render(frame);
+                buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
                 return;
             }
 
             // チャンネルマッピングが変更されたかチェック
-            if (auto ch_mapping = rendering->pull_ch_mapping_on_render(); ch_mapping.has_value()) {
+            if (auto ch_mapping = resource->pull_ch_mapping_on_render(); ch_mapping.has_value()) {
                 // 全バッファ再書き込み開始
-                rendering->reset_overwrite_requests_on_render();
-                buffering->set_all_writing_on_render(rendering->play_frame(), std::move(ch_mapping));
+                resource->reset_overwrite_requests_on_render();
+                buffering->set_all_writing_on_render(resource->play_frame(), std::move(ch_mapping));
                 return;
             }
 
             // リングバッファの要素の上書き
-            rendering->perform_overwrite_requests_on_render(overwrite_requests_handler);
+            resource->perform_overwrite_requests_on_render(overwrite_requests_handler);
 
             // 再生中でなければ終了
-            if (!rendering->is_playing_on_render()) {
+            if (!resource->is_playing_on_render()) {
                 return;
             }
 
             // 以下レンダリング
 
-            frame_index_t const begin_frame = rendering->play_frame();
+            audio::pcm_buffer *reading_buffer = reading->buffer_on_render();
+            if (!reading_buffer) {
+                return;
+            }
+
+            frame_index_t const begin_frame = resource->play_frame();
             frame_index_t current_frame = begin_frame;
             frame_index_t const next_frame = current_frame + out_length;
             uint32_t const frag_length = buffering->fragment_length_on_render();
-
-            audio::pcm_buffer *reading_buffer = reading->buffer_on_render();
-            if (!reading_buffer) {
-                throw std::runtime_error("reading_buffer is null.");
-            }
 
             bool read_failed = false;
 
@@ -243,14 +241,14 @@ audio_player::audio_player(audio_renderable_ptr const &renderable, std::string c
 
                 current_frame += info.length;
 
-                rendering->set_play_frame_on_render(current_frame);
+                resource->set_play_frame_on_render(current_frame);
             }
         });
 
-    this->_renderable->set_is_rendering(true);
+    this->_renderer->set_is_rendering(true);
 }
 
-void audio_player::set_ch_mapping(std::vector<int64_t> ch_mapping) {
+void audio_player::set_channel_mapping(std::vector<int64_t> ch_mapping) {
     this->_ch_mapping->set_value(std::move(ch_mapping));
 }
 
@@ -259,11 +257,11 @@ void audio_player::set_playing(bool const is_playing) {
 }
 
 void audio_player::seek(frame_index_t const frame) {
-    this->_rendering->seek_on_main(frame);
+    this->_resource->seek_on_main(frame);
 }
 
 void audio_player::overwrite(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
-    this->_rendering->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
+    this->_resource->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
 }
 
 std::vector<channel_index_t> const &audio_player::ch_mapping() const {
@@ -275,21 +273,15 @@ bool audio_player::is_playing() const {
 }
 
 frame_index_t audio_player::play_frame() const {
-    return this->_rendering->play_frame();
+    return this->_resource->play_frame();
 }
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
     return this->_is_playing->chain();
 }
 
-player_ptr audio_player::make_shared(audio_renderable_ptr const &renderable, std::string const &root_path,
-                                     worker_ptr const &worker, task_priority const &priority,
-                                     audio_rendering_protocol_ptr const &rendering,
-                                     audio_reading_protocol_ptr const &reading,
-                                     audio_buffering_protocol_ptr const &buffering) {
-    return player_ptr(new audio_player{renderable, root_path, worker, priority, rendering, reading, buffering});
-}
-
-void audio_player::_update_playing(bool const is_playing) {
-    this->_rendering->set_is_playing_on_main(is_playing);
+player_ptr audio_player::make_shared(audio_renderable_ptr const &renderer, std::string const &root_path,
+                                     workable_ptr const &worker, task_priority const &priority,
+                                     audio_player_resource_protocol_ptr const &rendering) {
+    return player_ptr(new audio_player{renderer, root_path, worker, priority, rendering});
 }

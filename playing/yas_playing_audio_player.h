@@ -11,7 +11,7 @@
 
 namespace yas::playing {
 struct audio_player : audio_playable {
-    void set_ch_mapping(std::vector<int64_t>);
+    void set_channel_mapping(std::vector<int64_t>);
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
     void overwrite(channel_index_t const, fragment_index_t const) override;
@@ -27,13 +27,12 @@ struct audio_player : audio_playable {
         uint32_t rendering;
     };
 
-    static player_ptr make_shared(audio_renderable_ptr const &, std::string const &root_path, worker_ptr const &,
-                                  task_priority const &, audio_rendering_protocol_ptr const &,
-                                  audio_reading_protocol_ptr const &, audio_buffering_protocol_ptr const &);
+    static player_ptr make_shared(audio_renderable_ptr const &, std::string const &root_path, workable_ptr const &,
+                                  task_priority const &, audio_player_resource_protocol_ptr const &);
 
    private:
-    audio_renderable_ptr const _renderable;
-    worker_ptr const _worker;
+    audio_renderable_ptr const _renderer;
+    workable_ptr const _worker;
     task_priority const _priority;
 
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
@@ -41,14 +40,9 @@ struct audio_player : audio_playable {
         chaining::value::holder<std::vector<channel_index_t>>::make_shared(std::vector<channel_index_t>{});
     chaining::observer_pool _pool;
 
-    audio_rendering_protocol_ptr const _rendering;
-    audio_reading_protocol_ptr const _reading;
-    audio_buffering_protocol_ptr const _buffering;
+    audio_player_resource_protocol_ptr const _resource;
 
-    void _update_playing(bool const);
-
-    audio_player(audio_renderable_ptr const &, std::string const &root_path, worker_ptr const &, task_priority const &,
-                 audio_rendering_protocol_ptr const &, audio_reading_protocol_ptr const &,
-                 audio_buffering_protocol_ptr const &);
+    audio_player(audio_renderable_ptr const &, std::string const &root_path, workable_ptr const &,
+                 task_priority const &, audio_player_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing

@@ -114,7 +114,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     auto const channel = audio_buffering_channel::make_shared({element0, element1});
     auto const ch_path = test::channel_path();
 
-    std::thread{[&ch_path, &channel] { channel->write_all_elements_on_task(ch_path, 0); }}.join();
+    channel->write_all_elements_on_task(ch_path, 0);
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called0.at(0).first, ch_path);
@@ -146,9 +146,9 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     auto const channel = audio_buffering_channel::make_shared({element0, element1});
     auto const ch_path = test::channel_path();
 
-    std::thread{[&channel, &ch_path] { channel->write_all_elements_on_task(ch_path, 0); }}.join();
+    channel->write_all_elements_on_task(ch_path, 0);
 
-    std::thread{[&channel] { XCTAssertFalse(channel->write_elements_if_needed_on_task()); }}.join();
+    XCTAssertFalse(channel->write_elements_if_needed_on_task());
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called0.at(0), ch_path);
@@ -158,7 +158,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     result0 = true;
     result1 = false;
 
-    std::thread{[&channel] { XCTAssertTrue(channel->write_elements_if_needed_on_task()); }}.join();
+    XCTAssertTrue(channel->write_elements_if_needed_on_task());
 
     XCTAssertEqual(called0.size(), 2);
     XCTAssertEqual(called0.at(1), ch_path);
@@ -168,7 +168,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     result0 = false;
     result1 = true;
 
-    std::thread{[&channel] { XCTAssertTrue(channel->write_elements_if_needed_on_task()); }}.join();
+    XCTAssertTrue(channel->write_elements_if_needed_on_task());
 
     XCTAssertEqual(called0.size(), 3);
     XCTAssertEqual(called0.at(2), ch_path);
@@ -178,7 +178,7 @@ static std::shared_ptr<element> cast_to_element(audio_buffering_element_protocol
     result0 = true;
     result1 = true;
 
-    std::thread{[&channel] { XCTAssertTrue(channel->write_elements_if_needed_on_task()); }}.join();
+    XCTAssertTrue(channel->write_elements_if_needed_on_task());
 
     XCTAssertEqual(called0.size(), 4);
     XCTAssertEqual(called0.at(3), ch_path);
