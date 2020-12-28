@@ -16,7 +16,7 @@
 
 namespace yas::playing {
 struct audio_coordinator {
-    void set_channel_mapping(std::vector<channel_index_t>);
+    void set_channel_mapping(channel_mapping_ptr const &);
     void set_playing(bool const);
     void seek(frame_index_t const);
     void overwrite(proc::time::range const &);

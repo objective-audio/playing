@@ -15,6 +15,7 @@
 #include "yas_playing_audio_player_resource.h"
 #include "yas_playing_audio_reading.h"
 #include "yas_playing_audio_utils.h"
+#include "yas_playing_channel_mapping.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
 
@@ -31,8 +32,8 @@ audio_coordinator::audio_coordinator(std::string const &root_path, audio::io_dev
     this->_worker->start();
 }
 
-void audio_coordinator::set_channel_mapping(std::vector<channel_index_t> ch_mapping) {
-    this->_player->set_channel_mapping(std::move(ch_mapping));
+void audio_coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
+    this->_player->set_channel_mapping(ch_mapping->indices);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {
