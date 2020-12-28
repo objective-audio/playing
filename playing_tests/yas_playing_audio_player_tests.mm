@@ -22,7 +22,7 @@ using namespace yas::playing;
 }
 
 - (void)test_constructor {
-    audio_player::task_priority priority{.setup = 100, .rendering = 101};
+    audio_player_task_priority const priority{.setup = 100, .rendering = 101};
     auto const worker = worker::make_shared();
     auto const renderer = std::make_shared<test::renderer>();
     auto const reading = std::make_shared<test::reading>();

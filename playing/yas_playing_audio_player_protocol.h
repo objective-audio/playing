@@ -8,7 +8,14 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
+struct audio_player_task_priority {
+    uint32_t setup;
+    uint32_t rendering;
+};
+
 struct audio_playable {
+    using task_priority_t = audio_player_task_priority;
+
     virtual ~audio_playable() = default;
 
     virtual void set_channel_mapping(std::vector<channel_index_t>) = 0;

@@ -20,7 +20,7 @@ using namespace yas;
 using namespace yas::playing;
 
 audio_player::audio_player(audio_renderable_ptr const &renderer, std::string const &root_path,
-                           workable_ptr const &worker, task_priority const &priority,
+                           workable_ptr const &worker, task_priority_t const &priority,
                            audio_player_resource_protocol_ptr const &rendering)
     : _renderer(renderer), _worker(worker), _priority(priority), _resource(rendering) {
     if (priority.rendering <= priority.setup) {
@@ -282,7 +282,7 @@ chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {
 }
 
 player_ptr audio_player::make_shared(audio_renderable_ptr const &renderer, std::string const &root_path,
-                                     workable_ptr const &worker, task_priority const &priority,
+                                     workable_ptr const &worker, task_priority_t const &priority,
                                      audio_player_resource_protocol_ptr const &rendering) {
     return player_ptr(new audio_player{renderer, root_path, worker, priority, rendering});
 }

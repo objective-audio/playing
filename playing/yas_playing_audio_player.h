@@ -22,18 +22,13 @@ struct audio_player : audio_playable {
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
 
-    struct task_priority {
-        uint32_t setup;
-        uint32_t rendering;
-    };
-
     static player_ptr make_shared(audio_renderable_ptr const &, std::string const &root_path, workable_ptr const &,
-                                  task_priority const &, audio_player_resource_protocol_ptr const &);
+                                  task_priority_t const &, audio_player_resource_protocol_ptr const &);
 
    private:
     audio_renderable_ptr const _renderer;
     workable_ptr const _worker;
-    task_priority const _priority;
+    task_priority_t const _priority;
 
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
     chaining::value::holder_ptr<std::vector<channel_index_t>> const _ch_mapping =
@@ -43,6 +38,6 @@ struct audio_player : audio_playable {
     audio_player_resource_protocol_ptr const _resource;
 
     audio_player(audio_renderable_ptr const &, std::string const &root_path, workable_ptr const &,
-                 task_priority const &, audio_player_resource_protocol_ptr const &);
+                 task_priority_t const &, audio_player_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing

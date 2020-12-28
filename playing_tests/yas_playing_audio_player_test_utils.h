@@ -245,7 +245,7 @@ struct audio_player_cpp {
         };
         this->renderer->set_is_rendering_handler = [](bool is_rendering) {};
 
-        audio_player::task_priority priority{.setup = 100, .rendering = 101};
+        audio_player_task_priority const priority{.setup = 100, .rendering = 101};
 
         this->player =
             audio_player::make_shared(this->renderer, test_utils::root_path(), this->worker, priority, this->resource);
