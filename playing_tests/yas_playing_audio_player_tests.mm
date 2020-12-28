@@ -29,12 +29,12 @@ using namespace yas::playing;
     auto const buffering = std::make_shared<test::buffering>();
     auto const rendering = std::make_shared<test::resource>(reading, buffering);
 
-    std::vector<std::vector<channel_index_t>> called_set_ch_mapping;
+    std::vector<channel_mapping_ptr> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;
     std::vector<audio_renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
 
-    rendering->set_ch_mapping_handler = [&called_set_ch_mapping](std::vector<channel_index_t> const &ch_mapping) {
+    rendering->set_ch_mapping_handler = [&called_set_ch_mapping](channel_mapping_ptr const &ch_mapping) {
         called_set_ch_mapping.emplace_back(ch_mapping);
     };
 
@@ -53,7 +53,7 @@ using namespace yas::playing;
     auto const player = audio_player::make_shared(renderer, test_utils::root_path(), worker, priority, rendering);
 
     XCTAssertEqual(called_set_ch_mapping.size(), 1);
-    XCTAssertEqual(called_set_ch_mapping.at(0).size(), 0);
+    XCTAssertEqual(called_set_ch_mapping.at(0)->indices.size(), 0);
     XCTAssertEqual(called_set_is_playing.size(), 1);
     XCTAssertFalse(called_set_is_playing.at(0));
     XCTAssertEqual(called_set_rendering_handler.size(), 1);
@@ -66,18 +66,18 @@ using namespace yas::playing;
 
     auto const &player = self->_cpp.player;
 
-    std::vector<std::vector<channel_index_t>> called;
+    std::vector<channel_mapping_ptr> called;
 
-    self->_cpp.resource->set_ch_mapping_handler = [&called](std::vector<channel_index_t> const &ch_mapping) {
+    self->_cpp.resource->set_ch_mapping_handler = [&called](channel_mapping_ptr const &ch_mapping) {
         called.emplace_back(ch_mapping);
     };
 
-    player->set_channel_mapping({10, 11, 12});
+    player->set_channel_mapping(channel_mapping::make_shared({10, 11, 12}));
 
-    XCTAssertEqual(player->channel_mapping(), (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{10, 11, 12}));
 
     XCTAssertEqual(called.size(), 1);
-    XCTAssertEqual(called.at(0), (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(called.at(0)->indices, (std::vector<channel_index_t>{10, 11, 12}));
 }
 
 - (void)test_is_playing {

@@ -33,7 +33,7 @@ audio_coordinator::audio_coordinator(std::string const &root_path, audio::io_dev
 }
 
 void audio_coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
-    this->_player->set_channel_mapping(ch_mapping->indices);
+    this->_player->set_channel_mapping(ch_mapping);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {

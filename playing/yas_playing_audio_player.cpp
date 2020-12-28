@@ -4,6 +4,8 @@
 
 #include "yas_playing_audio_player.h"
 
+#include <playing/yas_playing_channel_mapping.h>
+
 #include <thread>
 
 #include "yas_playing_audio_buffering.h"
@@ -22,7 +24,11 @@ using namespace yas::playing;
 audio_player::audio_player(audio_renderable_ptr const &renderer, std::string const &root_path,
                            workable_ptr const &worker, task_priority_t const &priority,
                            audio_player_resource_protocol_ptr const &rendering)
-    : _renderer(renderer), _worker(worker), _priority(priority), _resource(rendering) {
+    : _renderer(renderer),
+      _worker(worker),
+      _priority(priority),
+      _resource(rendering),
+      _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())) {
     if (priority.rendering <= priority.setup) {
         throw std::invalid_argument("invalid priority");
     }
@@ -249,8 +255,8 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
     this->_renderer->set_is_rendering(true);
 }
 
-void audio_player::set_channel_mapping(std::vector<channel_index_t> ch_mapping) {
-    this->_ch_mapping->set_value(std::move(ch_mapping));
+void audio_player::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
+    this->_ch_mapping->set_value(ch_mapping);
 }
 
 void audio_player::set_playing(bool const is_playing) {
@@ -265,7 +271,7 @@ void audio_player::overwrite(channel_index_t const ch_idx, fragment_index_t cons
     this->_resource->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
 }
 
-std::vector<channel_index_t> const &audio_player::channel_mapping() const {
+channel_mapping_ptr const &audio_player::channel_mapping() const {
     return this->_ch_mapping->raw();
 }
 

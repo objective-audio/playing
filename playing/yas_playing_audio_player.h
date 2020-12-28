@@ -11,12 +11,12 @@
 
 namespace yas::playing {
 struct audio_player : audio_playable {
-    void set_channel_mapping(std::vector<channel_index_t>) override;
+    void set_channel_mapping(channel_mapping_ptr const &) override;
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
     void overwrite(channel_index_t const, fragment_index_t const) override;
 
-    [[nodiscard]] std::vector<channel_index_t> const &channel_mapping() const override;
+    [[nodiscard]] channel_mapping_ptr const &channel_mapping() const override;
     [[nodiscard]] bool is_playing() const override;
     [[nodiscard]] frame_index_t current_frame() const override;
 
@@ -29,13 +29,11 @@ struct audio_player : audio_playable {
     audio_renderable_ptr const _renderer;
     workable_ptr const _worker;
     task_priority_t const _priority;
+    audio_player_resource_protocol_ptr const _resource;
 
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
-    chaining::value::holder_ptr<std::vector<channel_index_t>> const _ch_mapping =
-        chaining::value::holder<std::vector<channel_index_t>>::make_shared(std::vector<channel_index_t>{});
+    chaining::value::holder_ptr<channel_mapping_ptr> const _ch_mapping;
     chaining::observer_pool _pool;
-
-    audio_player_resource_protocol_ptr const _resource;
 
     audio_player(audio_renderable_ptr const &, std::string const &root_path, workable_ptr const &,
                  task_priority_t const &, audio_player_resource_protocol_ptr const &);

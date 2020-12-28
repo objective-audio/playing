@@ -28,8 +28,8 @@ struct resource : audio_player_resource_protocol {
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
     std::function<std::optional<frame_index_t>(void)> pull_seek_frame_handler;
-    std::function<void(std::vector<channel_index_t> const &)> set_ch_mapping_handler;
-    std::function<std::optional<std::vector<channel_index_t>>(void)> pull_ch_mapping_handler;
+    std::function<void(channel_mapping_ptr const &)> set_ch_mapping_handler;
+    std::function<std::optional<channel_mapping_ptr>(void)> pull_ch_mapping_handler;
     std::function<void(frame_index_t)> set_current_frame_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<void(element_address &&)> add_overwrite_request_handler;
@@ -67,11 +67,11 @@ struct resource : audio_player_resource_protocol {
         return this->pull_seek_frame_handler();
     }
 
-    void set_channel_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) override {
+    void set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) override {
         this->set_ch_mapping_handler(ch_mapping);
     }
 
-    std::optional<std::vector<channel_index_t>> pull_channel_mapping_on_render() override {
+    std::optional<channel_mapping_ptr> pull_channel_mapping_on_render() override {
         return this->pull_ch_mapping_handler();
     }
 
@@ -135,7 +135,7 @@ struct buffering : audio_buffering_protocol {
     std::function<void(double, audio::pcm_format, uint32_t)> set_creating_handler;
     std::function<bool(double, audio::pcm_format, uint32_t)> needs_create_handler;
     std::function<void(void)> create_buffer_handler;
-    std::function<void(frame_index_t, std::optional<std::vector<channel_index_t>> &&)> set_all_writing_handler;
+    std::function<void(frame_index_t, std::optional<channel_mapping_ptr> &&)> set_all_writing_handler;
     std::function<void(void)> write_all_elements_handler;
     std::function<void(fragment_index_t)> advance_handler;
     std::function<bool(void)> write_elements_if_needed_handler;
@@ -177,7 +177,7 @@ struct buffering : audio_buffering_protocol {
     }
 
     void set_all_writing_on_render(frame_index_t const frame,
-                                   std::optional<std::vector<channel_index_t>> &&ch_mapping) override {
+                                   std::optional<channel_mapping_ptr> &&ch_mapping) override {
         this->set_all_writing_handler(frame, std::move(ch_mapping));
     }
 
@@ -238,7 +238,7 @@ struct audio_player_cpp {
     }
 
     void setup_initial() {
-        this->resource->set_ch_mapping_handler = [](std::vector<channel_index_t> const &ch_mapping) {};
+        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &ch_mapping) {};
         this->resource->set_playing_handler = [](bool is_playing) {};
         this->renderer->set_rendering_handler_handler = [this](audio_renderable::rendering_f &&handler) {
             this->rendering_handler = std::move(handler);

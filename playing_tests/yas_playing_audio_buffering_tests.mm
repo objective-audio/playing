@@ -243,7 +243,7 @@ struct audio_buffering_cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 100);
-    XCTAssertEqual(buffering->ch_mapping_for_test().size(), 0);
+    XCTAssertEqual(buffering->ch_mapping_for_test()->indices.size(), 0);
 }
 
 - (void)test_set_all_writing_from_advancing {
@@ -253,11 +253,11 @@ struct audio_buffering_cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
-    buffering->set_all_writing_on_render(200, std::vector<channel_index_t>{1, 0});
+    buffering->set_all_writing_on_render(200, channel_mapping::make_shared({1, 0}));
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 200);
-    XCTAssertEqual(buffering->ch_mapping_for_test(), (std::vector<channel_index_t>{1, 0}));
+    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{1, 0}));
 }
 
 - (void)test_advance {
@@ -377,7 +377,9 @@ struct audio_buffering_cpp {
     XCTAssertEqual(called_channel_1.at(0).first, test::channel_path(1));
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
-    std::thread{[&buffering] { buffering->set_all_writing_on_render(10, std::vector<channel_index_t>{1, 0}); }}.join();
+    std::thread{[&buffering] {
+        buffering->set_all_writing_on_render(10, channel_mapping::make_shared({1, 0}));
+    }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 2);
@@ -432,7 +434,7 @@ struct audio_buffering_cpp {
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
 
-    std::thread{[&buffering] { buffering->set_all_writing_on_render(0, std::vector<channel_index_t>{2, 3}); }}.join();
+    std::thread{[&buffering] { buffering->set_all_writing_on_render(0, channel_mapping::make_shared({2, 3})); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called0.size(), 1);

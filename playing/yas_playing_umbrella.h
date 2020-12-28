@@ -12,6 +12,7 @@
 #include <playing/yas_playing_audio_reading.h>
 #include <playing/yas_playing_audio_renderer.h>
 #include <playing/yas_playing_audio_rendering_info.h>
+#include <playing/yas_playing_channel_mapping.h>
 #include <playing/yas_playing_math.h>
 #include <playing/yas_playing_numbers_file.h>
 #include <playing/yas_playing_path.h>
