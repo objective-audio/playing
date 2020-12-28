@@ -15,6 +15,7 @@
 #include "yas_playing_audio_player_resource.h"
 #include "yas_playing_audio_reading.h"
 #include "yas_playing_audio_utils.h"
+#include "yas_playing_channel_mapping.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
 
@@ -29,6 +30,10 @@ audio_coordinator::audio_coordinator(std::string const &root_path, audio::io_dev
           audio_player_resource::make_shared(audio_reading::make_shared(),
                                              audio_buffering::make_shared(3, root_path, audio_utils::make_channel)))) {
     this->_worker->start();
+}
+
+void audio_coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
+    this->_player->set_channel_mapping(ch_mapping);
 }
 
 void audio_coordinator::set_playing(bool const is_playing) {
@@ -59,8 +64,8 @@ bool audio_coordinator::is_playing() const {
     return this->_player->is_playing();
 }
 
-frame_index_t audio_coordinator::play_frame() const {
-    return this->_player->play_frame();
+frame_index_t audio_coordinator::current_frame() const {
+    return this->_player->current_frame();
 }
 
 sample_rate_t audio_coordinator::sample_rate() const {

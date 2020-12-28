@@ -108,13 +108,13 @@ using namespace yas::playing;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
-    std::size_t called_play_frame = 0;
-    std::vector<std::pair<frame_index_t, std::optional<std::vector<channel_index_t>>>> called_set_all_writing;
+    std::size_t called_current_frame = 0;
+    std::vector<std::pair<frame_index_t, std::optional<channel_mapping_ptr>>> called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
 
-    frame_index_t play_frame = 100;
+    frame_index_t current_frame = 100;
     std::optional<frame_index_t> seek_frame = std::nullopt;
-    std::vector<channel_index_t> ch_mapping{10, 11, 12};
+    auto ch_mapping = channel_mapping::make_shared({10, 11, 12});
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::waiting; };
     rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
@@ -122,14 +122,14 @@ using namespace yas::playing;
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->play_frame_handler = [&called_play_frame, &play_frame] {
-        ++called_play_frame;
-        return play_frame;
+    rendering->current_frame_handler = [&called_current_frame, &current_frame] {
+        ++called_current_frame;
+        return current_frame;
     };
-    buffering->set_all_writing_handler =
-        [&called_set_all_writing](frame_index_t frame, std::optional<std::vector<channel_index_t>> &&ch_mapping) {
-            called_set_all_writing.emplace_back(frame, ch_mapping);
-        };
+    buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
+                                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
+        called_set_all_writing.emplace_back(frame, ch_mapping);
+    };
     rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
@@ -141,10 +141,10 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_reset_overwrite, 1);
     XCTAssertEqual(called_pull_seek, 1);
-    XCTAssertEqual(called_play_frame, 1);
+    XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0).first, 100);
-    XCTAssertEqual(called_set_all_writing.at(0).second, (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(called_set_all_writing.at(0).second.value()->indices, (std::vector<channel_index_t>{10, 11, 12}));
     XCTAssertEqual(called_pull_ch_mapping, 1);
 
     // seek_frameあり
@@ -155,10 +155,10 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_reset_overwrite, 2);
     XCTAssertEqual(called_pull_seek, 2);
-    XCTAssertEqual(called_play_frame, 1);
+    XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 2);
     XCTAssertEqual(called_set_all_writing.at(1).first, 200);
-    XCTAssertEqual(called_set_all_writing.at(1).second, (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(called_set_all_writing.at(1).second.value()->indices, (std::vector<channel_index_t>{10, 11, 12}));
     XCTAssertEqual(called_pull_ch_mapping, 2);
 }
 
@@ -199,9 +199,8 @@ using namespace yas::playing;
         ++called_pull_seek;
         return 0;
     };
-    rendering->set_play_frame_handler = [](frame_index_t frame) {};
-    buffering->set_all_writing_handler = [](frame_index_t frame,
-                                            std::optional<std::vector<channel_index_t>> &&ch_mapping) {};
+    rendering->set_current_frame_handler = [](frame_index_t frame) {};
+    buffering->set_all_writing_handler = [](frame_index_t frame, std::optional<channel_mapping_ptr> &&ch_mapping) {};
     rendering->pull_ch_mapping_handler = [] { return std::nullopt; };
 
     self->_cpp.rendering_handler(&buffer);

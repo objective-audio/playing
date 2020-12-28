@@ -20,6 +20,7 @@ class audio_buffering_channel;
 class audio_buffering_element;
 class audio_reading;
 class audio_player_resource;
+class channel_mapping;
 
 class audio_playable;
 class audio_renderable;
@@ -45,6 +46,7 @@ using audio_buffering_channel_ptr = std::shared_ptr<audio_buffering_channel>;
 using audio_buffering_element_ptr = std::shared_ptr<audio_buffering_element>;
 using audio_reading_ptr = std::shared_ptr<audio_reading>;
 using audio_player_resource_ptr = std::shared_ptr<audio_player_resource>;
+using channel_mapping_ptr = std::shared_ptr<channel_mapping>;
 
 using audio_playable_ptr = std::shared_ptr<audio_playable>;
 using audio_renderable_ptr = std::shared_ptr<audio_renderable>;

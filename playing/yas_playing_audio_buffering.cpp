@@ -14,6 +14,7 @@
 #include "yas_playing_audio_buffering_channel.h"
 #include "yas_playing_audio_buffering_element.h"
 #include "yas_playing_audio_player_utils.h"
+#include "yas_playing_channel_mapping.h"
 #include "yas_playing_signal_file.h"
 #include "yas_playing_signal_file_info.h"
 
@@ -22,7 +23,10 @@ using namespace yas::playing;
 
 audio_buffering::audio_buffering(std::size_t const element_count, std::string const &root_path,
                                  make_channel_f &&make_channel_handler)
-    : _element_count(element_count), _root_path(root_path), _make_channel_handler(make_channel_handler) {
+    : _element_count(element_count),
+      _root_path(root_path),
+      _make_channel_handler(make_channel_handler),
+      _ch_mapping(channel_mapping::make_shared()) {
 }
 
 std::size_t audio_buffering::element_count() const {
@@ -131,7 +135,7 @@ void audio_buffering::create_buffer_on_task() {
 }
 
 void audio_buffering::set_all_writing_on_render(frame_index_t const frame,
-                                                std::optional<std::vector<channel_index_t>> &&ch_mapping) {
+                                                std::optional<channel_mapping_ptr> &&ch_mapping) {
     if (this->_rendering_state.load() == rendering_state_t::all_writing) {
         throw std::runtime_error("state is already all_writing.");
     }
@@ -229,28 +233,28 @@ frame_index_t audio_buffering::all_writing_frame_for_test() const {
     return this->_all_writing_frame;
 }
 
-std::vector<channel_index_t> const &audio_buffering::ch_mapping_for_test() const {
+channel_mapping_ptr const &audio_buffering::ch_mapping_for_test() const {
     return this->_ch_mapping;
 }
 
 channel_index_t audio_buffering::_mapped_ch_idx_on_task(channel_index_t const ch_idx) const {
-    if (ch_idx < this->_ch_mapping.size()) {
-        return this->_ch_mapping.at(ch_idx);
+    if (ch_idx < this->_ch_mapping->indices.size()) {
+        return this->_ch_mapping->indices.at(ch_idx);
     } else {
         return ch_idx;
     }
 }
 
 std::optional<channel_index_t> audio_buffering::_unmapped_ch_idx_on_task(channel_index_t const ch_idx) const {
-    auto each = make_fast_each(this->_ch_mapping.size());
+    auto each = make_fast_each(this->_ch_mapping->indices.size());
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
-        if (this->_ch_mapping.at(idx) == ch_idx) {
+        if (this->_ch_mapping->indices.at(idx) == ch_idx) {
             return idx;
         }
     }
 
-    if (this->_ch_mapping.size() <= ch_idx && ch_idx < this->_channels.size()) {
+    if (this->_ch_mapping->indices.size() <= ch_idx && ch_idx < this->_channels.size()) {
         return ch_idx;
     }
 

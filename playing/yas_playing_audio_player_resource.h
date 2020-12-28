@@ -20,11 +20,11 @@ struct audio_player_resource : audio_player_resource_protocol {
     void seek_on_main(frame_index_t const frame) override;
     [[nodiscard]] std::optional<frame_index_t> pull_seek_frame_on_render() override;
 
-    void set_ch_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) override;
-    [[nodiscard]] std::optional<std::vector<channel_index_t>> pull_ch_mapping_on_render() override;
+    void set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) override;
+    [[nodiscard]] std::optional<channel_mapping_ptr> pull_channel_mapping_on_render() override;
 
-    void set_play_frame_on_render(frame_index_t const) override;
-    [[nodiscard]] frame_index_t play_frame() const override;
+    void set_current_frame_on_render(frame_index_t const) override;
+    [[nodiscard]] frame_index_t current_frame() const override;
 
     void add_overwrite_request_on_main(element_address &&) override;
     void perform_overwrite_requests_on_render(overwrite_requests_f const &) override;
@@ -37,13 +37,13 @@ struct audio_player_resource : audio_player_resource_protocol {
     audio_buffering_protocol_ptr const _buffering;
 
     std::atomic<bool> _is_playing{false};
-    std::atomic<frame_index_t> _play_frame{0};
+    std::atomic<frame_index_t> _current_frame{0};
 
     std::recursive_mutex _seek_mutex;
     std::optional<frame_index_t> _seek_frame = std::nullopt;
 
     std::recursive_mutex _ch_mapping_mutex;
-    std::vector<channel_index_t> _ch_mapping;
+    channel_mapping_ptr _ch_mapping;
     bool _ch_mapping_changed = false;
 
     std::recursive_mutex _overwrite_mutex;

@@ -27,25 +27,25 @@ using namespace yas::playing;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
-    std::vector<frame_index_t> called_set_play_frame;
-    std::vector<std::pair<frame_index_t, std::optional<std::vector<channel_index_t>>>> called_set_all_writing;
+    std::vector<frame_index_t> called_set_current_frame;
+    std::vector<std::pair<frame_index_t, std::optional<channel_mapping_ptr>>> called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
 
     std::optional<frame_index_t> seek_frame = 300;
-    std::vector<channel_index_t> ch_mapping{13, 14, 15};
+    auto ch_mapping = channel_mapping::make_shared({13, 14, 15});
 
     rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
     rendering->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->set_play_frame_handler = [&called_set_play_frame](frame_index_t frame) {
-        called_set_play_frame.emplace_back(frame);
+    rendering->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
     };
-    buffering->set_all_writing_handler =
-        [&called_set_all_writing](frame_index_t frame, std::optional<std::vector<channel_index_t>> &&ch_mapping) {
-            called_set_all_writing.emplace_back(frame, ch_mapping);
-        };
+    buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
+                                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
+        called_set_all_writing.emplace_back(frame, ch_mapping);
+    };
     rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
@@ -55,12 +55,12 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_pull_seek, 1);
     XCTAssertEqual(called_reset_overwrite, 1);
-    XCTAssertEqual(called_set_play_frame.size(), 1);
-    XCTAssertEqual(called_set_play_frame.at(0), 300);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
+    XCTAssertEqual(called_set_current_frame.at(0), 300);
     XCTAssertEqual(called_pull_ch_mapping, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0).first, 300);
-    XCTAssertEqual(called_set_all_writing.at(0).second, (std::vector<channel_index_t>{13, 14, 15}));
+    XCTAssertEqual(called_set_all_writing.at(0).second.value()->indices, (std::vector<channel_index_t>{13, 14, 15}));
 }
 
 - (void)test_pull_ch_mapping {
@@ -73,28 +73,28 @@ using namespace yas::playing;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
-    std::size_t called_play_frame = 0;
-    std::vector<frame_index_t> called_set_play_frame;
-    std::vector<std::pair<frame_index_t, std::optional<std::vector<channel_index_t>>>> called_set_all_writing;
+    std::size_t called_current_frame = 0;
+    std::vector<frame_index_t> called_set_current_frame;
+    std::vector<std::pair<frame_index_t, std::optional<channel_mapping_ptr>>> called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
 
-    frame_index_t play_frame = 400;
+    frame_index_t current_frame = 400;
     std::optional<frame_index_t> seek_frame = std::nullopt;
-    std::optional<std::vector<channel_index_t>> ch_mapping = std::vector<channel_index_t>{16, 17, 18};
+    std::optional<channel_mapping_ptr> ch_mapping = channel_mapping::make_shared({16, 17, 18});
 
     rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
     rendering->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->play_frame_handler = [&called_play_frame, &play_frame] {
-        ++called_play_frame;
-        return play_frame;
+    rendering->current_frame_handler = [&called_current_frame, &current_frame] {
+        ++called_current_frame;
+        return current_frame;
     };
-    buffering->set_all_writing_handler =
-        [&called_set_all_writing](frame_index_t frame, std::optional<std::vector<channel_index_t>> &&ch_mapping) {
-            called_set_all_writing.emplace_back(frame, ch_mapping);
-        };
+    buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
+                                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
+        called_set_all_writing.emplace_back(frame, ch_mapping);
+    };
     rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
@@ -104,11 +104,11 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_pull_seek, 1);
     XCTAssertEqual(called_reset_overwrite, 1);
-    XCTAssertEqual(called_play_frame, 1);
+    XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_pull_ch_mapping, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0).first, 400);
-    XCTAssertEqual(called_set_all_writing.at(0).second, (std::vector<channel_index_t>{16, 17, 18}));
+    XCTAssertEqual(called_set_all_writing.at(0).second.value()->indices, (std::vector<channel_index_t>{16, 17, 18}));
 }
 
 - (void)test_perform_overwrite_requests {
@@ -182,12 +182,12 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
     auto const &buffering = self->_cpp.buffering;
 
-    frame_index_t play_frame = 0;
+    frame_index_t current_frame = 0;
     std::vector<fragment_index_t> called_advance;
-    std::vector<frame_index_t> called_set_play_frame;
+    std::vector<frame_index_t> called_set_current_frame;
     std::vector<std::pair<channel_index_t, frame_index_t>> called_read_into;
 
-    resource->play_frame_handler = [&play_frame] { return play_frame; };
+    resource->current_frame_handler = [&current_frame] { return current_frame; };
     buffering->fragment_length_handler = [] { return 4; };
     buffering->channel_count_handler = [] { return 3; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
@@ -199,15 +199,15 @@ using namespace yas::playing;
     buffering->advance_handler = [&called_advance](fragment_index_t frag_idx) {
         called_advance.emplace_back(frag_idx);
     };
-    resource->set_play_frame_handler = [&called_set_play_frame](frame_index_t frame) {
-        called_set_play_frame.emplace_back(frame);
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
     };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_advance.size(), 0);
-    XCTAssertEqual(called_set_play_frame.size(), 1);
-    XCTAssertEqual(called_set_play_frame.at(0), 2);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
+    XCTAssertEqual(called_set_current_frame.at(0), 2);
     XCTAssertEqual(called_read_into.size(), 3);
     XCTAssertEqual(called_read_into.at(0).first, 0);
     XCTAssertEqual(called_read_into.at(0).second, 0);
@@ -235,12 +235,12 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
     auto const &buffering = self->_cpp.buffering;
 
-    frame_index_t play_frame = 10;
+    frame_index_t current_frame = 10;
     std::vector<fragment_index_t> called_advance;
-    std::vector<frame_index_t> called_set_play_frame;
+    std::vector<frame_index_t> called_set_current_frame;
     std::vector<std::pair<channel_index_t, frame_index_t>> called_read_into;
 
-    resource->play_frame_handler = [&play_frame] { return play_frame; };
+    resource->current_frame_handler = [&current_frame] { return current_frame; };
     buffering->fragment_length_handler = [] { return 1; };
     buffering->channel_count_handler = [] { return 3; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
@@ -252,8 +252,8 @@ using namespace yas::playing;
     buffering->advance_handler = [&called_advance](fragment_index_t frag_idx) {
         called_advance.emplace_back(frag_idx);
     };
-    resource->set_play_frame_handler = [&called_set_play_frame](frame_index_t frame) {
-        called_set_play_frame.emplace_back(frame);
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
     };
 
     self->_cpp.rendering_handler(&buffer);
@@ -261,9 +261,9 @@ using namespace yas::playing;
     XCTAssertEqual(called_advance.size(), 2);
     XCTAssertEqual(called_advance.at(0), 11);
     XCTAssertEqual(called_advance.at(1), 12);
-    XCTAssertEqual(called_set_play_frame.size(), 2);
-    XCTAssertEqual(called_set_play_frame.at(0), 11);
-    XCTAssertEqual(called_set_play_frame.at(1), 12);
+    XCTAssertEqual(called_set_current_frame.size(), 2);
+    XCTAssertEqual(called_set_current_frame.at(0), 11);
+    XCTAssertEqual(called_set_current_frame.at(1), 12);
 
     XCTAssertEqual(called_read_into.size(), 6);
     XCTAssertEqual(called_read_into.at(0).first, 0);
@@ -298,12 +298,12 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
     auto const &buffering = self->_cpp.buffering;
 
-    frame_index_t play_frame = 20;
+    frame_index_t current_frame = 20;
     std::vector<fragment_index_t> called_advance;
-    std::vector<frame_index_t> called_set_play_frame;
+    std::vector<frame_index_t> called_set_current_frame;
     std::vector<std::pair<channel_index_t, frame_index_t>> called_read_into;
 
-    resource->play_frame_handler = [&play_frame] { return play_frame; };
+    resource->current_frame_handler = [&current_frame] { return current_frame; };
     buffering->fragment_length_handler = [] { return 4; };
     buffering->channel_count_handler = [] { return 1; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
@@ -315,15 +315,15 @@ using namespace yas::playing;
     buffering->advance_handler = [&called_advance](fragment_index_t frag_idx) {
         called_advance.emplace_back(frag_idx);
     };
-    resource->set_play_frame_handler = [&called_set_play_frame](frame_index_t frame) {
-        called_set_play_frame.emplace_back(frame);
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
     };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_advance.size(), 0);
-    XCTAssertEqual(called_set_play_frame.size(), 1);
-    XCTAssertEqual(called_set_play_frame.at(0), 22);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
+    XCTAssertEqual(called_set_current_frame.at(0), 22);
     XCTAssertEqual(called_read_into.size(), 1);
     XCTAssertEqual(called_read_into.at(0).first, 0);
     XCTAssertEqual(called_read_into.at(0).second, 20);
@@ -347,12 +347,12 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
     auto const &buffering = self->_cpp.buffering;
 
-    frame_index_t play_frame = 30;
+    frame_index_t current_frame = 30;
     std::vector<fragment_index_t> called_advance;
-    std::vector<frame_index_t> called_set_play_frame;
+    std::vector<frame_index_t> called_set_current_frame;
     std::vector<std::pair<channel_index_t, frame_index_t>> called_read_into;
 
-    resource->play_frame_handler = [&play_frame] { return play_frame; };
+    resource->current_frame_handler = [&current_frame] { return current_frame; };
     buffering->fragment_length_handler = [] { return 1; };
     buffering->channel_count_handler = [] { return 3; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
@@ -369,16 +369,16 @@ using namespace yas::playing;
     buffering->advance_handler = [&called_advance](fragment_index_t frag_idx) {
         called_advance.emplace_back(frag_idx);
     };
-    resource->set_play_frame_handler = [&called_set_play_frame](frame_index_t frame) {
-        called_set_play_frame.emplace_back(frame);
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
     };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_advance.size(), 1);
     XCTAssertEqual(called_advance.at(0), 31);
-    XCTAssertEqual(called_set_play_frame.size(), 1);
-    XCTAssertEqual(called_set_play_frame.at(0), 31);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
+    XCTAssertEqual(called_set_current_frame.at(0), 31);
     XCTAssertEqual(called_read_into.size(), 4);
     XCTAssertEqual(called_read_into.at(0).first, 0);
     XCTAssertEqual(called_read_into.at(0).second, 30);

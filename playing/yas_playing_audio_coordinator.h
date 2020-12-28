@@ -16,12 +16,13 @@
 
 namespace yas::playing {
 struct audio_coordinator {
+    void set_channel_mapping(channel_mapping_ptr const &);
     void set_playing(bool const);
     void seek(frame_index_t const);
     void overwrite(proc::time::range const &);
 
     [[nodiscard]] bool is_playing() const;
-    [[nodiscard]] frame_index_t play_frame() const;
+    [[nodiscard]] frame_index_t current_frame() const;
 
     [[nodiscard]] sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;
@@ -35,13 +36,13 @@ struct audio_coordinator {
    private:
     audio::io_device_ptr const _device;
     std::string const _root_path;
-    worker_ptr const _worker = worker::make_shared();
+    workable_ptr const _worker = worker::make_shared();
     audio_coordinator_renderable_ptr const _renderer = audio_renderer::make_shared(this->_device);
     audio_playable_ptr const _player;
 
     chaining::observer_pool _pool;
 
-    explicit audio_coordinator(std::string const &root_path, audio::io_device_ptr const &);
+    audio_coordinator(std::string const &root_path, audio::io_device_ptr const &);
 
     audio_coordinator(audio_coordinator const &) = delete;
     audio_coordinator(audio_coordinator &&) = delete;

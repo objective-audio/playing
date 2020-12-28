@@ -48,13 +48,13 @@ std::optional<frame_index_t> audio_player_resource::pull_seek_frame_on_render() 
     return std::nullopt;
 }
 
-void audio_player_resource::set_ch_mapping_on_main(std::vector<channel_index_t> const &ch_mapping) {
+void audio_player_resource::set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) {
     std::lock_guard<std::recursive_mutex> lock(this->_ch_mapping_mutex);
     this->_ch_mapping = ch_mapping;
     this->_ch_mapping_changed = true;
 }
 
-std::optional<std::vector<channel_index_t>> audio_player_resource::pull_ch_mapping_on_render() {
+std::optional<channel_mapping_ptr> audio_player_resource::pull_channel_mapping_on_render() {
     if (auto lock = std::unique_lock<std::recursive_mutex>(this->_ch_mapping_mutex, std::try_to_lock);
         lock.owns_lock()) {
         if (this->_ch_mapping_changed) {
@@ -65,12 +65,12 @@ std::optional<std::vector<channel_index_t>> audio_player_resource::pull_ch_mappi
     return std::nullopt;
 }
 
-void audio_player_resource::set_play_frame_on_render(frame_index_t const frame) {
-    this->_play_frame = frame;
+void audio_player_resource::set_current_frame_on_render(frame_index_t const frame) {
+    this->_current_frame = frame;
 }
 
-frame_index_t audio_player_resource::play_frame() const {
-    return this->_play_frame.load();
+frame_index_t audio_player_resource::current_frame() const {
+    return this->_current_frame.load();
 }
 
 void audio_player_resource::add_overwrite_request_on_main(element_address &&request) {
