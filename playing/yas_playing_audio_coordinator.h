@@ -21,7 +21,7 @@ struct audio_coordinator {
     void overwrite(proc::time::range const &);
 
     [[nodiscard]] bool is_playing() const;
-    [[nodiscard]] frame_index_t play_frame() const;
+    [[nodiscard]] frame_index_t current_frame() const;
 
     [[nodiscard]] sample_rate_t sample_rate() const;
     [[nodiscard]] audio::pcm_format pcm_format() const;

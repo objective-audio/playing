@@ -16,7 +16,7 @@ struct audio_playable {
     virtual void overwrite(channel_index_t const, fragment_index_t const) = 0;
 
     [[nodiscard]] virtual bool is_playing() const = 0;
-    [[nodiscard]] virtual frame_index_t play_frame() const = 0;
+    [[nodiscard]] virtual frame_index_t current_frame() const = 0;
 
     [[nodiscard]] virtual chaining::chain_sync_t<bool> is_playing_chain() const = 0;
 };

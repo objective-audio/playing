@@ -65,12 +65,12 @@ std::optional<std::vector<channel_index_t>> audio_player_resource::pull_ch_mappi
     return std::nullopt;
 }
 
-void audio_player_resource::set_play_frame_on_render(frame_index_t const frame) {
-    this->_play_frame = frame;
+void audio_player_resource::set_current_frame_on_render(frame_index_t const frame) {
+    this->_current_frame = frame;
 }
 
-frame_index_t audio_player_resource::play_frame() const {
-    return this->_play_frame.load();
+frame_index_t audio_player_resource::current_frame() const {
+    return this->_current_frame.load();
 }
 
 void audio_player_resource::add_overwrite_request_on_main(element_address &&request) {

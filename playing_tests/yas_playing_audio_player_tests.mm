@@ -167,20 +167,20 @@ using namespace yas::playing;
     XCTAssertEqual(called_add_overwrite.at(0).fragment_index, 4);
 }
 
-- (void)test_play_frame {
+- (void)test_current_frame {
     self->_cpp.setup_initial();
 
     auto const &player = self->_cpp.player;
 
     frame_index_t frame = 0;
 
-    self->_cpp.resource->play_frame_handler = [&frame] { return frame; };
+    self->_cpp.resource->current_frame_handler = [&frame] { return frame; };
 
-    XCTAssertEqual(player->play_frame(), 0);
+    XCTAssertEqual(player->current_frame(), 0);
 
     frame = 1;
 
-    XCTAssertEqual(player->play_frame(), 1);
+    XCTAssertEqual(player->current_frame(), 1);
 }
 
 @end

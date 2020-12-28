@@ -155,7 +155,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
                     // 書き込み待機状態なので全バッファ書き込み開始
                     resource->reset_overwrite_requests_on_render();
                     auto const seek_frame = resource->pull_seek_frame_on_render();
-                    frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->play_frame();
+                    frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
                     buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
                 }
                     return;
@@ -172,7 +172,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
                 // 全バッファ再書き込み開始
                 resource->reset_overwrite_requests_on_render();
                 auto const &frame = seek_frame.value();
-                resource->set_play_frame_on_render(frame);
+                resource->set_current_frame_on_render(frame);
                 buffering->set_all_writing_on_render(frame, resource->pull_ch_mapping_on_render());
                 return;
             }
@@ -181,7 +181,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
             if (auto ch_mapping = resource->pull_ch_mapping_on_render(); ch_mapping.has_value()) {
                 // 全バッファ再書き込み開始
                 resource->reset_overwrite_requests_on_render();
-                buffering->set_all_writing_on_render(resource->play_frame(), std::move(ch_mapping));
+                buffering->set_all_writing_on_render(resource->current_frame(), std::move(ch_mapping));
                 return;
             }
 
@@ -200,7 +200,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
                 return;
             }
 
-            frame_index_t const begin_frame = resource->play_frame();
+            frame_index_t const begin_frame = resource->current_frame();
             frame_index_t current_frame = begin_frame;
             frame_index_t const next_frame = current_frame + out_length;
             uint32_t const frag_length = buffering->fragment_length_on_render();
@@ -241,7 +241,7 @@ audio_player::audio_player(audio_renderable_ptr const &renderer, std::string con
 
                 current_frame += info.length;
 
-                resource->set_play_frame_on_render(current_frame);
+                resource->set_current_frame_on_render(current_frame);
             }
         });
 
@@ -272,8 +272,8 @@ bool audio_player::is_playing() const {
     return this->_is_playing->raw();
 }
 
-frame_index_t audio_player::play_frame() const {
-    return this->_resource->play_frame();
+frame_index_t audio_player::current_frame() const {
+    return this->_resource->current_frame();
 }
 
 chaining::chain_sync_t<bool> audio_player::is_playing_chain() const {

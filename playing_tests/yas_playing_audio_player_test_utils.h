@@ -30,8 +30,8 @@ struct resource : audio_player_resource_protocol {
     std::function<std::optional<frame_index_t>(void)> pull_seek_frame_handler;
     std::function<void(std::vector<channel_index_t> const &)> set_ch_mapping_handler;
     std::function<std::optional<std::vector<channel_index_t>>(void)> pull_ch_mapping_handler;
-    std::function<void(frame_index_t)> set_play_frame_handler;
-    std::function<frame_index_t(void)> play_frame_handler;
+    std::function<void(frame_index_t)> set_current_frame_handler;
+    std::function<frame_index_t(void)> current_frame_handler;
     std::function<void(element_address &&)> add_overwrite_request_handler;
     std::function<void(overwrite_requests_f const &)> perform_overwrite_requests_handler;
     std::function<void(void)> reset_overwrite_requests_handler;
@@ -75,12 +75,12 @@ struct resource : audio_player_resource_protocol {
         return this->pull_ch_mapping_handler();
     }
 
-    void set_play_frame_on_render(frame_index_t const frame) override {
-        this->set_play_frame_handler(frame);
+    void set_current_frame_on_render(frame_index_t const frame) override {
+        this->set_current_frame_handler(frame);
     }
 
-    frame_index_t play_frame() const override {
-        return this->play_frame_handler();
+    frame_index_t current_frame() const override {
+        return this->current_frame_handler();
     }
 
     void add_overwrite_request_on_main(element_address &&address) override {

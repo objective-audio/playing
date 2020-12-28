@@ -59,8 +59,8 @@ bool audio_coordinator::is_playing() const {
     return this->_player->is_playing();
 }
 
-frame_index_t audio_coordinator::play_frame() const {
-    return this->_player->play_frame();
+frame_index_t audio_coordinator::current_frame() const {
+    return this->_player->current_frame();
 }
 
 sample_rate_t audio_coordinator::sample_rate() const {

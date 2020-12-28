@@ -18,7 +18,7 @@ struct audio_player : audio_playable {
 
     [[nodiscard]] std::vector<channel_index_t> const &ch_mapping() const;
     [[nodiscard]] bool is_playing() const override;
-    [[nodiscard]] frame_index_t play_frame() const override;
+    [[nodiscard]] frame_index_t current_frame() const override;
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
 
