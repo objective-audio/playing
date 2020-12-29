@@ -101,8 +101,8 @@ std::optional<signal_file_info> playing::to_signal_file_info(std::string const &
         return std::nullopt;
     }
 
-    auto const frame = to_integer<proc::frame_index_t>(splited.at(1));
-    auto const length = to_integer<proc::length_t>(splited.at(2));
+    auto const frame = to_integer<frame_index_t>(splited.at(1));
+    auto const length = to_integer<length_t>(splited.at(2));
 
     return signal_file_info{path, proc::time::range{frame, length}, sample_type};
 }
