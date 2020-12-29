@@ -10,7 +10,7 @@
 #include <optional>
 
 namespace yas::playing {
-struct rendering_info {
+struct rendering_info final {
     uint32_t const length;
     std::optional<fragment_index_t> const next_frag_idx;
 
