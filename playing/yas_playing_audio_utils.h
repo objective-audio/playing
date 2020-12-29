@@ -10,11 +10,11 @@
 #include <memory>
 
 namespace yas::playing {
-class audio_buffering_channel;
+class buffering_channel;
 }
 
 namespace yas::playing::audio_utils {
-[[nodiscard]] std::shared_ptr<audio_buffering_channel> make_channel(std::size_t const element_count,
-                                                                    audio::format const &format,
-                                                                    sample_rate_t const frag_length);
+[[nodiscard]] std::shared_ptr<buffering_channel> make_channel(std::size_t const element_count,
+                                                              audio::format const &format,
+                                                              sample_rate_t const frag_length);
 }  // namespace yas::playing::audio_utils

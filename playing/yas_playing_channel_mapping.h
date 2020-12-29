@@ -1,5 +1,5 @@
 //
-//  yas_playing_audio_channel_mapping.h
+//  yas_playing_channel_mapping.h
 //
 
 #pragma once
