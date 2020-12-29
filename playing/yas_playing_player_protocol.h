@@ -9,8 +9,8 @@
 
 namespace yas::playing {
 struct player_task_priority {
-    uint32_t setup;
-    uint32_t rendering;
+    uint32_t setup = 0;
+    uint32_t rendering = 1;
 };
 
 struct playable {
