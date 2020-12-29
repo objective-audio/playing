@@ -14,7 +14,7 @@
 #include "yas_playing_buffering_element.h"
 #include "yas_playing_channel_mapping.h"
 #include "yas_playing_player_resource.h"
-#include "yas_playing_reading.h"
+#include "yas_playing_reading_resource.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
 
@@ -26,7 +26,7 @@ coordinator::coordinator(std::string const &root_path, audio::io_device_ptr cons
       _device(device),
       _player(player::make_shared(
           this->_renderer, this->_root_path, this->_worker, {.setup = 100, .rendering = 101},
-          player_resource::make_shared(reading::make_shared(),
+          player_resource::make_shared(reading_resource::make_shared(),
                                        buffering::make_shared(3, root_path, playing::make_channel)))) {
     this->_worker->start();
 }

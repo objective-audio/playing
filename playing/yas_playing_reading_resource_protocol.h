@@ -1,11 +1,11 @@
 //
-//  yas_playing_reading_protocol.h
+//  yas_playing_reading_resource_protocol.h
 //
 
 #pragma once
 
 namespace yas::playing {
-enum class audio_reading_state {
+enum class reading_resource_state {
     /// 起動した状態
     /// render側: creatingにする
     /// task側: 何もしない
@@ -22,10 +22,10 @@ enum class audio_reading_state {
     rendering,
 };
 
-struct reading_protocol {
-    using state_t = audio_reading_state;
+struct reading_resource_protocol {
+    using state_t = reading_resource_state;
 
-    virtual ~reading_protocol() = default;
+    virtual ~reading_resource_protocol() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual audio::pcm_buffer *buffer_on_render() = 0;

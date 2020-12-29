@@ -18,7 +18,7 @@ class player;
 class buffering;
 class buffering_channel;
 class buffering_element;
-class reading;
+class reading_resource;
 class player_resource;
 class channel_mapping;
 
@@ -28,7 +28,7 @@ class coordinator_renderable;
 class buffering_element_protocol;
 class buffering_channel_protocol;
 class buffering_protocol;
-class reading_protocol;
+class reading_resource_protocol;
 class player_resource_protocol;
 
 using timeline_exporter_ptr = std::shared_ptr<timeline_exporter>;
@@ -43,7 +43,7 @@ using cancel_id_ptr = std::shared_ptr<cancel_id>;
 using buffering_ptr = std::shared_ptr<buffering>;
 using buffering_channel_ptr = std::shared_ptr<buffering_channel>;
 using buffering_element_ptr = std::shared_ptr<buffering_element>;
-using reading_ptr = std::shared_ptr<reading>;
+using reading_ptr = std::shared_ptr<reading_resource>;
 using player_resource_ptr = std::shared_ptr<player_resource>;
 using channel_mapping_ptr = std::shared_ptr<channel_mapping>;
 
@@ -53,6 +53,6 @@ using coordinator_renderable_ptr = std::shared_ptr<coordinator_renderable>;
 using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_protocol>;
 using buffering_channel_protocol_ptr = std::shared_ptr<buffering_channel_protocol>;
 using buffering_protocol_ptr = std::shared_ptr<buffering_protocol>;
-using reading_protocol_ptr = std::shared_ptr<reading_protocol>;
+using reading_protocol_ptr = std::shared_ptr<reading_resource_protocol>;
 using player_resource_protocol_ptr = std::shared_ptr<player_resource_protocol>;
 }  // namespace yas::playing

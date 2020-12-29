@@ -17,13 +17,13 @@ using namespace yas::playing;
 @implementation yas_playing_reading_tests
 
 - (void)test_initial_state {
-    auto const reading = reading::make_shared();
+    auto const reading = reading_resource::make_shared();
 
-    XCTAssertEqual(reading->state(), reading::state_t::initial);
+    XCTAssertEqual(reading->state(), reading_resource::state_t::initial);
 }
 
 - (void)test_reset_and_create_buffer {
-    auto const reading = reading::make_shared();
+    auto const reading = reading_resource::make_shared();
 
     std::promise<void> create_promise;
     std::promise<void> render_promise;
@@ -34,7 +34,7 @@ using namespace yas::playing;
 
     std::thread task_thread{[&reading, &create_promise] {
         while (true) {
-            if (reading->state() == reading::state_t::creating) {
+            if (reading->state() == reading_resource::state_t::creating) {
                 reading->create_buffer_on_task();
                 create_promise.set_value();
                 break;
@@ -51,7 +51,7 @@ using namespace yas::playing;
     create_promise.get_future().get();
     render_promise.get_future().get();
 
-    XCTAssertEqual(reading->state(), reading::state_t::rendering);
+    XCTAssertEqual(reading->state(), reading_resource::state_t::rendering);
     XCTAssertTrue(reading->buffer_on_render() != nullptr);
     XCTAssertEqual(reading->buffer_on_render()->format().sample_rate(), sample_rate);
     XCTAssertEqual(reading->buffer_on_render()->format().pcm_format(), pcm_format);
@@ -63,7 +63,7 @@ using namespace yas::playing;
 }
 
 - (void)test_needs_create_on_render {
-    auto const reading = reading::make_shared();
+    auto const reading = reading_resource::make_shared();
 
     std::thread{[&reading] { reading->set_creating_on_render(4, audio::pcm_format::int16, 2); }}.join();
     std::thread{[&reading] { reading->create_buffer_on_task(); }}.join();

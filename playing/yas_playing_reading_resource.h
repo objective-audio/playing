@@ -1,5 +1,5 @@
 //
-//  yas_playing_reading.h
+//  yas_playing_reading_resource.h
 //
 
 #pragma once
@@ -7,10 +7,10 @@
 #include <audio/yas_audio_format.h>
 #include <audio/yas_audio_pcm_buffer.h>
 #include <playing/yas_playing_ptr.h>
-#include <playing/yas_playing_reading_protocol.h>
+#include <playing/yas_playing_reading_resource_protocol.h>
 
 namespace yas::playing {
-struct reading final : reading_protocol {
+struct reading_resource final : reading_resource_protocol {
     [[nodiscard]] state_t state() const override;
     [[nodiscard]] audio::pcm_buffer *buffer_on_render() override;
 
@@ -22,7 +22,7 @@ struct reading final : reading_protocol {
     static reading_ptr make_shared();
 
    private:
-    reading();
+    reading_resource();
 
     std::atomic<state_t> _current_state = state_t::initial;
     audio::pcm_buffer_ptr _buffer = nullptr;

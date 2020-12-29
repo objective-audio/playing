@@ -13,7 +13,7 @@
 #include <playing/yas_playing_path.h>
 #include <playing/yas_playing_player.h>
 #include <playing/yas_playing_player_resource.h>
-#include <playing/yas_playing_reading.h>
+#include <playing/yas_playing_reading_resource.h>
 #include <playing/yas_playing_renderer.h>
 #include <playing/yas_playing_rendering_info.h>
 #include <playing/yas_playing_signal_file.h>

@@ -15,7 +15,7 @@
 #include "yas_playing_player_resource.h"
 #include "yas_playing_player_utils.h"
 #include "yas_playing_ptr.h"
-#include "yas_playing_reading.h"
+#include "yas_playing_reading_resource.h"
 #include "yas_playing_rendering_info.h"
 
 using namespace yas;
@@ -40,7 +40,7 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
 
         auto result = worker::task_result::unprocessed;
 
-        if (reading->state() == reading::state_t::creating) {
+        if (reading->state() == reading_resource::state_t::creating) {
             reading->create_buffer_on_task();
             std::this_thread::yield();
             result = worker::task_result::processed;
@@ -113,14 +113,14 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             // 出力バッファのセットアップ
 
             switch (reading->state()) {
-                case reading::state_t::initial:
+                case reading_resource::state_t::initial:
                     // 初期状態なのでバッファ生成開始
                     reading->set_creating_on_render(sample_rate, pcm_format, out_length);
                     return;
-                case reading::state_t::creating:
+                case reading_resource::state_t::creating:
                     // task側で生成中
                     return;
-                case reading::state_t::rendering:
+                case reading_resource::state_t::rendering:
                     // バッファ生成済み
                     break;
             }
