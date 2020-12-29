@@ -336,7 +336,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 - (void)test_make_channel {
     audio::format const format{
         {.sample_rate = 4, .channel_count = 2, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
-    auto const channel = playing::make_channel(3, format, 5);
+    auto const channel = playing::make_buffering_channel(3, format, 5);
 
     auto const &elements = channel->elements_for_test();
     XCTAssertEqual(elements.size(), 3);

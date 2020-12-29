@@ -27,6 +27,6 @@ struct buffering_channel final : buffering_channel_protocol {
     explicit buffering_channel(std::vector<buffering_element_protocol_ptr> &&);
 };
 
-[[nodiscard]] buffering_channel_ptr make_channel(std::size_t const element_count, audio::format const &format,
-                                                 sample_rate_t const frag_length);
+[[nodiscard]] buffering_channel_ptr make_buffering_channel(std::size_t const element_count, audio::format const &format,
+                                                           sample_rate_t const frag_length);
 }  // namespace yas::playing

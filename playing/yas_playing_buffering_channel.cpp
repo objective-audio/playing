@@ -75,8 +75,8 @@ buffering_channel_ptr buffering_channel::make_shared(std::vector<buffering_eleme
     return buffering_channel_ptr{new buffering_channel{std::move(elements)}};
 }
 
-buffering_channel_ptr playing::make_channel(std::size_t const element_count, audio::format const &format,
-                                            sample_rate_t const frag_length) {
+buffering_channel_ptr playing::make_buffering_channel(std::size_t const element_count, audio::format const &format,
+                                                      sample_rate_t const frag_length) {
     std::vector<buffering_element_protocol_ptr> elements;
     elements.reserve(element_count);
 
