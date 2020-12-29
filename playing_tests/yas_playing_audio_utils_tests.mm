@@ -1,18 +1,18 @@
 //
-//  yas_playing_audio_utils_tests.mm
+//  yas_playing_utils_tests.mm
 //
 
 #import <XCTest/XCTest.h>
-#import <playing/yas_playing_audio_buffering_channel.h>
-#import <playing/yas_playing_audio_buffering_element.h>
 #import <playing/yas_playing_audio_utils.h>
+#import <playing/yas_playing_buffering_channel.h>
+#import <playing/yas_playing_buffering_element.h>
 
 using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::test {
-static audio_buffering_element_ptr cast_to_element(audio_buffering_element_protocol_ptr const &protocol) {
-    return std::dynamic_pointer_cast<audio_buffering_element>(protocol);
+static buffering_element_ptr cast_to_element(buffering_element_protocol_ptr const &protocol) {
+    return std::dynamic_pointer_cast<buffering_element>(protocol);
 }
 }
 
