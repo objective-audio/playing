@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace yas::playing {
-struct channel_mapping {
+struct channel_mapping final {
     std::vector<channel_index_t> const indices;
 
     static channel_mapping_ptr make_shared();

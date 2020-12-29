@@ -11,7 +11,7 @@
 #include <processing/yas_processing_types.h>
 
 namespace yas::playing {
-struct renderer : coordinator_renderable {
+struct renderer final : coordinator_renderable {
     audio::graph_ptr const graph;
 
     void set_rendering_handler(renderable::rendering_f &&) override;

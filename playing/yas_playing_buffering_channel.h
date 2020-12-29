@@ -5,11 +5,10 @@
 #pragma once
 
 #include <playing/yas_playing_buffering_channel_protocol.h>
-#include <playing/yas_playing_buffering_element_protocol.h>
 #include <playing/yas_playing_ptr.h>
 
 namespace yas::playing {
-struct buffering_channel : buffering_channel_protocol {
+struct buffering_channel final : buffering_channel_protocol {
     void write_all_elements_on_task(path::channel const &, fragment_index_t const top_frag_idx) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
 
@@ -27,4 +26,7 @@ struct buffering_channel : buffering_channel_protocol {
 
     explicit buffering_channel(std::vector<buffering_element_protocol_ptr> &&);
 };
+
+[[nodiscard]] buffering_channel_ptr make_buffering_channel(std::size_t const element_count, audio::format const &format,
+                                                           sample_rate_t const frag_length);
 }  // namespace yas::playing

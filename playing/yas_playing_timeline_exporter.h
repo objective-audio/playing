@@ -12,7 +12,7 @@
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
-struct timeline_exporter {
+struct timeline_exporter final {
     enum class method {
         reset,
         export_began,

@@ -96,7 +96,7 @@ struct resource : player_resource_protocol {
     }
 };
 
-struct reading : reading_protocol {
+struct reading : reading_resource_protocol {
     std::function<state_t(void)> state_handler;
     std::function<audio::pcm_buffer *(void)> buffer_handler;
     std::function<bool(double, audio::pcm_format, uint32_t)> needs_create_handler;
@@ -126,7 +126,7 @@ struct reading : reading_protocol {
     }
 };
 
-struct buffering : buffering_protocol {
+struct buffering : buffering_resource_protocol {
     std::function<setup_state_t(void)> setup_state_handler;
     std::function<rendering_state_t(void)> rendering_state_handler;
     std::function<std::size_t(void)> element_count_handler;
@@ -256,7 +256,7 @@ struct audio_player_cpp {
 
         auto const &reading = this->reading;
 
-        reading->state_handler = [] { return playing::audio_reading_state::rendering; };
+        reading->state_handler = [] { return playing::reading_resource_state::rendering; };
         reading->set_creating_handler = [](double, audio::pcm_format, uint32_t) {};
         reading->needs_create_handler = [](double, audio::pcm_format, uint32_t) { return false; };
     }

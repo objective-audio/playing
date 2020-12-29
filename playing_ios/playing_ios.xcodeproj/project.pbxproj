@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		B603FD5E25877FA7007F4D78 /* yas_playing_player_resource_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B603FD5D25877FA7007F4D78 /* yas_playing_player_resource_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B61DF5DF254EE26700972B05 /* yas_playing_reading.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61DF5DD254EE26700972B05 /* yas_playing_reading.cpp */; };
-		B61DF5E0254EE26700972B05 /* yas_playing_reading.h in Headers */ = {isa = PBXBuildFile; fileRef = B61DF5DE254EE26700972B05 /* yas_playing_reading.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B61DF5DF254EE26700972B05 /* yas_playing_reading_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61DF5DD254EE26700972B05 /* yas_playing_reading_resource.cpp */; };
+		B61DF5E0254EE26700972B05 /* yas_playing_reading_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B61DF5DE254EE26700972B05 /* yas_playing_reading_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6300165257E42B300CC206B /* yas_playing_buffering_channel_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6300163257E42B300CC206B /* yas_playing_buffering_channel_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6300166257E42B300CC206B /* yas_playing_buffering_element_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6300164257E42B300CC206B /* yas_playing_buffering_element_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B630016A257E42CE00CC206B /* yas_playing_buffering_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6300169257E42CE00CC206B /* yas_playing_buffering_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B630016A257E42CE00CC206B /* yas_playing_buffering_resource_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6300169257E42CE00CC206B /* yas_playing_buffering_resource_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B646495A25583A2D00398A97 /* yas_playing_player_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B646495825583A2D00398A97 /* yas_playing_player_resource.cpp */; };
 		B646495B25583A2D00398A97 /* yas_playing_player_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B646495925583A2D00398A97 /* yas_playing_player_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B66827EC254E67FF00306B0D /* yas_playing_player_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B66827E8254E67FE00306B0D /* yas_playing_player_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -20,12 +20,12 @@
 		B66827EE254E67FF00306B0D /* yas_playing_player.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66827EA254E67FF00306B0D /* yas_playing_player.cpp */; };
 		B66827EF254E67FF00306B0D /* yas_playing_player_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B66827EB254E67FF00306B0D /* yas_playing_player_utils.cpp */; };
 		B66827FF254E6A8F00306B0D /* yas_playing_renderer_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B66827FE254E6A8F00306B0D /* yas_playing_renderer_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		B668281A25510D8800306B0D /* yas_playing_buffering.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B668281625510D8800306B0D /* yas_playing_buffering.cpp */; };
-		B668281D25510D8800306B0D /* yas_playing_buffering.h in Headers */ = {isa = PBXBuildFile; fileRef = B668281925510D8800306B0D /* yas_playing_buffering.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B668281A25510D8800306B0D /* yas_playing_buffering_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B668281625510D8800306B0D /* yas_playing_buffering_resource.cpp */; };
+		B668281D25510D8800306B0D /* yas_playing_buffering_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B668281925510D8800306B0D /* yas_playing_buffering_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B67D29782599E92200692980 /* yas_playing_channel_mapping.h in Headers */ = {isa = PBXBuildFile; fileRef = B67D29762599E92200692980 /* yas_playing_channel_mapping.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B67D29792599E92200692980 /* yas_playing_channel_mapping.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B67D29772599E92200692980 /* yas_playing_channel_mapping.cpp */; };
 		B69AF31E258B9F5D00856455 /* yas_playing_buffering_element_protocol.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B69AF31D258B9F5D00856455 /* yas_playing_buffering_element_protocol.cpp */; };
-		B6AC810C25838B2B003A4CEC /* yas_playing_reading_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6AC810B25838B2B003A4CEC /* yas_playing_reading_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6AC810C25838B2B003A4CEC /* yas_playing_reading_resource_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6AC810B25838B2B003A4CEC /* yas_playing_reading_resource_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B30F8E255960990022D37A /* yas_playing_buffering_channel.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B30F8A255960980022D37A /* yas_playing_buffering_channel.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6B30F8F255960990022D37A /* yas_playing_buffering_element.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6B30F8B255960990022D37A /* yas_playing_buffering_element.cpp */; };
 		B6B30F90255960990022D37A /* yas_playing_buffering_element.h in Headers */ = {isa = PBXBuildFile; fileRef = B6B30F8C255960990022D37A /* yas_playing_buffering_element.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -35,7 +35,6 @@
 		B6DCC439229AAEE7007F88B7 /* yas_playing_coordinator.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC416229AAEE7007F88B7 /* yas_playing_coordinator.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC43A229AAEE7007F88B7 /* yas_playing_timeline_container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC417229AAEE7007F88B7 /* yas_playing_timeline_container.cpp */; };
 		B6DCC43C229AAEE7007F88B7 /* yas_playing_path.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC419229AAEE7007F88B7 /* yas_playing_path.cpp */; };
-		B6DCC43D229AAEE7007F88B7 /* yas_playing_rendering_info.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC41A229AAEE7007F88B7 /* yas_playing_rendering_info.cpp */; };
 		B6DCC43E229AAEE7007F88B7 /* yas_playing_timeline_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC41B229AAEE7007F88B7 /* yas_playing_timeline_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC440229AAEE7007F88B7 /* yas_playing_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC41D229AAEE7007F88B7 /* yas_playing_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC442229AAEE7007F88B7 /* yas_playing_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC41F229AAEE7007F88B7 /* yas_playing_renderer.cpp */; };
@@ -52,7 +51,6 @@
 		B6DCC450229AAEE7007F88B7 /* yas_playing_coordinator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC42D229AAEE7007F88B7 /* yas_playing_coordinator.cpp */; };
 		B6DCC451229AAEE7007F88B7 /* yas_playing_timeline_canceling.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC42E229AAEE7007F88B7 /* yas_playing_timeline_canceling.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC452229AAEE7007F88B7 /* yas_playing_timeline_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC42F229AAEE7007F88B7 /* yas_playing_timeline_utils.cpp */; };
-		B6DCC453229AAEE7007F88B7 /* yas_playing_rendering_info.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC430229AAEE7007F88B7 /* yas_playing_rendering_info.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC454229AAEE7007F88B7 /* yas_playing_numbers_file.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC431229AAEE7007F88B7 /* yas_playing_numbers_file.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC455229AAEE7007F88B7 /* yas_playing_timeline_exporter.h in Headers */ = {isa = PBXBuildFile; fileRef = B6DCC432229AAEE7007F88B7 /* yas_playing_timeline_exporter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6DCC457229AAEE7007F88B7 /* yas_playing_signal_file.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC434229AAEE7007F88B7 /* yas_playing_signal_file.cpp */; };
@@ -65,17 +63,15 @@
 		B6DCC462229AAF27007F88B7 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC461229AAF27007F88B7 /* cpp_utils.framework */; };
 		B6DCC464229AAF27007F88B7 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC463229AAF27007F88B7 /* objc_utils.framework */; };
 		B6DCC466229AAF27007F88B7 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC465229AAF27007F88B7 /* processing.framework */; };
-		B6EC2AB02588AA6A001E904B /* yas_playing_audio_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */; };
-		B6EC2AB12588AA6A001E904B /* yas_playing_audio_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		B603FD5D25877FA7007F4D78 /* yas_playing_player_resource_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_resource_protocol.h; sourceTree = "<group>"; };
-		B61DF5DD254EE26700972B05 /* yas_playing_reading.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_reading.cpp; sourceTree = "<group>"; };
-		B61DF5DE254EE26700972B05 /* yas_playing_reading.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading.h; sourceTree = "<group>"; };
+		B61DF5DD254EE26700972B05 /* yas_playing_reading_resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_reading_resource.cpp; sourceTree = "<group>"; };
+		B61DF5DE254EE26700972B05 /* yas_playing_reading_resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading_resource.h; sourceTree = "<group>"; };
 		B6300163257E42B300CC206B /* yas_playing_buffering_channel_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_channel_protocol.h; sourceTree = "<group>"; };
 		B6300164257E42B300CC206B /* yas_playing_buffering_element_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_element_protocol.h; sourceTree = "<group>"; };
-		B6300169257E42CE00CC206B /* yas_playing_buffering_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_protocol.h; sourceTree = "<group>"; };
+		B6300169257E42CE00CC206B /* yas_playing_buffering_resource_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_resource_protocol.h; sourceTree = "<group>"; };
 		B646495825583A2D00398A97 /* yas_playing_player_resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_player_resource.cpp; sourceTree = "<group>"; };
 		B646495925583A2D00398A97 /* yas_playing_player_resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_resource.h; sourceTree = "<group>"; };
 		B66827E8254E67FE00306B0D /* yas_playing_player_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_utils.h; sourceTree = "<group>"; };
@@ -83,12 +79,12 @@
 		B66827EA254E67FF00306B0D /* yas_playing_player.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_player.cpp; sourceTree = "<group>"; };
 		B66827EB254E67FF00306B0D /* yas_playing_player_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_player_utils.cpp; sourceTree = "<group>"; };
 		B66827FE254E6A8F00306B0D /* yas_playing_renderer_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_renderer_protocol.h; sourceTree = "<group>"; };
-		B668281625510D8800306B0D /* yas_playing_buffering.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_buffering.cpp; sourceTree = "<group>"; };
-		B668281925510D8800306B0D /* yas_playing_buffering.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering.h; sourceTree = "<group>"; };
+		B668281625510D8800306B0D /* yas_playing_buffering_resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_buffering_resource.cpp; sourceTree = "<group>"; };
+		B668281925510D8800306B0D /* yas_playing_buffering_resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_resource.h; sourceTree = "<group>"; };
 		B67D29762599E92200692980 /* yas_playing_channel_mapping.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_channel_mapping.h; sourceTree = "<group>"; };
 		B67D29772599E92200692980 /* yas_playing_channel_mapping.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_channel_mapping.cpp; sourceTree = "<group>"; };
 		B69AF31D258B9F5D00856455 /* yas_playing_buffering_element_protocol.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_buffering_element_protocol.cpp; sourceTree = "<group>"; };
-		B6AC810B25838B2B003A4CEC /* yas_playing_reading_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading_protocol.h; sourceTree = "<group>"; };
+		B6AC810B25838B2B003A4CEC /* yas_playing_reading_resource_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading_resource_protocol.h; sourceTree = "<group>"; };
 		B6B30F8A255960980022D37A /* yas_playing_buffering_channel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_channel.h; sourceTree = "<group>"; };
 		B6B30F8B255960990022D37A /* yas_playing_buffering_element.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_buffering_element.cpp; sourceTree = "<group>"; };
 		B6B30F8C255960990022D37A /* yas_playing_buffering_element.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_element.h; sourceTree = "<group>"; };
@@ -100,7 +96,6 @@
 		B6DCC416229AAEE7007F88B7 /* yas_playing_coordinator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_coordinator.h; sourceTree = "<group>"; };
 		B6DCC417229AAEE7007F88B7 /* yas_playing_timeline_container.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_timeline_container.cpp; sourceTree = "<group>"; };
 		B6DCC419229AAEE7007F88B7 /* yas_playing_path.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_path.cpp; sourceTree = "<group>"; };
-		B6DCC41A229AAEE7007F88B7 /* yas_playing_rendering_info.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_rendering_info.cpp; sourceTree = "<group>"; };
 		B6DCC41B229AAEE7007F88B7 /* yas_playing_timeline_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_timeline_utils.h; sourceTree = "<group>"; };
 		B6DCC41D229AAEE7007F88B7 /* yas_playing_renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_renderer.h; sourceTree = "<group>"; };
 		B6DCC41F229AAEE7007F88B7 /* yas_playing_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_renderer.cpp; sourceTree = "<group>"; };
@@ -117,7 +112,6 @@
 		B6DCC42D229AAEE7007F88B7 /* yas_playing_coordinator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_coordinator.cpp; sourceTree = "<group>"; };
 		B6DCC42E229AAEE7007F88B7 /* yas_playing_timeline_canceling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_timeline_canceling.h; sourceTree = "<group>"; };
 		B6DCC42F229AAEE7007F88B7 /* yas_playing_timeline_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_timeline_utils.cpp; sourceTree = "<group>"; };
-		B6DCC430229AAEE7007F88B7 /* yas_playing_rendering_info.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_rendering_info.h; sourceTree = "<group>"; };
 		B6DCC431229AAEE7007F88B7 /* yas_playing_numbers_file.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_numbers_file.h; sourceTree = "<group>"; };
 		B6DCC432229AAEE7007F88B7 /* yas_playing_timeline_exporter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_timeline_exporter.h; sourceTree = "<group>"; };
 		B6DCC434229AAEE7007F88B7 /* yas_playing_signal_file.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_signal_file.cpp; sourceTree = "<group>"; };
@@ -130,8 +124,6 @@
 		B6DCC461229AAF27007F88B7 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC463229AAF27007F88B7 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC465229AAF27007F88B7 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_utils.cpp; sourceTree = "<group>"; };
-		B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,9 +179,9 @@
 				B6300164257E42B300CC206B /* yas_playing_buffering_element_protocol.h */,
 				B6B30F8B255960990022D37A /* yas_playing_buffering_element.cpp */,
 				B6B30F8C255960990022D37A /* yas_playing_buffering_element.h */,
-				B6300169257E42CE00CC206B /* yas_playing_buffering_protocol.h */,
-				B668281625510D8800306B0D /* yas_playing_buffering.cpp */,
-				B668281925510D8800306B0D /* yas_playing_buffering.h */,
+				B6300169257E42CE00CC206B /* yas_playing_buffering_resource_protocol.h */,
+				B668281625510D8800306B0D /* yas_playing_buffering_resource.cpp */,
+				B668281925510D8800306B0D /* yas_playing_buffering_resource.h */,
 				B6DCC421229AAEE7007F88B7 /* yas_playing_configulation.h */,
 				B6DCC42D229AAEE7007F88B7 /* yas_playing_coordinator.cpp */,
 				B6DCC416229AAEE7007F88B7 /* yas_playing_coordinator.h */,
@@ -201,16 +193,12 @@
 				B66827E8254E67FE00306B0D /* yas_playing_player_utils.h */,
 				B66827EA254E67FF00306B0D /* yas_playing_player.cpp */,
 				B66827E9254E67FF00306B0D /* yas_playing_player.h */,
-				B6AC810B25838B2B003A4CEC /* yas_playing_reading_protocol.h */,
-				B61DF5DD254EE26700972B05 /* yas_playing_reading.cpp */,
-				B61DF5DE254EE26700972B05 /* yas_playing_reading.h */,
+				B6AC810B25838B2B003A4CEC /* yas_playing_reading_resource_protocol.h */,
+				B61DF5DD254EE26700972B05 /* yas_playing_reading_resource.cpp */,
+				B61DF5DE254EE26700972B05 /* yas_playing_reading_resource.h */,
 				B66827FE254E6A8F00306B0D /* yas_playing_renderer_protocol.h */,
 				B6DCC41F229AAEE7007F88B7 /* yas_playing_renderer.cpp */,
 				B6DCC41D229AAEE7007F88B7 /* yas_playing_renderer.h */,
-				B6DCC41A229AAEE7007F88B7 /* yas_playing_rendering_info.cpp */,
-				B6DCC430229AAEE7007F88B7 /* yas_playing_rendering_info.h */,
-				B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */,
-				B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */,
 				B67D29772599E92200692980 /* yas_playing_channel_mapping.cpp */,
 				B67D29762599E92200692980 /* yas_playing_channel_mapping.h */,
 				B6DCC435229AAEE7007F88B7 /* yas_playing_math.cpp */,
@@ -264,11 +252,10 @@
 				B6300166257E42B300CC206B /* yas_playing_buffering_element_protocol.h in Headers */,
 				B6DCC43E229AAEE7007F88B7 /* yas_playing_timeline_utils.h in Headers */,
 				B6DCC411229AAE5F007F88B7 /* playing.h in Headers */,
-				B61DF5E0254EE26700972B05 /* yas_playing_reading.h in Headers */,
-				B630016A257E42CE00CC206B /* yas_playing_buffering_protocol.h in Headers */,
+				B61DF5E0254EE26700972B05 /* yas_playing_reading_resource.h in Headers */,
+				B630016A257E42CE00CC206B /* yas_playing_buffering_resource_protocol.h in Headers */,
 				B6DCC439229AAEE7007F88B7 /* yas_playing_coordinator.h in Headers */,
 				B66827EC254E67FF00306B0D /* yas_playing_player_utils.h in Headers */,
-				B6EC2AB12588AA6A001E904B /* yas_playing_audio_utils.h in Headers */,
 				B6DCC447229AAEE7007F88B7 /* yas_playing_signal_file.h in Headers */,
 				B6B30F90255960990022D37A /* yas_playing_buffering_element.h in Headers */,
 				B6DCC440229AAEE7007F88B7 /* yas_playing_renderer.h in Headers */,
@@ -279,13 +266,12 @@
 				B66827ED254E67FF00306B0D /* yas_playing_player.h in Headers */,
 				B6DCC454229AAEE7007F88B7 /* yas_playing_numbers_file.h in Headers */,
 				B67D29782599E92200692980 /* yas_playing_channel_mapping.h in Headers */,
-				B6DCC453229AAEE7007F88B7 /* yas_playing_rendering_info.h in Headers */,
 				B6B30F8E255960990022D37A /* yas_playing_buffering_channel.h in Headers */,
 				B66827FF254E6A8F00306B0D /* yas_playing_renderer_protocol.h in Headers */,
 				B6DCC459229AAEE7007F88B7 /* yas_playing_path.h in Headers */,
-				B6AC810C25838B2B003A4CEC /* yas_playing_reading_protocol.h in Headers */,
+				B6AC810C25838B2B003A4CEC /* yas_playing_reading_resource_protocol.h in Headers */,
 				B6300165257E42B300CC206B /* yas_playing_buffering_channel_protocol.h in Headers */,
-				B668281D25510D8800306B0D /* yas_playing_buffering.h in Headers */,
+				B668281D25510D8800306B0D /* yas_playing_buffering_resource.h in Headers */,
 				B6DCC451229AAEE7007F88B7 /* yas_playing_timeline_canceling.h in Headers */,
 				B603FD5E25877FA7007F4D78 /* yas_playing_player_resource_protocol.h in Headers */,
 				B6DCC44F229AAEE7007F88B7 /* yas_playing_umbrella.h in Headers */,
@@ -365,20 +351,18 @@
 				B6DCC443229AAEE7007F88B7 /* yas_playing_timeline_canceling.cpp in Sources */,
 				B6DCC44E229AAEE7007F88B7 /* yas_playing_timeline_exporter.cpp in Sources */,
 				B67D29792599E92200692980 /* yas_playing_channel_mapping.cpp in Sources */,
-				B6DCC43D229AAEE7007F88B7 /* yas_playing_rendering_info.cpp in Sources */,
 				B6DCC43A229AAEE7007F88B7 /* yas_playing_timeline_container.cpp in Sources */,
-				B6EC2AB02588AA6A001E904B /* yas_playing_audio_utils.cpp in Sources */,
 				B6DCC442229AAEE7007F88B7 /* yas_playing_renderer.cpp in Sources */,
 				B6DCC450229AAEE7007F88B7 /* yas_playing_coordinator.cpp in Sources */,
 				B6DCC43C229AAEE7007F88B7 /* yas_playing_path.cpp in Sources */,
 				B6DCC44D229AAEE7007F88B7 /* yas_playing_numbers_file.cpp in Sources */,
 				B6DCC458229AAEE7007F88B7 /* yas_playing_math.cpp in Sources */,
-				B61DF5DF254EE26700972B05 /* yas_playing_reading.cpp in Sources */,
+				B61DF5DF254EE26700972B05 /* yas_playing_reading_resource.cpp in Sources */,
 				B6DCC457229AAEE7007F88B7 /* yas_playing_signal_file.cpp in Sources */,
 				B6B30F8F255960990022D37A /* yas_playing_buffering_element.cpp in Sources */,
 				B69AF31E258B9F5D00856455 /* yas_playing_buffering_element_protocol.cpp in Sources */,
 				B6DCC452229AAEE7007F88B7 /* yas_playing_timeline_utils.cpp in Sources */,
-				B668281A25510D8800306B0D /* yas_playing_buffering.cpp in Sources */,
+				B668281A25510D8800306B0D /* yas_playing_buffering_resource.cpp in Sources */,
 				B66827EF254E67FF00306B0D /* yas_playing_player_utils.cpp in Sources */,
 				B646495A25583A2D00398A97 /* yas_playing_player_resource.cpp in Sources */,
 				B6B30F91255960990022D37A /* yas_playing_buffering_channel.cpp in Sources */,

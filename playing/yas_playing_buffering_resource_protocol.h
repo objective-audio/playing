@@ -1,8 +1,12 @@
 //
-//  yas_playing_buffering_protocol.h
+//  yas_playing_buffering_resource_protocol.h
 //
 
 #pragma once
+
+#include <audio/yas_audio_pcm_buffer.h>
+#include <playing/yas_playing_ptr.h>
+#include <playing/yas_playing_types.h>
 
 namespace yas::playing {
 enum class audio_buffering_setup_state {
@@ -43,11 +47,11 @@ enum class audio_buffering_rendering_state {
     advancing,
 };
 
-struct buffering_protocol {
+struct buffering_resource_protocol {
     using setup_state_t = audio_buffering_setup_state;
     using rendering_state_t = audio_buffering_rendering_state;
 
-    virtual ~buffering_protocol() = default;
+    virtual ~buffering_resource_protocol() = default;
 
     [[nodiscard]] virtual setup_state_t setup_state() const = 0;
     [[nodiscard]] virtual rendering_state_t rendering_state() const = 0;

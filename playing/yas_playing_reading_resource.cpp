@@ -2,21 +2,21 @@
 //  yas_playing_reading.cpp
 //
 
-#include "yas_playing_reading.h"
+#include "yas_playing_reading_resource.h"
 
 #include <thread>
 
 using namespace yas;
 using namespace yas::playing;
 
-reading::reading() {
+reading_resource::reading_resource() {
 }
 
-reading::state_t reading::state() const {
+reading_resource::state_t reading_resource::state() const {
     return this->_current_state.load();
 }
 
-audio::pcm_buffer *reading::buffer_on_render() {
+audio::pcm_buffer *reading_resource::buffer_on_render() {
     if (this->_current_state != state_t::rendering) {
         throw std::runtime_error("state is not rendering");
     }
@@ -24,8 +24,8 @@ audio::pcm_buffer *reading::buffer_on_render() {
     return this->_buffer.get();
 }
 
-bool reading::needs_create_on_render(double const sample_rate, audio::pcm_format const pcm_format,
-                                     uint32_t const length) const {
+bool reading_resource::needs_create_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+                                              uint32_t const length) const {
     if (this->_current_state != state_t::rendering) {
         throw std::runtime_error("state is not rendering");
     }
@@ -33,8 +33,8 @@ bool reading::needs_create_on_render(double const sample_rate, audio::pcm_format
     return this->_buffer->format().sample_rate() != sample_rate || this->_buffer->frame_capacity() < length;
 }
 
-void reading::set_creating_on_render(double const sample_rate, audio::pcm_format const pcm_format,
-                                     uint32_t const length) {
+void reading_resource::set_creating_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+                                              uint32_t const length) {
     if (this->_current_state == state_t::creating) {
         throw std::runtime_error("state is already creating.");
     }
@@ -50,7 +50,7 @@ void reading::set_creating_on_render(double const sample_rate, audio::pcm_format
     this->_current_state.store(state_t::creating);
 }
 
-void reading::create_buffer_on_task() {
+void reading_resource::create_buffer_on_task() {
     if (this->_current_state != state_t::creating) {
         throw std::runtime_error("state is not creating.");
     }
@@ -79,6 +79,6 @@ void reading::create_buffer_on_task() {
     std::this_thread::yield();
 }
 
-reading_ptr reading::make_shared() {
-    return reading_ptr(new reading{});
+reading_ptr reading_resource::make_shared() {
+    return reading_ptr(new reading_resource{});
 }

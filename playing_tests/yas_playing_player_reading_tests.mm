@@ -30,7 +30,7 @@ using namespace yas::playing;
 
     auto const &reading = self->_cpp.reading;
 
-    reading->state_handler = [] { return playing::audio_reading_state::initial; };
+    reading->state_handler = [] { return playing::reading_resource_state::initial; };
     reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t ch_count) {
         called_set_create.emplace_back(sample_rate, pcm_format, ch_count);
@@ -54,7 +54,7 @@ using namespace yas::playing;
 
     auto const &reading = self->_cpp.reading;
 
-    reading->state_handler = [] { return playing::audio_reading_state::creating; };
+    reading->state_handler = [] { return playing::reading_resource_state::creating; };
     reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t ch_count) {
         called_set_create.emplace_back(sample_rate, pcm_format, ch_count);
@@ -79,7 +79,7 @@ using namespace yas::playing;
     auto const &reading = self->_cpp.reading;
     auto const &buffering = self->_cpp.buffering;
 
-    reading->state_handler = [] { return playing::audio_reading_state::rendering; };
+    reading->state_handler = [] { return playing::reading_resource_state::rendering; };
     reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t length) {
         called_set_create.emplace_back(sample_rate, pcm_format, length);

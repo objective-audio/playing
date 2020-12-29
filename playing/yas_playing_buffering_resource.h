@@ -1,14 +1,14 @@
 //
-//  yas_playing_buffering.h
+//  yas_playing_buffering_resource.h
 //
 
 #pragma once
 
-#include <playing/yas_playing_buffering_channel.h>
-#include <playing/yas_playing_buffering_protocol.h>
+#include <playing/yas_playing_buffering_resource_protocol.h>
+#include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-struct buffering final : buffering_protocol {
+struct buffering_resource final : buffering_resource_protocol {
     [[nodiscard]] setup_state_t setup_state() const override;
     [[nodiscard]] rendering_state_t rendering_state() const override;
     [[nodiscard]] std::size_t element_count() const override;
@@ -56,7 +56,7 @@ struct buffering final : buffering_protocol {
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 
-    buffering(std::size_t const element_count, std::string const &root_path, make_channel_f &&);
+    buffering_resource(std::size_t const element_count, std::string const &root_path, make_channel_f &&);
 
     channel_index_t _mapped_ch_idx_on_task(channel_index_t const) const;
     std::optional<channel_index_t> _unmapped_ch_idx_on_task(channel_index_t const) const;

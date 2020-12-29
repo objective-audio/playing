@@ -7,7 +7,6 @@
 #include <cpp_utils/yas_fast_each.h>
 
 #include "yas_playing_math.h"
-#include "yas_playing_rendering_info.h"
 
 using namespace yas;
 using namespace yas::playing;
@@ -42,5 +41,20 @@ channel_index_t player_utils::map_ch_idx(std::vector<channel_index_t> const &map
         return mapping.at(ch_idx);
     } else {
         return ch_idx;
+    }
+}
+
+uint32_t player_utils::process_length(frame_index_t const frame, frame_index_t const next_frame,
+                                      uint32_t const frag_length) {
+    return std::min(uint32_t(next_frame - frame), uint32_t(frag_length - math::mod_int(frame, frag_length)));
+}
+
+std::optional<fragment_index_t> player_utils::next_fragment_index(frame_index_t const frame, uint32_t const proc_length,
+                                                                  uint32_t const file_length) {
+    frame_index_t const next_frame = frame + proc_length;
+    if (next_frame % file_length == 0) {
+        return next_frame / file_length;
+    } else {
+        return std::nullopt;
     }
 }

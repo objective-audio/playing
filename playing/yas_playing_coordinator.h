@@ -35,7 +35,6 @@ struct coordinator final {
 
    private:
     audio::io_device_ptr const _device;
-    std::string const _root_path;
     workable_ptr const _worker = worker::make_shared();
     coordinator_renderable_ptr const _renderer = renderer::make_shared(this->_device);
     playable_ptr const _player;

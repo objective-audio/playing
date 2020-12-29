@@ -61,13 +61,13 @@ struct channel : buffering_channel_protocol {
 };
 
 struct audio_buffering_cpp {
-    std::shared_ptr<buffering> buffering = nullptr;
+    std::shared_ptr<buffering_resource> buffering = nullptr;
     std::vector<std::shared_ptr<test::channel>> channels;
 
     void setup_rendering() {
         std::vector<std::shared_ptr<test::channel>> channels;
 
-        auto const buffering = buffering::make_shared(
+        auto const buffering = buffering_resource::make_shared(
             test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
@@ -90,7 +90,7 @@ struct audio_buffering_cpp {
     void setup_advancing() {
         std::vector<std::shared_ptr<test::channel>> channels;
 
-        auto const buffering = buffering::make_shared(
+        auto const buffering = buffering_resource::make_shared(
             test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
@@ -138,7 +138,7 @@ struct audio_buffering_cpp {
 - (void)test_setup_state {
     std::vector<std::shared_ptr<test::channel>> channels;
 
-    auto const buffering = buffering::make_shared(
+    auto const buffering = buffering_resource::make_shared(
         test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
@@ -176,7 +176,7 @@ struct audio_buffering_cpp {
 - (void)test_rendering_state {
     std::vector<std::shared_ptr<test::channel>> channels;
 
-    auto const buffering = buffering::make_shared(
+    auto const buffering = buffering_resource::make_shared(
         test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<test::channel>(element_count, format, frag_length);

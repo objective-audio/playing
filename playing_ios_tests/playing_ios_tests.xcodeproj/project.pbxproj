@@ -19,7 +19,7 @@
 		B6DCC48F229AB1CD007F88B7 /* yas_playing_numbers_file_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC47D229AB1CD007F88B7 /* yas_playing_numbers_file_tests.mm */; };
 		B6DCC490229AB1CD007F88B7 /* yas_playing_signal_file_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC47E229AB1CD007F88B7 /* yas_playing_signal_file_tests.mm */; };
 		B6DCC493229AB1CD007F88B7 /* yas_playing_timeline_exporter_chain_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC482229AB1CD007F88B7 /* yas_playing_timeline_exporter_chain_tests.mm */; };
-		B6DCC494229AB1CD007F88B7 /* yas_playing_rendering_info_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC484229AB1CD007F88B7 /* yas_playing_rendering_info_tests.mm */; };
+		B6DCC494229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */; };
 		B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */; };
 		B6DCC496229AB1CE007F88B7 /* yas_playing_path_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */; };
 		B6DCC497229AB1CE007F88B7 /* yas_playing_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */; };
@@ -32,7 +32,6 @@
 		B6DCC4A6229AB1DF007F88B7 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC4A5229AB1DF007F88B7 /* objc_utils.framework */; };
 		B6DCC4A8229AB1DF007F88B7 /* playing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC4A7229AB1DF007F88B7 /* playing.framework */; };
 		B6DCC4AA229AB1DF007F88B7 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC4A9229AB1DF007F88B7 /* processing.framework */; };
-		B6EC2AB92588AB41001E904B /* yas_playing_audio_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6EC2AB82588AB41001E904B /* yas_playing_audio_utils_tests.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -52,7 +51,7 @@
 		B6DCC47E229AB1CD007F88B7 /* yas_playing_signal_file_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_signal_file_tests.mm; sourceTree = "<group>"; };
 		B6DCC481229AB1CD007F88B7 /* yas_playing_test_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_test_utils.h; sourceTree = "<group>"; };
 		B6DCC482229AB1CD007F88B7 /* yas_playing_timeline_exporter_chain_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_exporter_chain_tests.mm; sourceTree = "<group>"; };
-		B6DCC484229AB1CD007F88B7 /* yas_playing_rendering_info_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_rendering_info_tests.mm; sourceTree = "<group>"; };
+		B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_player_utils_tests.mm; sourceTree = "<group>"; };
 		B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_canceling_tests.mm; sourceTree = "<group>"; };
 		B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_path_utils_tests.mm; sourceTree = "<group>"; };
 		B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_math_tests.mm; sourceTree = "<group>"; };
@@ -65,7 +64,6 @@
 		B6DCC4A5229AB1DF007F88B7 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC4A7229AB1DF007F88B7 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC4A9229AB1DF007F88B7 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6EC2AB82588AB41001E904B /* yas_playing_audio_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_audio_utils_tests.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,8 +121,7 @@
 				B67E94772598B5960040D431 /* yas_playing_player_test_utils.h */,
 				B6873B0D25920D43001AC4CA /* yas_playing_player_tests.mm */,
 				B684BBBD25569D8800AB537B /* yas_playing_reading_tests.mm */,
-				B6DCC484229AB1CD007F88B7 /* yas_playing_rendering_info_tests.mm */,
-				B6EC2AB82588AB41001E904B /* yas_playing_audio_utils_tests.mm */,
+				B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */,
 				B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */,
 				B6DCC47D229AB1CD007F88B7 /* yas_playing_numbers_file_tests.mm */,
 				B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */,
@@ -243,14 +240,13 @@
 			files = (
 				B6DCC49D229AB1CE007F88B7 /* yas_playing_test_utils.mm in Sources */,
 				B67E947B2598B5960040D431 /* yas_playing_player_buffering_tests.mm in Sources */,
-				B6DCC494229AB1CD007F88B7 /* yas_playing_rendering_info_tests.mm in Sources */,
+				B6DCC494229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm in Sources */,
 				B684BBBE25569D8800AB537B /* yas_playing_reading_tests.mm in Sources */,
 				B6DCC496229AB1CE007F88B7 /* yas_playing_path_utils_tests.mm in Sources */,
 				B6B30F9825596C2A0022D37A /* yas_playing_buffering_channel_tests.mm in Sources */,
 				B67E94792598B5960040D431 /* yas_playing_player_rendering_tests.mm in Sources */,
 				B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */,
 				B6DCC48E229AB1CD007F88B7 /* yas_playing_signal_file_info_tests.mm in Sources */,
-				B6EC2AB92588AB41001E904B /* yas_playing_audio_utils_tests.mm in Sources */,
 				B6873B0E25920D43001AC4CA /* yas_playing_player_tests.mm in Sources */,
 				B6DCC493229AB1CD007F88B7 /* yas_playing_timeline_exporter_chain_tests.mm in Sources */,
 				B63319D22552D3CC005D452C /* yas_playing_buffering_tests.mm in Sources */,

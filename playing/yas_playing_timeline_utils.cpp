@@ -18,7 +18,7 @@ proc::time::range timeline_utils::fragments_range(proc::time::range const &range
                                                   proc::sample_rate_t const sample_rate) {
     auto const frame = math::floor_int(range.frame, sample_rate);
     auto const next_frame = math::ceil_int(range.next_frame(), sample_rate);
-    return proc::time::range{frame, static_cast<proc::length_t>(next_frame - frame)};
+    return proc::time::range{frame, static_cast<length_t>(next_frame - frame)};
 }
 
 char const *timeline_utils::char_data(proc::signal_event const &event) {
