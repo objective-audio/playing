@@ -73,8 +73,12 @@ struct element : buffering_element_protocol {
     }
 };
 
-static std::shared_ptr<element> cast_to_element(buffering_element_protocol_ptr const &protocol) {
+static std::shared_ptr<element> cast_to_test_element(buffering_element_protocol_ptr const &protocol) {
     return std::dynamic_pointer_cast<element>(protocol);
+}
+
+static buffering_element_ptr cast_to_buffering_element(buffering_element_protocol_ptr const &protocol) {
+    return std::dynamic_pointer_cast<buffering_element>(protocol);
 }
 }
 
@@ -92,9 +96,9 @@ static std::shared_ptr<element> cast_to_element(buffering_element_protocol_ptr c
     auto const &elements = channel->elements_for_test();
     XCTAssertEqual(elements.size(), 2);
 
-    auto const casted_element0 = test::cast_to_element(elements.at(0));
+    auto const casted_element0 = test::cast_to_test_element(elements.at(0));
     XCTAssertEqual(casted_element0, element0);
-    auto const casted_element1 = test::cast_to_element(elements.at(1));
+    auto const casted_element1 = test::cast_to_test_element(elements.at(1));
     XCTAssertEqual(casted_element1, element1);
 }
 
@@ -327,6 +331,30 @@ static std::shared_ptr<element> cast_to_element(buffering_element_protocol_ptr c
 
     XCTAssertEqual(data[0], 123);
     XCTAssertEqual(data[1], 456);
+}
+
+- (void)test_make_channel {
+    audio::format const format{
+        {.sample_rate = 4, .channel_count = 2, .pcm_format = audio::pcm_format::int16, .interleaved = false}};
+    auto const channel = playing::make_channel(3, format, 5);
+
+    auto const &elements = channel->elements_for_test();
+    XCTAssertEqual(elements.size(), 3);
+
+    auto const casted_element0 = test::cast_to_buffering_element(elements.at(0));
+    auto const &buffer0 = casted_element0->buffer_for_test();
+    XCTAssertEqual(buffer0.frame_length(), 5);
+    XCTAssertEqual(buffer0.format(), format);
+
+    auto const casted_element1 = test::cast_to_buffering_element(elements.at(1));
+    auto const &buffer1 = casted_element1->buffer_for_test();
+    XCTAssertEqual(buffer1.frame_length(), 5);
+    XCTAssertEqual(buffer1.format(), format);
+
+    auto const casted_element2 = test::cast_to_buffering_element(elements.at(2));
+    auto const &buffer2 = casted_element2->buffer_for_test();
+    XCTAssertEqual(buffer2.frame_length(), 5);
+    XCTAssertEqual(buffer2.format(), format);
 }
 
 @end

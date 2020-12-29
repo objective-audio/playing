@@ -65,8 +65,6 @@
 		B6DCC462229AAF27007F88B7 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC461229AAF27007F88B7 /* cpp_utils.framework */; };
 		B6DCC464229AAF27007F88B7 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC463229AAF27007F88B7 /* objc_utils.framework */; };
 		B6DCC466229AAF27007F88B7 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6DCC465229AAF27007F88B7 /* processing.framework */; };
-		B6EC2AB02588AA6A001E904B /* yas_playing_audio_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */; };
-		B6EC2AB12588AA6A001E904B /* yas_playing_audio_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -130,8 +128,6 @@
 		B6DCC461229AAF27007F88B7 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC463229AAF27007F88B7 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6DCC465229AAF27007F88B7 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_audio_utils.cpp; sourceTree = "<group>"; };
-		B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_audio_utils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,8 +205,6 @@
 				B6DCC41D229AAEE7007F88B7 /* yas_playing_renderer.h */,
 				B6DCC41A229AAEE7007F88B7 /* yas_playing_rendering_info.cpp */,
 				B6DCC430229AAEE7007F88B7 /* yas_playing_rendering_info.h */,
-				B6EC2AAE2588AA69001E904B /* yas_playing_audio_utils.cpp */,
-				B6EC2AAF2588AA6A001E904B /* yas_playing_audio_utils.h */,
 				B67D29772599E92200692980 /* yas_playing_channel_mapping.cpp */,
 				B67D29762599E92200692980 /* yas_playing_channel_mapping.h */,
 				B6DCC435229AAEE7007F88B7 /* yas_playing_math.cpp */,
@@ -268,7 +262,6 @@
 				B630016A257E42CE00CC206B /* yas_playing_buffering_protocol.h in Headers */,
 				B6DCC439229AAEE7007F88B7 /* yas_playing_coordinator.h in Headers */,
 				B66827EC254E67FF00306B0D /* yas_playing_player_utils.h in Headers */,
-				B6EC2AB12588AA6A001E904B /* yas_playing_audio_utils.h in Headers */,
 				B6DCC447229AAEE7007F88B7 /* yas_playing_signal_file.h in Headers */,
 				B6B30F90255960990022D37A /* yas_playing_buffering_element.h in Headers */,
 				B6DCC440229AAEE7007F88B7 /* yas_playing_renderer.h in Headers */,
@@ -367,7 +360,6 @@
 				B67D29792599E92200692980 /* yas_playing_channel_mapping.cpp in Sources */,
 				B6DCC43D229AAEE7007F88B7 /* yas_playing_rendering_info.cpp in Sources */,
 				B6DCC43A229AAEE7007F88B7 /* yas_playing_timeline_container.cpp in Sources */,
-				B6EC2AB02588AA6A001E904B /* yas_playing_audio_utils.cpp in Sources */,
 				B6DCC442229AAEE7007F88B7 /* yas_playing_renderer.cpp in Sources */,
 				B6DCC450229AAEE7007F88B7 /* yas_playing_coordinator.cpp in Sources */,
 				B6DCC43C229AAEE7007F88B7 /* yas_playing_path.cpp in Sources */,

@@ -9,7 +9,6 @@
 
 #include <thread>
 
-#include "yas_playing_audio_utils.h"
 #include "yas_playing_buffering.h"
 #include "yas_playing_buffering_channel.h"
 #include "yas_playing_buffering_element.h"
@@ -28,7 +27,7 @@ coordinator::coordinator(std::string const &root_path, audio::io_device_ptr cons
       _player(player::make_shared(
           this->_renderer, this->_root_path, this->_worker, {.setup = 100, .rendering = 101},
           player_resource::make_shared(reading::make_shared(),
-                                       buffering::make_shared(3, root_path, audio_utils::make_channel)))) {
+                                       buffering::make_shared(3, root_path, playing::make_channel)))) {
     this->_worker->start();
 }
 
