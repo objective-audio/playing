@@ -109,7 +109,7 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             throw std::invalid_argument("out_buffer is not non-interleaved.");
         }
 
-        // 出力バッファのセットアップ
+        // reading_resourceのセットアップ
 
         switch (reading->state()) {
             case reading_resource::state_t::initial:
@@ -124,14 +124,14 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
                 break;
         }
 
-        // 生成済みの出力バッファを作り直すかチェック
+        // 生成済みのreadingバッファを作り直すかチェック
         if (reading->needs_create_on_render(sample_rate, pcm_format, out_length)) {
             // バッファを再生成
             reading->set_creating_on_render(sample_rate, pcm_format, out_length);
             return;
         }
 
-        // リングバッファのセットアップ
+        // buffering_resourceのセットアップ
 
         switch (buffering->setup_state()) {
             case buffering_resource::setup_state_t::initial:
@@ -146,14 +146,14 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
                 break;
         }
 
-        // 生成済みのバッファを作り直すかチェック
+        // 生成済みのbufferingバッファを作り直すかチェック
         if (buffering->needs_create_on_render(sample_rate, pcm_format, out_ch_count)) {
-            // リングバッファの再生成
+            // バッファの再生成
             buffering->set_creating_on_render(sample_rate, pcm_format, out_ch_count);
             return;
         }
 
-        // リングバッファのレンダリング
+        // bufferingバッファへの書き込み
 
         switch (buffering->rendering_state()) {
             case buffering_resource::rendering_state_t::waiting: {
@@ -190,7 +190,7 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             return;
         }
 
-        // リングバッファの要素の上書き
+        // bufferingの要素の上書き
         resource->perform_overwrite_requests_on_render(overwrite_requests_handler);
 
         // 再生中でなければ終了
