@@ -210,11 +210,11 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
         frame_index_t const next_frame = current_frame + out_length;
         uint32_t const frag_length = buffering->fragment_length_on_render();
 
-        bool read_failed = false;
-
         while (current_frame < next_frame) {
             auto const proc_length = player_utils::process_length(current_frame, next_frame, frag_length);
             uint32_t const to_frame = uint32_t(current_frame - begin_frame);
+
+            bool read_failed = false;
 
             auto each = make_fast_each(out_format.channel_count());
             while (yas_each_next(each)) {
