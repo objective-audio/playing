@@ -8,9 +8,9 @@
 
 #include <thread>
 
-#include "yas_playing_buffering.h"
 #include "yas_playing_buffering_channel.h"
 #include "yas_playing_buffering_element.h"
+#include "yas_playing_buffering_resource.h"
 #include "yas_playing_path.h"
 #include "yas_playing_player_resource.h"
 #include "yas_playing_player_utils.h"
@@ -47,7 +47,7 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             std::this_thread::yield();
         }
 
-        if (buffering->setup_state() == buffering::setup_state_t::creating) {
+        if (buffering->setup_state() == buffering_resource::setup_state_t::creating) {
             buffering->create_buffer_on_task();
             std::this_thread::yield();
             result = worker::task_result::processed;
@@ -60,12 +60,12 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
     worker->add_task(priority.rendering, [buffering = this->_resource->buffering()] {
 #warning 細かく処理を分ける&他のステートを見て途中でやめる
         switch (buffering->rendering_state()) {
-            case buffering::rendering_state_t::waiting:
+            case buffering_resource::rendering_state_t::waiting:
                 return worker::task_result::unprocessed;
-            case buffering::rendering_state_t::all_writing:
+            case buffering_resource::rendering_state_t::all_writing:
                 buffering->write_all_elements_on_task();
                 return worker::task_result::processed;
-            case buffering::rendering_state_t::advancing:
+            case buffering_resource::rendering_state_t::advancing:
                 if (buffering->write_elements_if_needed_on_task()) {
                     return worker::task_result::processed;
                 } else {
@@ -135,14 +135,14 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             // リングバッファのセットアップ
 
             switch (buffering->setup_state()) {
-                case buffering::setup_state_t::initial:
+                case buffering_resource::setup_state_t::initial:
                     // 初期状態なのでバッファ生成開始
                     buffering->set_creating_on_render(sample_rate, pcm_format, out_ch_count);
                     return;
-                case buffering::setup_state_t::creating:
+                case buffering_resource::setup_state_t::creating:
                     // task側で生成中
                     return;
-                case buffering::setup_state_t::rendering:
+                case buffering_resource::setup_state_t::rendering:
                     // バッファ生成済み
                     break;
             }
@@ -157,7 +157,7 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
             // リングバッファのレンダリング
 
             switch (buffering->rendering_state()) {
-                case buffering::rendering_state_t::waiting: {
+                case buffering_resource::rendering_state_t::waiting: {
                     // 書き込み待機状態なので全バッファ書き込み開始
                     resource->reset_overwrite_requests_on_render();
                     auto const seek_frame = resource->pull_seek_frame_on_render();
@@ -165,10 +165,10 @@ player::player(renderable_ptr const &renderer, std::string const &root_path, wor
                     buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render());
                 }
                     return;
-                case buffering::rendering_state_t::all_writing:
+                case buffering_resource::rendering_state_t::all_writing:
                     // task側で書き込み中
                     return;
-                case buffering::rendering_state_t::advancing:
+                case buffering_resource::rendering_state_t::advancing:
                     // 全バッファ書き込み済み
                     break;
             }

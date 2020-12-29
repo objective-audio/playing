@@ -6,7 +6,7 @@
 
 #include <cpp_utils/yas_fast_each.h>
 
-#include "yas_playing_buffering.h"
+#include "yas_playing_buffering_resource.h"
 #include "yas_playing_reading_resource.h"
 
 using namespace yas;

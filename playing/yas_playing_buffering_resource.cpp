@@ -1,8 +1,8 @@
 //
-//  yas_playing_buffering.cpp
+//  yas_playing_buffering_resource.cpp
 //
 
-#include "yas_playing_buffering.h"
+#include "yas_playing_buffering_resource.h"
 
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_fast_each.h>
@@ -21,36 +21,36 @@
 using namespace yas;
 using namespace yas::playing;
 
-buffering::buffering(std::size_t const element_count, std::string const &root_path,
-                     make_channel_f &&make_channel_handler)
+buffering_resource::buffering_resource(std::size_t const element_count, std::string const &root_path,
+                                       make_channel_f &&make_channel_handler)
     : _element_count(element_count),
       _root_path(root_path),
       _make_channel_handler(make_channel_handler),
       _ch_mapping(channel_mapping::make_shared()) {
 }
 
-std::size_t buffering::element_count() const {
+std::size_t buffering_resource::element_count() const {
     return this->_element_count;
 }
 
-buffering::setup_state_t buffering::setup_state() const {
+buffering_resource::setup_state_t buffering_resource::setup_state() const {
     return this->_setup_state.load();
 }
 
-buffering::rendering_state_t buffering::rendering_state() const {
+buffering_resource::rendering_state_t buffering_resource::rendering_state() const {
     return this->_rendering_state.load();
 }
 
-std::size_t buffering::channel_count_on_render() const {
+std::size_t buffering_resource::channel_count_on_render() const {
     return this->_ch_count;
 }
 
-sample_rate_t buffering::fragment_length_on_render() const {
+sample_rate_t buffering_resource::fragment_length_on_render() const {
     return this->_frag_length;
 }
 
-void buffering::set_creating_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
-                                       uint32_t const ch_count) {
+void buffering_resource::set_creating_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+                                                uint32_t const ch_count) {
     if (this->_setup_state.load() == setup_state_t::creating) {
         throw std::runtime_error("state is already creating.");
     }
@@ -62,8 +62,8 @@ void buffering::set_creating_on_render(double const sample_rate, audio::pcm_form
     this->_setup_state.store(setup_state_t::creating);
 }
 
-bool buffering::needs_create_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
-                                       uint32_t const ch_count) {
+bool buffering_resource::needs_create_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+                                                uint32_t const ch_count) {
     if (this->_setup_state.load() != setup_state_t::rendering) {
         throw std::runtime_error("state is not rendering.");
     }
@@ -83,7 +83,7 @@ bool buffering::needs_create_on_render(double const sample_rate, audio::pcm_form
     return false;
 }
 
-void buffering::create_buffer_on_task() {
+void buffering_resource::create_buffer_on_task() {
     if (this->_setup_state.load() != setup_state_t::creating) {
         throw std::runtime_error("state is not creating.");
     }
@@ -134,7 +134,8 @@ void buffering::create_buffer_on_task() {
     std::this_thread::yield();
 }
 
-void buffering::set_all_writing_on_render(frame_index_t const frame, std::optional<channel_mapping_ptr> &&ch_mapping) {
+void buffering_resource::set_all_writing_on_render(frame_index_t const frame,
+                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
     if (this->_rendering_state.load() == rendering_state_t::all_writing) {
         throw std::runtime_error("state is already all_writing.");
     }
@@ -146,7 +147,7 @@ void buffering::set_all_writing_on_render(frame_index_t const frame, std::option
     this->_rendering_state.store(rendering_state_t::all_writing);
 }
 
-void buffering::write_all_elements_on_task() {
+void buffering_resource::write_all_elements_on_task() {
     if (this->_rendering_state.load() != rendering_state_t::all_writing) {
         throw std::runtime_error("state is not all_writing.");
     }
@@ -174,7 +175,7 @@ void buffering::write_all_elements_on_task() {
     std::this_thread::yield();
 }
 
-void buffering::advance_on_render(fragment_index_t const frag_idx) {
+void buffering_resource::advance_on_render(fragment_index_t const frag_idx) {
     if (this->_rendering_state.load() != rendering_state_t::advancing) {
         throw std::runtime_error("state is not advancing.");
     }
@@ -185,7 +186,7 @@ void buffering::advance_on_render(fragment_index_t const frag_idx) {
     }
 }
 
-bool buffering::write_elements_if_needed_on_task() {
+bool buffering_resource::write_elements_if_needed_on_task() {
     if (this->_rendering_state.load() != rendering_state_t::advancing) {
         throw std::runtime_error("state is not advancing.");
     }
@@ -203,7 +204,7 @@ bool buffering::write_elements_if_needed_on_task() {
     return is_loaded;
 }
 
-void buffering::overwrite_element_on_render(element_address const &index) {
+void buffering_resource::overwrite_element_on_render(element_address const &index) {
     if (this->_rendering_state.load() != rendering_state_t::advancing) {
         throw std::runtime_error("state is not advancing.");
     }
@@ -213,8 +214,8 @@ void buffering::overwrite_element_on_render(element_address const &index) {
     }
 }
 
-bool buffering::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
-                                           frame_index_t const frame) {
+bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
+                                                    frame_index_t const frame) {
     if (this->_channels.size() <= ch_idx) {
         return false;
     }
@@ -222,21 +223,21 @@ bool buffering::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channe
     return this->_channels.at(ch_idx)->read_into_buffer_on_render(out_buffer, frame);
 }
 
-buffering_ptr buffering::make_shared(std::size_t const element_count, std::string const &root_path,
+buffering_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
 
-                                     make_channel_f &&make_channel_handler) {
-    return buffering_ptr{new buffering{element_count, root_path, std::move(make_channel_handler)}};
+                                              make_channel_f &&make_channel_handler) {
+    return buffering_ptr{new buffering_resource{element_count, root_path, std::move(make_channel_handler)}};
 }
 
-frame_index_t buffering::all_writing_frame_for_test() const {
+frame_index_t buffering_resource::all_writing_frame_for_test() const {
     return this->_all_writing_frame;
 }
 
-channel_mapping_ptr const &buffering::ch_mapping_for_test() const {
+channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
 }
 
-channel_index_t buffering::_mapped_ch_idx_on_task(channel_index_t const ch_idx) const {
+channel_index_t buffering_resource::_mapped_ch_idx_on_task(channel_index_t const ch_idx) const {
     if (ch_idx < this->_ch_mapping->indices.size()) {
         return this->_ch_mapping->indices.at(ch_idx);
     } else {
@@ -244,7 +245,7 @@ channel_index_t buffering::_mapped_ch_idx_on_task(channel_index_t const ch_idx) 
     }
 }
 
-std::optional<channel_index_t> buffering::_unmapped_ch_idx_on_task(channel_index_t const ch_idx) const {
+std::optional<channel_index_t> buffering_resource::_unmapped_ch_idx_on_task(channel_index_t const ch_idx) const {
     auto each = make_fast_each(this->_ch_mapping->indices.size());
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);

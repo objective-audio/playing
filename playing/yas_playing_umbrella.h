@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <playing/yas_playing_buffering.h>
+#include <playing/yas_playing_buffering_channel.h>
 #include <playing/yas_playing_buffering_element.h>
+#include <playing/yas_playing_buffering_resource.h>
 #include <playing/yas_playing_channel_mapping.h>
 #include <playing/yas_playing_coordinator.h>
 #include <playing/yas_playing_math.h>
