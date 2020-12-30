@@ -192,9 +192,9 @@ void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &even
     std::optional<proc::time::range> total_range = proc::total_range(event.elements);
 
     for (auto &trk_idx : track_indices) {
-        auto erase_task = task::make_shared([resource = this->_resource, trk_idx = trk_idx](
-                                                auto const &) mutable { resource->timeline->erase_track(trk_idx); },
-                                            {.priority = this->_priority.timeline});
+        auto erase_task = task::make_shared(
+            [resource = this->_resource, trk_idx = trk_idx](auto const &) { resource->timeline->erase_track(trk_idx); },
+            {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(erase_task));
     }
@@ -212,8 +212,7 @@ void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc:
     for (auto &pair : modules) {
         auto const &range = pair.first;
         auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range,
-             modules = std::move(pair.second)](auto const &) mutable {
+            [resource = this->_resource, trk_idx, range = range, modules = std::move(pair.second)](auto const &) {
                 auto const &track = resource->timeline->track(trk_idx);
                 assert(track->modules().count(range) == 0);
                 for (auto &module : modules) {
@@ -239,8 +238,7 @@ void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::
     for (auto &pair : modules) {
         auto const &range = pair.first;
         auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range,
-             module = std::move(pair.second)](auto const &) mutable {
+            [resource = this->_resource, trk_idx, range = range, module = std::move(pair.second)](auto const &) {
                 auto const &track = resource->timeline->track(trk_idx);
                 assert(track->modules().count(range) > 0);
                 track->erase_modules_for_range(range);
@@ -262,7 +260,7 @@ void timeline_exporter::_insert_module(proc::track_index_t const trk_idx, proc::
 
     auto task = task::make_shared(
         [resource = this->_resource, trk_idx, range, module_idx = event.index,
-         module = event.element->copy()](auto const &) mutable {
+         module = event.element->copy()](auto const &) {
             auto const &track = resource->timeline->track(trk_idx);
             assert(track->modules().count(range) > 0);
             track->insert_module(std::move(module), module_idx, range);
@@ -279,7 +277,7 @@ void timeline_exporter::_erase_module(proc::track_index_t const trk_idx, proc::t
     assert(thread::is_main());
 
     auto task = task::make_shared(
-        [resource = this->_resource, trk_idx, range, module_idx = event.index](auto const &) mutable {
+        [resource = this->_resource, trk_idx, range, module_idx = event.index](auto const &) {
             auto const &track = resource->timeline->track(trk_idx);
             assert(track->modules().count(range) > 0);
             track->erase_module_at(module_idx, range);
