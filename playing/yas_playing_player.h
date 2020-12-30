@@ -11,6 +11,7 @@
 
 namespace yas::playing {
 struct player final : player_protocol {
+    void set_identifier(std::string const &);
     void set_channel_mapping(channel_mapping_ptr const &) override;
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
@@ -22,7 +23,7 @@ struct player final : player_protocol {
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
 
-    static player_ptr make_shared(renderable_ptr const &, std::string const &root_path, workable_ptr const &,
+    static player_ptr make_shared(std::string const &root_path, renderable_ptr const &, workable_ptr const &,
                                   task_priority_t const &, player_resource_protocol_ptr const &);
 
    private:
@@ -35,7 +36,7 @@ struct player final : player_protocol {
     chaining::value::holder_ptr<channel_mapping_ptr> const _ch_mapping;
     chaining::observer_pool _pool;
 
-    player(renderable_ptr const &, std::string const &root_path, workable_ptr const &, task_priority_t const &,
+    player(std::string const &root_path, renderable_ptr const &, workable_ptr const &, task_priority_t const &,
            player_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing

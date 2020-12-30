@@ -23,7 +23,7 @@ using namespace yas::playing;
 
 coordinator::coordinator(std::string const &root_path, audio::io_device_ptr const &device)
     : _device(device),
-      _player(player::make_shared(this->_renderer, root_path, this->_worker, {},
+      _player(player::make_shared(root_path, this->_renderer, this->_worker, {},
                                   player_resource::make_shared(reading_resource::make_shared(),
                                                                buffering_resource::make_shared(
                                                                    3, root_path, playing::make_buffering_channel)))) {

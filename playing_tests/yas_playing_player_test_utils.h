@@ -248,7 +248,7 @@ struct audio_player_cpp {
         player_task_priority const priority{.setup = 100, .rendering = 101};
 
         this->player =
-            player::make_shared(this->renderer, test_utils::root_path(), this->worker, priority, this->resource);
+            player::make_shared(test_utils::root_path(), this->renderer, this->worker, priority, this->resource);
     }
 
     void skip_reading() {
