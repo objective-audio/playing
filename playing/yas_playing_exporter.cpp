@@ -11,7 +11,6 @@
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_task.h>
 #include <cpp_utils/yas_thread.h>
-#include <cpp_utils/yas_to_integer.h>
 #include <processing/yas_processing_umbrella.h>
 
 #include "yas_playing_math.h"
@@ -299,7 +298,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
 
                 resource->send_method_on_task(method_t::export_began, frags_range);
 
-                if (auto const error = exporter->_remove_fragments_on_task(resource, frags_range, task)) {
+                if (auto const error = resource->remove_fragments_on_task(resource, frags_range, task)) {
                     resource->send_error_on_task(*error, range);
                     return;
                 } else {
@@ -310,51 +309,6 @@ void exporter::_push_export_task(proc::time::range const &range) {
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));
-}
-
-[[nodiscard]] std::optional<exporter::error_t> exporter::_remove_fragments_on_task(
-    exporter_resource_ptr const &resource, proc::time::range const &frags_range, task const &task) {
-    assert(!thread::is_main());
-
-    auto const &sync_source = resource->sync_source.value();
-    auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{resource->root_path, resource->identifier, sample_rate};
-
-    auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
-    if (!ch_paths_result) {
-        if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
-            return std::nullopt;
-        } else {
-            return error_t::get_content_paths_failed;
-        }
-    }
-
-    auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
-                                                 [](auto const &path) { return url{path}.last_path_component(); });
-
-    auto const begin_frag_idx = frags_range.frame / sample_rate;
-    auto const end_frag_idx = frags_range.next_frame() / sample_rate;
-
-    for (auto const &ch_name : ch_names) {
-        if (task.is_canceled()) {
-            return std::nullopt;
-        }
-
-        auto const ch_idx = yas::to_integer<channel_index_t>(ch_name);
-        path::channel const ch_path{tl_path, ch_idx};
-
-        auto each = make_fast_each(begin_frag_idx, end_frag_idx);
-        while (yas_each_next(each)) {
-            auto const &frag_idx = yas_each_index(each);
-            auto const frag_path_str = path::fragment{ch_path, frag_idx}.string();
-            auto const remove_result = file_manager::remove_content(frag_path_str);
-            if (!remove_result) {
-                return error_t::remove_fragment_failed;
-            }
-        }
-    }
-
-    return std::nullopt;
 }
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,

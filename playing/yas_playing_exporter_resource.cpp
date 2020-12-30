@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_thread.h>
+#include <cpp_utils/yas_to_integer.h>
 #include <dispatch/dispatch.h>
 #include <processing/yas_processing_umbrella.h>
 
@@ -90,6 +91,52 @@ void exporter_resource::export_fragments_on_task(exporter_resource_ptr const &re
 
             if (auto const result = numbers_file::write(number_path_str, number_events); !result) {
                 return exporter_error::write_numbers_failed;
+            }
+        }
+    }
+
+    return std::nullopt;
+}
+
+std::optional<exporter_error> exporter_resource::remove_fragments_on_task(exporter_resource_ptr const &resource,
+                                                                          proc::time::range const &frags_range,
+                                                                          task const &task) {
+    assert(!thread::is_main());
+
+    auto const &sync_source = resource->sync_source.value();
+    auto const &sample_rate = sync_source.sample_rate;
+    path::timeline const tl_path{resource->root_path, resource->identifier, sample_rate};
+
+    auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
+    if (!ch_paths_result) {
+        if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
+            return std::nullopt;
+        } else {
+            return exporter_error::get_content_paths_failed;
+        }
+    }
+
+    auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
+                                                 [](auto const &path) { return url{path}.last_path_component(); });
+
+    auto const begin_frag_idx = frags_range.frame / sample_rate;
+    auto const end_frag_idx = frags_range.next_frame() / sample_rate;
+
+    for (auto const &ch_name : ch_names) {
+        if (task.is_canceled()) {
+            return std::nullopt;
+        }
+
+        auto const ch_idx = yas::to_integer<channel_index_t>(ch_name);
+        path::channel const ch_path{tl_path, ch_idx};
+
+        auto each = make_fast_each(begin_frag_idx, end_frag_idx);
+        while (yas_each_next(each)) {
+            auto const &frag_idx = yas_each_index(each);
+            auto const frag_path_str = path::fragment{ch_path, frag_idx}.string();
+            auto const remove_result = file_manager::remove_content(frag_path_str);
+            if (!remove_result) {
+                return exporter_error::remove_fragment_failed;
             }
         }
     }

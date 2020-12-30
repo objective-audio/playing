@@ -50,9 +50,6 @@ struct exporter final {
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
-
-    [[nodiscard]] std::optional<error_t> _remove_fragments_on_task(exporter_resource_ptr const &,
-                                                                   proc::time::range const &frags_range, task const &);
 };
 }  // namespace yas::playing
 

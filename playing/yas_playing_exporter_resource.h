@@ -22,11 +22,14 @@ struct exporter_resource {
     [[nodiscard]] std::optional<exporter_error> export_fragment_on_task(exporter_resource_ptr const &resource,
                                                                         proc::time::range const &frag_range,
                                                                         proc::stream const &stream);
+    [[nodiscard]] std::optional<exporter_error> remove_fragments_on_task(exporter_resource_ptr const &resource,
+                                                                         proc::time::range const &frags_range,
+                                                                         task const &task);
 
     void send_method_on_task(exporter_method const type, std::optional<proc::time::range> const &range);
     void send_error_on_task(exporter_error const type, std::optional<proc::time::range> const &range);
 
-    static exporter_resource_ptr make_shared(std::string const &root_path);
+    [[nodiscard]] static exporter_resource_ptr make_shared(std::string const &root_path);
 
    private:
     exporter_resource(std::string const &root_path);
