@@ -52,10 +52,6 @@ struct exporter final {
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
 
-    void _export_fragments_on_task(exporter_resource_ptr const &, proc::time::range const &frags_range, task const &);
-    [[nodiscard]] std::optional<error_t> _export_fragment_on_task(exporter_resource_ptr const &,
-                                                                  proc::time::range const &frag_range,
-                                                                  proc::stream const &stream);
     [[nodiscard]] std::optional<error_t> _remove_fragments_on_task(exporter_resource_ptr const &,
                                                                    proc::time::range const &frags_range, task const &);
 };

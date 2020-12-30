@@ -155,7 +155,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
                 resource->send_method_on_task(method_t::export_began, frags_range);
 
-                exporter->_export_fragments_on_task(resource, frags_range, task);
+                resource->export_fragments_on_task(resource, frags_range, task);
             }
         },
         {.priority = this->_priority.timeline});
@@ -305,93 +305,13 @@ void exporter::_push_export_task(proc::time::range const &range) {
                     resource->send_error_on_task(*error, range);
                     return;
                 } else {
-                    exporter->_export_fragments_on_task(resource, frags_range, task);
+                    resource->export_fragments_on_task(resource, frags_range, task);
                 }
             }
         },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));
-}
-
-void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, proc::time::range const &frags_range,
-                                         task const &task) {
-    assert(!thread::is_main());
-
-    if (task.is_canceled()) {
-        return;
-    }
-
-    this->_resource->timeline->process(
-        frags_range, resource->sync_source.value(),
-        [&resource, &task, this](proc::time::range const &range, proc::stream const &stream) {
-            if (task.is_canceled()) {
-                return proc::continuation::abort;
-            }
-
-            if (auto error = this->_export_fragment_on_task(resource, range, stream)) {
-                resource->send_error_on_task(*error, range);
-            } else {
-                resource->send_method_on_task(method_t::export_ended, range);
-            }
-
-            return proc::continuation::keep;
-        });
-}
-
-[[nodiscard]] std::optional<exporter::error_t> exporter::_export_fragment_on_task(exporter_resource_ptr const &resource,
-                                                                                  proc::time::range const &frag_range,
-                                                                                  proc::stream const &stream) {
-    assert(!thread::is_main());
-
-    auto const &sync_source = resource->sync_source.value();
-    path::timeline const tl_path{this->_root_path, resource->identifier, sync_source.sample_rate};
-
-    auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
-
-    for (auto const &ch_pair : stream.channels()) {
-        auto const &ch_idx = ch_pair.first;
-        auto const &channel = ch_pair.second;
-
-        path::channel const ch_path{tl_path, ch_idx};
-        auto const frag_path = path::fragment{ch_path, frag_idx};
-        std::string const frag_path_str = frag_path.string();
-
-        auto remove_result = file_manager::remove_content(frag_path_str);
-        if (!remove_result) {
-            return error_t::remove_fragment_failed;
-        }
-
-        if (channel.events().size() == 0) {
-            return std::nullopt;
-        }
-
-        auto const create_result = file_manager::create_directory_if_not_exists(frag_path_str);
-        if (!create_result) {
-            return error_t::create_directory_failed;
-        }
-
-        for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
-            proc::time::range const &range = event_pair.first;
-            proc::signal_event_ptr const &event = event_pair.second;
-
-            auto const signal_path_str = path::signal_event{frag_path, range, event->sample_type()}.string();
-
-            if (auto const result = signal_file::write(signal_path_str, *event); !result) {
-                return error_t::write_signal_failed;
-            }
-        }
-
-        if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-            auto const number_path_str = path::number_events{frag_path}.string();
-
-            if (auto const result = numbers_file::write(number_path_str, number_events); !result) {
-                return error_t::write_numbers_failed;
-            }
-        }
-    }
-
-    return std::nullopt;
 }
 
 [[nodiscard]] std::optional<exporter::error_t> exporter::_remove_fragments_on_task(
