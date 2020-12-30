@@ -58,8 +58,6 @@ struct exporter final {
                                                                   proc::stream const &stream);
     [[nodiscard]] std::optional<error_t> _remove_fragments_on_task(exporter_resource_ptr const &,
                                                                    proc::time::range const &frags_range, task const &);
-    void _send_method_on_task(method_t const type, std::optional<proc::time::range> const &range);
-    void _send_error_on_task(error_t const type, std::optional<proc::time::range> const &range);
 };
 }  // namespace yas::playing
 
