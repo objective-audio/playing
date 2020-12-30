@@ -5,61 +5,38 @@
 #pragma once
 
 #include <chaining/yas_chaining_umbrella.h>
-#include <cpp_utils/yas_result.h>
-#include <cpp_utils/yas_task.h>
 #include <playing/yas_playing_exporter_resource.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_timeline_container.h>
-#include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
 struct exporter final {
-    enum class method {
-        reset,
-        export_began,
-        export_ended,
-    };
-
-    enum class error {
-        remove_fragment_failed,
-        create_directory_failed,
-        write_signal_failed,
-        write_numbers_failed,
-        get_content_paths_failed,
-    };
-
-    using result_t = result<method, error>;
-
-    struct event {
-        result_t const result;
-        std::optional<proc::time::range> const range;
-    };
-
-    struct task_priority {
-        task_priority_t const timeline;
-        task_priority_t const fragment;
-    };
+    using method_t = exporter_method;
+    using error_t = exporter_error;
+    using result_t = exporter_result_t;
+    using event_t = exporter_event;
+    using task_priority_t = exporter_task_priority;
 
     void set_timeline_container(timeline_container_ptr const &);
 
-    chaining::chain_unsync_t<event> event_chain() const;
+    chaining::chain_unsync_t<event_t> event_chain() const;
 
     static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
-                                    task_priority const &, proc::sample_rate_t const);
+                                    task_priority_t const &, proc::sample_rate_t const);
 
    private:
     std::string const _root_path;
     std::shared_ptr<task_queue> const _queue;
-    task_priority const _priority;
+    task_priority_t const _priority;
     chaining::value::holder_ptr<timeline_container_ptr> const _src_container;
 
-    chaining::notifier_ptr<event> const _event_notifier = chaining::notifier<event>::make_shared();
+    chaining::notifier_ptr<event_t> const _event_notifier = chaining::notifier<event_t>::make_shared();
     chaining::observer_pool _pool;
 
     exporter_resource_ptr const _resource = exporter_resource::make_shared();
     exporter_wptr _weak_exporter;
 
-    exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
+    exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority_t const &,
              proc::sample_rate_t const);
 
     void _receive_timeline_event(proc::timeline::event_t const &event);
@@ -77,21 +54,21 @@ struct exporter final {
     void _push_export_task(proc::time::range const &range);
 
     void _export_fragments_on_task(exporter_resource_ptr const &, proc::time::range const &frags_range, task const &);
-    [[nodiscard]] std::optional<error> _export_fragment_on_task(exporter_resource_ptr const &,
-                                                                proc::time::range const &frag_range,
-                                                                proc::stream const &stream);
-    [[nodiscard]] std::optional<error> _remove_fragments_on_task(exporter_resource_ptr const &,
-                                                                 proc::time::range const &frags_range, task const &);
-    void _send_method_on_task(method const type, std::optional<proc::time::range> const &range);
-    void _send_error_on_task(error const type, std::optional<proc::time::range> const &range);
-    void _send_event_on_task(event event);
+    [[nodiscard]] std::optional<error_t> _export_fragment_on_task(exporter_resource_ptr const &,
+                                                                  proc::time::range const &frag_range,
+                                                                  proc::stream const &stream);
+    [[nodiscard]] std::optional<error_t> _remove_fragments_on_task(exporter_resource_ptr const &,
+                                                                   proc::time::range const &frags_range, task const &);
+    void _send_method_on_task(method_t const type, std::optional<proc::time::range> const &range);
+    void _send_error_on_task(error_t const type, std::optional<proc::time::range> const &range);
+    void _send_event_on_task(event_t event);
 };
 }  // namespace yas::playing
 
 namespace yas {
-std::string to_string(playing::exporter::method const &);
-std::string to_string(playing::exporter::error const &);
+std::string to_string(playing::exporter::method_t const &);
+std::string to_string(playing::exporter::error_t const &);
 };  // namespace yas
 
-std::ostream &operator<<(std::ostream &, yas::playing::exporter::method const &);
-std::ostream &operator<<(std::ostream &, yas::playing::exporter::error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::exporter::method_t const &);
+std::ostream &operator<<(std::ostream &, yas::playing::exporter::error_t const &);

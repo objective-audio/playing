@@ -15,7 +15,7 @@ namespace yas::playing::exporter_chain_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
     std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
-    exporter::task_priority const priority{.timeline = 0, .fragment = 1};
+    exporter::task_priority_t const priority{.timeline = 0, .fragment = 1};
 };
 }
 
@@ -46,7 +46,7 @@ struct cpp {
     auto timeline = proc::timeline::make_shared();
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"set timeline"];
 
@@ -62,13 +62,13 @@ struct cpp {
         [self waitForExpectations:@[expectation] timeout:10.0];
 
         XCTAssertEqual(received.size(), 1);
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::reset);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::reset);
     }
 
     auto track = proc::track::make_shared();
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"insert track"];
         expectation.expectedFulfillmentCount = 2;
@@ -89,14 +89,14 @@ struct cpp {
         [self waitForExpectations:@[expectation] timeout:10.0];
 
         XCTAssertEqual(received.size(), 2);
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::export_began);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::export_began);
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
-        XCTAssertEqual(received.at(1).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
     }
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"insert module same range"];
         expectation.expectedFulfillmentCount = 2;
@@ -116,14 +116,14 @@ struct cpp {
 
         XCTAssertEqual(received.size(), 2);
 
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::export_began);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::export_began);
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
-        XCTAssertEqual(received.at(1).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
     }
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"insert module diff range"];
         expectation.expectedFulfillmentCount = 3;
@@ -143,16 +143,16 @@ struct cpp {
 
         XCTAssertEqual(received.size(), 3);
 
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::export_began);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::export_began);
         XCTAssertEqual(received.at(0).range, (proc::time::range{2, 4}));
-        XCTAssertEqual(received.at(1).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{2, 2}));
-        XCTAssertEqual(received.at(2).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(2).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(2).range, (proc::time::range{4, 2}));
     }
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"erase module"];
         expectation.expectedFulfillmentCount = 2;
@@ -170,14 +170,14 @@ struct cpp {
 
         XCTAssertEqual(received.size(), 2);
 
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::export_began);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::export_began);
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
-        XCTAssertEqual(received.at(1).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
     }
 
     {
-        std::vector<exporter::event> received;
+        std::vector<exporter::event_t> received;
 
         auto expectation = [self expectationWithDescription:@"erase track"];
         expectation.expectedFulfillmentCount = 3;
@@ -195,11 +195,11 @@ struct cpp {
 
         XCTAssertEqual(received.size(), 3);
 
-        XCTAssertEqual(received.at(0).result.value(), exporter::method::export_began);
+        XCTAssertEqual(received.at(0).result.value(), exporter::method_t::export_began);
         XCTAssertEqual(received.at(0).range, (proc::time::range{2, 4}));
-        XCTAssertEqual(received.at(1).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{2, 2}));
-        XCTAssertEqual(received.at(2).result.value(), exporter::method::export_ended);
+        XCTAssertEqual(received.at(2).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(2).range, (proc::time::range{4, 2}));
     }
 }

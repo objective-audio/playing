@@ -26,7 +26,7 @@ using namespace yas;
 using namespace yas::playing;
 
 exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
-                   task_priority const &priority, proc::sample_rate_t const sample_rate)
+                   task_priority_t const &priority, proc::sample_rate_t const sample_rate)
     : _root_path(root_path),
       _queue(queue),
       _priority(priority),
@@ -58,7 +58,7 @@ void exporter::set_timeline_container(timeline_container_ptr const &container) {
     this->_src_container->set_value(container);
 }
 
-chaining::chain_unsync_t<exporter::event> exporter::event_chain() const {
+chaining::chain_unsync_t<exporter::event_t> exporter::event_chain() const {
     return this->_event_notifier->chain();
 }
 
@@ -132,7 +132,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
                     return;
                 }
 
-                exporter->_send_method_on_task(method::reset, std::nullopt);
+                exporter->_send_method_on_task(method_t::reset, std::nullopt);
 
                 if (auto const result = file_manager::remove_content(root_path); !result) {
                     std::runtime_error("remove timeline root directory failed.");
@@ -152,7 +152,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
                 auto const &sync_source = resource->sync_source.value();
                 auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                exporter->_send_method_on_task(method::export_began, frags_range);
+                exporter->_send_method_on_task(method_t::export_began, frags_range);
 
                 exporter->_export_fragments_on_task(resource, frags_range, task);
             }
@@ -298,7 +298,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
                 auto const &sync_source = resource->sync_source.value();
                 auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                exporter->_send_method_on_task(method::export_began, frags_range);
+                exporter->_send_method_on_task(method_t::export_began, frags_range);
 
                 if (auto const error = exporter->_remove_fragments_on_task(resource, frags_range, task)) {
                     exporter->_send_error_on_task(*error, range);
@@ -331,16 +331,16 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
             if (auto error = this->_export_fragment_on_task(resource, range, stream)) {
                 this->_send_error_on_task(*error, range);
             } else {
-                this->_send_method_on_task(method::export_ended, range);
+                this->_send_method_on_task(method_t::export_ended, range);
             }
 
             return proc::continuation::keep;
         });
 }
 
-[[nodiscard]] std::optional<exporter::error> exporter::_export_fragment_on_task(exporter_resource_ptr const &resource,
-                                                                                proc::time::range const &frag_range,
-                                                                                proc::stream const &stream) {
+[[nodiscard]] std::optional<exporter::error_t> exporter::_export_fragment_on_task(exporter_resource_ptr const &resource,
+                                                                                  proc::time::range const &frag_range,
+                                                                                  proc::stream const &stream) {
     assert(!thread::is_main());
 
     auto const &sync_source = resource->sync_source.value();
@@ -358,7 +358,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
 
         auto remove_result = file_manager::remove_content(frag_path_str);
         if (!remove_result) {
-            return error::remove_fragment_failed;
+            return error_t::remove_fragment_failed;
         }
 
         if (channel.events().size() == 0) {
@@ -367,7 +367,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
 
         auto const create_result = file_manager::create_directory_if_not_exists(frag_path_str);
         if (!create_result) {
-            return error::create_directory_failed;
+            return error_t::create_directory_failed;
         }
 
         for (auto const &event_pair : channel.filtered_events<proc::signal_event>()) {
@@ -377,7 +377,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
             auto const signal_path_str = path::signal_event{frag_path, range, event->sample_type()}.string();
 
             if (auto const result = signal_file::write(signal_path_str, *event); !result) {
-                return error::write_signal_failed;
+                return error_t::write_signal_failed;
             }
         }
 
@@ -385,7 +385,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
             auto const number_path_str = path::number_events{frag_path}.string();
 
             if (auto const result = numbers_file::write(number_path_str, number_events); !result) {
-                return error::write_numbers_failed;
+                return error_t::write_numbers_failed;
             }
         }
     }
@@ -393,9 +393,8 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
     return std::nullopt;
 }
 
-[[nodiscard]] std::optional<exporter::error> exporter::_remove_fragments_on_task(exporter_resource_ptr const &resource,
-                                                                                 proc::time::range const &frags_range,
-                                                                                 task const &task) {
+[[nodiscard]] std::optional<exporter::error_t> exporter::_remove_fragments_on_task(
+    exporter_resource_ptr const &resource, proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     auto const &root_path = this->_root_path;
@@ -408,7 +407,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
         if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
             return std::nullopt;
         } else {
-            return error::get_content_paths_failed;
+            return error_t::get_content_paths_failed;
         }
     }
 
@@ -432,7 +431,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
             auto const frag_path_str = path::fragment{ch_path, frag_idx}.string();
             auto const remove_result = file_manager::remove_content(frag_path_str);
             if (!remove_result) {
-                return error::remove_fragment_failed;
+                return error_t::remove_fragment_failed;
             }
         }
     }
@@ -440,19 +439,19 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
     return std::nullopt;
 }
 
-void exporter::_send_method_on_task(method const type, std::optional<proc::time::range> const &range) {
+void exporter::_send_method_on_task(method_t const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_task(event{.result = result_t{type}, .range = range});
+    this->_send_event_on_task(event_t{.result = result_t{type}, .range = range});
 }
 
-void exporter::_send_error_on_task(error const type, std::optional<proc::time::range> const &range) {
+void exporter::_send_error_on_task(error_t const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_task(event{.result = result_t{type}, .range = range});
+    this->_send_event_on_task(event_t{.result = result_t{type}, .range = range});
 }
 
-void exporter::_send_event_on_task(event event) {
+void exporter::_send_event_on_task(event_t event) {
     auto lambda = [this, event = std::move(event), weak_exporter = this->_weak_exporter] {
         if (auto exporter = weak_exporter.lock()) {
             exporter->_event_notifier->notify(event);
@@ -465,44 +464,44 @@ void exporter::_send_event_on_task(event event) {
 }
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
-                                   task_priority const &task_priority, proc::sample_rate_t const sample_rate) {
+                                   task_priority_t const &task_priority, proc::sample_rate_t const sample_rate) {
     auto shared = exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
     shared->_weak_exporter = to_weak(shared);
     return shared;
 }
 
-std::string yas::to_string(exporter::method const &method) {
+std::string yas::to_string(exporter::method_t const &method) {
     switch (method) {
-        case exporter::method::reset:
+        case exporter::method_t::reset:
             return "reset";
-        case exporter::method::export_began:
+        case exporter::method_t::export_began:
             return "export_began";
-        case exporter::method::export_ended:
+        case exporter::method_t::export_ended:
             return "export_ended";
     }
 }
 
-std::string yas::to_string(exporter::error const &error) {
+std::string yas::to_string(exporter::error_t const &error) {
     switch (error) {
-        case exporter::error::remove_fragment_failed:
+        case exporter::error_t::remove_fragment_failed:
             return "remove_fragment_failed";
-        case exporter::error::create_directory_failed:
+        case exporter::error_t::create_directory_failed:
             return "create_directory_failed";
-        case exporter::error::write_signal_failed:
+        case exporter::error_t::write_signal_failed:
             return "write_signal_failed";
-        case exporter::error::write_numbers_failed:
+        case exporter::error_t::write_numbers_failed:
             return "write_numbers_failed";
-        case exporter::error::get_content_paths_failed:
+        case exporter::error_t::get_content_paths_failed:
             return "get_content_paths_failed";
     }
 }
 
-std::ostream &operator<<(std::ostream &stream, exporter::method const &value) {
+std::ostream &operator<<(std::ostream &stream, exporter::method_t const &value) {
     stream << to_string(value);
     return stream;
 }
 
-std::ostream &operator<<(std::ostream &stream, exporter::error const &value) {
+std::ostream &operator<<(std::ostream &stream, exporter::error_t const &value) {
     stream << to_string(value);
     return stream;
 }

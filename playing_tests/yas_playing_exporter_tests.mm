@@ -16,7 +16,7 @@ namespace yas::playing::exporter_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
     std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
-    exporter::task_priority const priority{.timeline = 0, .fragment = 1};
+    exporter::task_priority_t const priority{.timeline = 0, .fragment = 1};
 };
 }
 
@@ -41,7 +41,7 @@ struct cpp {
 - (void)test_initial {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
-    exporter::task_priority const &priority = self->_cpp.priority;
+    exporter::task_priority_t const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
 
     auto exporter = exporter::make_shared(root_path, queue, priority, sample_rate);
@@ -54,7 +54,7 @@ struct cpp {
 - (void)test_set_timeline {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
-    exporter::task_priority const &priority = self->_cpp.priority;
+    exporter::task_priority_t const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
@@ -155,7 +155,7 @@ struct cpp {
 - (void)test_set_sample_rate {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
-    exporter::task_priority const &priority = self->_cpp.priority;
+    exporter::task_priority_t const &priority = self->_cpp.priority;
     proc::sample_rate_t const pre_sample_rate = 2;
     proc::sample_rate_t const post_sample_rate = 3;
     std::string const identifier = "0";
@@ -254,7 +254,7 @@ struct cpp {
 - (void)test_update_timeline {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
-    exporter::task_priority const &priority = self->_cpp.priority;
+    exporter::task_priority_t const &priority = self->_cpp.priority;
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
@@ -362,17 +362,17 @@ struct cpp {
 }
 
 - (void)test_method_to_string {
-    XCTAssertEqual(to_string(exporter::method::reset), "reset");
-    XCTAssertEqual(to_string(exporter::method::export_began), "export_began");
-    XCTAssertEqual(to_string(exporter::method::export_ended), "export_ended");
+    XCTAssertEqual(to_string(exporter::method_t::reset), "reset");
+    XCTAssertEqual(to_string(exporter::method_t::export_began), "export_began");
+    XCTAssertEqual(to_string(exporter::method_t::export_ended), "export_ended");
 }
 
 - (void)test_error_to_string {
-    XCTAssertEqual(to_string(exporter::error::remove_fragment_failed), "remove_fragment_failed");
-    XCTAssertEqual(to_string(exporter::error::create_directory_failed), "create_directory_failed");
-    XCTAssertEqual(to_string(exporter::error::write_signal_failed), "write_signal_failed");
-    XCTAssertEqual(to_string(exporter::error::write_numbers_failed), "write_numbers_failed");
-    XCTAssertEqual(to_string(exporter::error::get_content_paths_failed), "get_content_paths_failed");
+    XCTAssertEqual(to_string(exporter::error_t::remove_fragment_failed), "remove_fragment_failed");
+    XCTAssertEqual(to_string(exporter::error_t::create_directory_failed), "create_directory_failed");
+    XCTAssertEqual(to_string(exporter::error_t::write_signal_failed), "write_signal_failed");
+    XCTAssertEqual(to_string(exporter::error_t::write_numbers_failed), "write_numbers_failed");
+    XCTAssertEqual(to_string(exporter::error_t::get_content_paths_failed), "get_content_paths_failed");
 }
 
 @end
