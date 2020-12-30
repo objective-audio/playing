@@ -31,7 +31,8 @@ struct coordinator final {
     [[nodiscard]] chaining::chain_sync_t<configuration> configuration_chain() const;
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
 
-    [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, audio::io_device_ptr const &);
+    [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::string const &identifier,
+                                                     audio::io_device_ptr const &);
 
    private:
     audio::io_device_ptr const _device;
@@ -41,7 +42,7 @@ struct coordinator final {
 
     chaining::observer_pool _pool;
 
-    coordinator(std::string const &root_path, audio::io_device_ptr const &);
+    coordinator(std::string const &root_path, std::string const &identifier, audio::io_device_ptr const &);
 
     coordinator(coordinator const &) = delete;
     coordinator(coordinator &&) = delete;
