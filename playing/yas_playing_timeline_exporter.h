@@ -68,7 +68,6 @@ struct timeline_exporter final {
     timeline_exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
                       proc::sample_rate_t const);
 
-    void _prepare(timeline_exporter_ptr const &);
     void _receive_timeline_event(proc::timeline::event_t const &event);
     void _receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event);
     void _receive_relayed_track_event(proc::track::relayed_event_t const &event, proc::track_index_t const trk_idx);

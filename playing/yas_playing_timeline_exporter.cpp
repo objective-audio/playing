@@ -62,10 +62,6 @@ chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chai
     return this->_event_notifier->chain();
 }
 
-void timeline_exporter::_prepare(timeline_exporter_ptr const &exporter) {
-    this->_weak_exporter = to_weak(exporter);
-}
-
 void timeline_exporter::_receive_timeline_event(proc::timeline::event_t const &event) {
     switch (event.type()) {
         case proc::timeline::event_type_t::fetched: {
@@ -492,7 +488,7 @@ timeline_exporter_ptr timeline_exporter::make_shared(std::string const &root_pat
                                                      task_priority const &task_priority,
                                                      proc::sample_rate_t const sample_rate) {
     auto shared = timeline_exporter_ptr(new timeline_exporter{root_path, task_queue, task_priority, sample_rate});
-    shared->_prepare(shared);
+    shared->_weak_exporter = to_weak(shared);
     return shared;
 }
 
