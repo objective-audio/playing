@@ -132,8 +132,7 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
         [tracks = std::move(tracks), identifier = container->identifier(), sample_rate = container->sample_rate(),
          weak_exporter = to_weak(exporter)](yas::task const &task) mutable {
             if (auto exporter = weak_exporter.lock()) {
-                auto &exporter_impl = exporter;
-                auto &bg = exporter_impl->_bg;
+                auto &bg = exporter->_bg;
                 bg.identifier = identifier;
                 bg.timeline = proc::timeline::make_shared(std::move(tracks));
                 bg.sync_source.emplace(sample_rate, sample_rate);
@@ -142,9 +141,9 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
                     return;
                 }
 
-                exporter_impl->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
+                exporter->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
 
-                auto const &root_path = exporter_impl->_root_path;
+                auto const &root_path = exporter->_root_path;
 
                 if (auto const result = file_manager::remove_content(root_path); !result) {
                     std::runtime_error("remove timeline root directory failed.");
@@ -154,19 +153,19 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
                     return;
                 }
 
-                proc::timeline_ptr const &timeline = exporter_impl->_bg.timeline;
+                proc::timeline_ptr const &timeline = exporter->_bg.timeline;
 
                 auto total_range = timeline->total_range();
                 if (!total_range.has_value()) {
                     return;
                 }
 
-                auto const &sync_source = exporter_impl->_sync_source_on_bg();
+                auto const &sync_source = exporter->_sync_source_on_bg();
                 auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+                exporter->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
 
-                exporter_impl->_export_fragments(frags_range, task, weak_exporter);
+                exporter->_export_fragments(frags_range, task, weak_exporter);
             }
         },
         {.priority = this->_priority.timeline});
@@ -267,8 +266,7 @@ void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::
             [trk_idx, range = range, module = std::move(pair.second),
              weak_exporter = to_weak(exporter)](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
-                    auto &exporter_impl = exporter;
-                    auto const &track = exporter_impl->_bg.timeline->track(trk_idx);
+                    auto const &track = exporter->_bg.timeline->track(trk_idx);
                     assert(track->modules().count(range) > 0);
                     track->erase_modules_for_range(range);
                 }
@@ -331,18 +329,16 @@ void timeline_exporter::_push_export_task(proc::time::range const &range, timeli
     auto export_task = task::make_shared(
         [range, weak_exporter = to_weak(exporter)](task const &task) {
             if (auto exporter = weak_exporter.lock()) {
-                auto &exporter_impl = exporter;
-
-                auto const &sync_source = exporter_impl->_sync_source_on_bg();
+                auto const &sync_source = exporter->_sync_source_on_bg();
                 auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                exporter_impl->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+                exporter->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
 
-                if (auto const error = exporter_impl->_remove_fragments_on_bg(frags_range, task)) {
-                    exporter_impl->_send_error_on_bg(*error, range, weak_exporter);
+                if (auto const error = exporter->_remove_fragments_on_bg(frags_range, task)) {
+                    exporter->_send_error_on_bg(*error, range, weak_exporter);
                     return;
                 } else {
-                    exporter_impl->_export_fragments(frags_range, task, weak_exporter);
+                    exporter->_export_fragments(frags_range, task, weak_exporter);
                 }
             }
         },
