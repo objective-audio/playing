@@ -76,15 +76,15 @@ struct timeline_exporter final {
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
 
-    void _export_fragments_on_bg(exporter_resource_ptr const &, proc::time::range const &frags_range, task const &);
-    [[nodiscard]] std::optional<error> _export_fragment_on_bg(exporter_resource_ptr const &,
-                                                              proc::time::range const &frag_range,
-                                                              proc::stream const &stream);
-    [[nodiscard]] std::optional<error> _remove_fragments_on_bg(exporter_resource_ptr const &,
-                                                               proc::time::range const &frags_range, task const &);
-    void _send_method_on_bg(method const type, std::optional<proc::time::range> const &range);
-    void _send_error_on_bg(error const type, std::optional<proc::time::range> const &range);
-    void _send_event_on_bg(event event);
+    void _export_fragments_on_task(exporter_resource_ptr const &, proc::time::range const &frags_range, task const &);
+    [[nodiscard]] std::optional<error> _export_fragment_on_task(exporter_resource_ptr const &,
+                                                                proc::time::range const &frag_range,
+                                                                proc::stream const &stream);
+    [[nodiscard]] std::optional<error> _remove_fragments_on_task(exporter_resource_ptr const &,
+                                                                 proc::time::range const &frags_range, task const &);
+    void _send_method_on_task(method const type, std::optional<proc::time::range> const &range);
+    void _send_error_on_task(error const type, std::optional<proc::time::range> const &range);
+    void _send_event_on_task(event event);
 };
 }  // namespace yas::playing
 
