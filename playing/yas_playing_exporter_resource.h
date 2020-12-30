@@ -14,6 +14,10 @@ struct exporter_resource {
     proc::timeline_ptr timeline;
     std::optional<proc::sync_source> sync_source;
 
+    chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
+
+    void send_event_on_task(exporter_event event);
+
     static exporter_resource_ptr make_shared();
 
    private:

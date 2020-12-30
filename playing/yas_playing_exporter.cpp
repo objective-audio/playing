@@ -59,7 +59,7 @@ void exporter::set_timeline_container(timeline_container_ptr const &container) {
 }
 
 chaining::chain_unsync_t<exporter::event_t> exporter::event_chain() const {
-    return this->_event_notifier->chain();
+    return this->_resource->event_notifier->chain();
 }
 
 void exporter::_receive_timeline_event(proc::timeline::event_t const &event) {
@@ -442,25 +442,13 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
 void exporter::_send_method_on_task(method_t const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_task(event_t{.result = result_t{type}, .range = range});
+    this->_resource->send_event_on_task(event_t{.result = result_t{type}, .range = range});
 }
 
 void exporter::_send_error_on_task(error_t const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_task(event_t{.result = result_t{type}, .range = range});
-}
-
-void exporter::_send_event_on_task(event_t event) {
-    auto lambda = [event = std::move(event), weak_notifier = to_weak(this->_event_notifier)] {
-        if (auto notifier = weak_notifier.lock()) {
-            notifier->notify(event);
-        }
-    };
-
-    dispatch_async(dispatch_get_main_queue(), ^{
-        lambda();
-    });
+    this->_resource->send_event_on_task(event_t{.result = result_t{type}, .range = range});
 }
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,

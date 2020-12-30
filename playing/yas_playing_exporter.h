@@ -30,7 +30,6 @@ struct exporter final {
     task_priority_t const _priority;
     chaining::value::holder_ptr<timeline_container_ptr> const _src_container;
 
-    chaining::notifier_ptr<event_t> const _event_notifier = chaining::notifier<event_t>::make_shared();
     chaining::observer_pool _pool;
 
     exporter_resource_ptr const _resource = exporter_resource::make_shared();
@@ -61,7 +60,6 @@ struct exporter final {
                                                                    proc::time::range const &frags_range, task const &);
     void _send_method_on_task(method_t const type, std::optional<proc::time::range> const &range);
     void _send_error_on_task(error_t const type, std::optional<proc::time::range> const &range);
-    void _send_event_on_task(event_t event);
 };
 }  // namespace yas::playing
 
