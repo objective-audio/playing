@@ -452,9 +452,9 @@ void exporter::_send_error_on_task(error_t const type, std::optional<proc::time:
 }
 
 void exporter::_send_event_on_task(event_t event) {
-    auto lambda = [this, event = std::move(event), weak_exporter = this->_weak_exporter] {
-        if (auto exporter = weak_exporter.lock()) {
-            exporter->_event_notifier->notify(event);
+    auto lambda = [event = std::move(event), weak_notifier = to_weak(this->_event_notifier)] {
+        if (auto notifier = weak_notifier.lock()) {
+            notifier->notify(event);
         }
     };
 
