@@ -1,8 +1,8 @@
 //
-//  yas_playing_timeline_exporter.cpp
+//  yas_playing_exporter.cpp
 //
 
-#include "yas_playing_timeline_exporter.h"
+#include "yas_playing_exporter.h"
 
 #include <audio/yas_audio_file.h>
 #include <audio/yas_audio_pcm_buffer.h>
@@ -25,8 +25,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-timeline_exporter::timeline_exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
-                                     task_priority const &priority, proc::sample_rate_t const sample_rate)
+exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
+                   task_priority const &priority, proc::sample_rate_t const sample_rate)
     : _root_path(root_path),
       _queue(queue),
       _priority(priority),
@@ -52,17 +52,17 @@ timeline_exporter::timeline_exporter(std::string const &root_path, std::shared_p
                        .end();
 }
 
-void timeline_exporter::set_timeline_container(timeline_container_ptr const &container) {
+void exporter::set_timeline_container(timeline_container_ptr const &container) {
     assert(thread::is_main());
 
     this->_src_container->set_value(container);
 }
 
-chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chain() const {
+chaining::chain_unsync_t<exporter::event> exporter::event_chain() const {
     return this->_event_notifier->chain();
 }
 
-void timeline_exporter::_receive_timeline_event(proc::timeline::event_t const &event) {
+void exporter::_receive_timeline_event(proc::timeline::event_t const &event) {
     switch (event.type()) {
         case proc::timeline::event_type_t::fetched: {
             auto const fetched_event = event.get<proc::timeline::fetched_event_t>();
@@ -82,7 +82,7 @@ void timeline_exporter::_receive_timeline_event(proc::timeline::event_t const &e
     }
 }
 
-void timeline_exporter::_receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event) {
+void exporter::_receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event) {
     switch (event.relayed.type()) {
         case proc::track::event_type_t::inserted: {
             this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>());
@@ -98,8 +98,8 @@ void timeline_exporter::_receive_relayed_timeline_event(proc::timeline::relayed_
     }
 }
 
-void timeline_exporter::_receive_relayed_track_event(proc::track::relayed_event_t const &event,
-                                                     proc::track_index_t const trk_idx) {
+void exporter::_receive_relayed_track_event(proc::track::relayed_event_t const &event,
+                                            proc::track_index_t const trk_idx) {
     switch (event.relayed.type()) {
         case proc::module_vector::event_type_t::inserted:
             this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>());
@@ -112,7 +112,7 @@ void timeline_exporter::_receive_relayed_track_event(proc::track::relayed_event_
     }
 }
 
-void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
+void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
     assert(thread::is_main());
 
     this->_queue->cancel_all();
@@ -162,7 +162,7 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
     this->_queue->push_back(std::move(task));
 }
 
-void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
+void exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto tracks = proc::copy_tracks(event.elements);
@@ -184,7 +184,7 @@ void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &e
     }
 }
 
-void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
+void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto track_indices = to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
@@ -204,7 +204,7 @@ void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &even
     }
 }
 
-void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
+void exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto modules = proc::copy_to_modules(event.elements);
@@ -230,7 +230,7 @@ void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc:
     }
 }
 
-void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event) {
+void exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto modules = proc::copy_to_modules(event.elements);
@@ -254,8 +254,8 @@ void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::
     }
 }
 
-void timeline_exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
-                                       proc::module_vector::inserted_event_t const &event) {
+void exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
+                              proc::module_vector::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto task = task::make_shared(
@@ -272,8 +272,8 @@ void timeline_exporter::_insert_module(proc::track_index_t const trk_idx, proc::
     this->_push_export_task(range);
 }
 
-void timeline_exporter::_erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
-                                      proc::module_vector::erased_event_t const &event) {
+void exporter::_erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
+                             proc::module_vector::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto task = task::make_shared(
@@ -289,7 +289,7 @@ void timeline_exporter::_erase_module(proc::track_index_t const trk_idx, proc::t
     this->_push_export_task(range);
 }
 
-void timeline_exporter::_push_export_task(proc::time::range const &range) {
+void exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
@@ -313,8 +313,8 @@ void timeline_exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->push_back(std::move(export_task));
 }
 
-void timeline_exporter::_export_fragments_on_task(exporter_resource_ptr const &resource,
-                                                  proc::time::range const &frags_range, task const &task) {
+void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, proc::time::range const &frags_range,
+                                         task const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
@@ -338,8 +338,9 @@ void timeline_exporter::_export_fragments_on_task(exporter_resource_ptr const &r
         });
 }
 
-[[nodiscard]] std::optional<timeline_exporter::error> timeline_exporter::_export_fragment_on_task(
-    exporter_resource_ptr const &resource, proc::time::range const &frag_range, proc::stream const &stream) {
+[[nodiscard]] std::optional<exporter::error> exporter::_export_fragment_on_task(exporter_resource_ptr const &resource,
+                                                                                proc::time::range const &frag_range,
+                                                                                proc::stream const &stream) {
     assert(!thread::is_main());
 
     auto const &sync_source = resource->sync_source.value();
@@ -392,8 +393,9 @@ void timeline_exporter::_export_fragments_on_task(exporter_resource_ptr const &r
     return std::nullopt;
 }
 
-[[nodiscard]] std::optional<timeline_exporter::error> timeline_exporter::_remove_fragments_on_task(
-    exporter_resource_ptr const &resource, proc::time::range const &frags_range, task const &task) {
+[[nodiscard]] std::optional<exporter::error> exporter::_remove_fragments_on_task(exporter_resource_ptr const &resource,
+                                                                                 proc::time::range const &frags_range,
+                                                                                 task const &task) {
     assert(!thread::is_main());
 
     auto const &root_path = this->_root_path;
@@ -438,19 +440,19 @@ void timeline_exporter::_export_fragments_on_task(exporter_resource_ptr const &r
     return std::nullopt;
 }
 
-void timeline_exporter::_send_method_on_task(method const type, std::optional<proc::time::range> const &range) {
+void exporter::_send_method_on_task(method const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
     this->_send_event_on_task(event{.result = result_t{type}, .range = range});
 }
 
-void timeline_exporter::_send_error_on_task(error const type, std::optional<proc::time::range> const &range) {
+void exporter::_send_error_on_task(error const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
     this->_send_event_on_task(event{.result = result_t{type}, .range = range});
 }
 
-void timeline_exporter::_send_event_on_task(event event) {
+void exporter::_send_event_on_task(event event) {
     auto lambda = [this, event = std::move(event), weak_exporter = this->_weak_exporter] {
         if (auto exporter = weak_exporter.lock()) {
             exporter->_event_notifier->notify(event);
@@ -462,47 +464,45 @@ void timeline_exporter::_send_event_on_task(event event) {
     });
 }
 
-timeline_exporter_ptr timeline_exporter::make_shared(std::string const &root_path,
-                                                     std::shared_ptr<task_queue> const &task_queue,
-                                                     task_priority const &task_priority,
-                                                     proc::sample_rate_t const sample_rate) {
-    auto shared = timeline_exporter_ptr(new timeline_exporter{root_path, task_queue, task_priority, sample_rate});
+exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
+                                   task_priority const &task_priority, proc::sample_rate_t const sample_rate) {
+    auto shared = exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
     shared->_weak_exporter = to_weak(shared);
     return shared;
 }
 
-std::string yas::to_string(timeline_exporter::method const &method) {
+std::string yas::to_string(exporter::method const &method) {
     switch (method) {
-        case timeline_exporter::method::reset:
+        case exporter::method::reset:
             return "reset";
-        case timeline_exporter::method::export_began:
+        case exporter::method::export_began:
             return "export_began";
-        case timeline_exporter::method::export_ended:
+        case exporter::method::export_ended:
             return "export_ended";
     }
 }
 
-std::string yas::to_string(timeline_exporter::error const &error) {
+std::string yas::to_string(exporter::error const &error) {
     switch (error) {
-        case timeline_exporter::error::remove_fragment_failed:
+        case exporter::error::remove_fragment_failed:
             return "remove_fragment_failed";
-        case timeline_exporter::error::create_directory_failed:
+        case exporter::error::create_directory_failed:
             return "create_directory_failed";
-        case timeline_exporter::error::write_signal_failed:
+        case exporter::error::write_signal_failed:
             return "write_signal_failed";
-        case timeline_exporter::error::write_numbers_failed:
+        case exporter::error::write_numbers_failed:
             return "write_numbers_failed";
-        case timeline_exporter::error::get_content_paths_failed:
+        case exporter::error::get_content_paths_failed:
             return "get_content_paths_failed";
     }
 }
 
-std::ostream &operator<<(std::ostream &stream, timeline_exporter::method const &value) {
+std::ostream &operator<<(std::ostream &stream, exporter::method const &value) {
     stream << to_string(value);
     return stream;
 }
 
-std::ostream &operator<<(std::ostream &stream, timeline_exporter::error const &value) {
+std::ostream &operator<<(std::ostream &stream, exporter::error const &value) {
     stream << to_string(value);
     return stream;
 }

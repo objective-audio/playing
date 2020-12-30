@@ -1,5 +1,5 @@
 //
-//  yas_playing_timeline_exporter.h
+//  yas_playing_exporter.h
 //
 
 #pragma once
@@ -13,7 +13,7 @@
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
-struct timeline_exporter final {
+struct exporter final {
     enum class method {
         reset,
         export_began,
@@ -44,8 +44,8 @@ struct timeline_exporter final {
 
     chaining::chain_unsync_t<event> event_chain() const;
 
-    static timeline_exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
-                                             task_priority const &, proc::sample_rate_t const);
+    static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
+                                    task_priority const &, proc::sample_rate_t const);
 
    private:
     std::string const _root_path;
@@ -57,10 +57,10 @@ struct timeline_exporter final {
     chaining::observer_pool _pool;
 
     exporter_resource_ptr const _resource = exporter_resource::make_shared();
-    timeline_exporter_wptr _weak_exporter;
+    exporter_wptr _weak_exporter;
 
-    timeline_exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
-                      proc::sample_rate_t const);
+    exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
+             proc::sample_rate_t const);
 
     void _receive_timeline_event(proc::timeline::event_t const &event);
     void _receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event);
@@ -89,9 +89,9 @@ struct timeline_exporter final {
 }  // namespace yas::playing
 
 namespace yas {
-std::string to_string(playing::timeline_exporter::method const &);
-std::string to_string(playing::timeline_exporter::error const &);
+std::string to_string(playing::exporter::method const &);
+std::string to_string(playing::exporter::error const &);
 };  // namespace yas
 
-std::ostream &operator<<(std::ostream &, yas::playing::timeline_exporter::method const &);
-std::ostream &operator<<(std::ostream &, yas::playing::timeline_exporter::error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::exporter::method const &);
+std::ostream &operator<<(std::ostream &, yas::playing::exporter::error const &);

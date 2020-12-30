@@ -13,7 +13,7 @@ sample::controller::controller() {
     proc::sample_rate_t const sample_rate = this->coordinator->sample_rate();
     auto timeline = this->make_sine_timeline(sample_rate);
     auto container = timeline_container::make_shared(this->identifier, sample_rate, timeline);
-    this->timeline_exporter->set_timeline_container(container);
+    this->exporter->set_timeline_container(container);
 
     std::cout << "root_path:" << this->root_path << std::endl;
 }
