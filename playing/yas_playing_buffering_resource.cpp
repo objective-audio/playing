@@ -22,9 +22,10 @@ using namespace yas;
 using namespace yas::playing;
 
 buffering_resource::buffering_resource(std::size_t const element_count, std::string const &root_path,
-                                       make_channel_f &&make_channel_handler)
+                                       std::string const &identifier, make_channel_f &&make_channel_handler)
     : _element_count(element_count),
       _root_path(root_path),
+      _identifier(identifier),
       _make_channel_handler(make_channel_handler),
       _ch_mapping(channel_mapping::make_shared()) {
 }
@@ -120,9 +121,8 @@ void buffering_resource::create_buffer_on_task() {
         std::this_thread::yield();
     }
 
-#warning todo identifierが0以外も対応したい
     this->_tl_path = path::timeline{.root_path = this->_root_path,
-                                    .identifier = "0",
+                                    .identifier = this->_identifier,
                                     .sample_rate = static_cast<sample_rate_t>(this->_sample_rate)};
 
     this->_rendering_state.store(rendering_state_t::waiting);
@@ -225,8 +225,8 @@ bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffe
 
 buffering_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
 
-                                              make_channel_f &&make_channel_handler) {
-    return buffering_ptr{new buffering_resource{element_count, root_path, std::move(make_channel_handler)}};
+                                              std::string const &identifier, make_channel_f &&make_channel_handler) {
+    return buffering_ptr{new buffering_resource{element_count, root_path, identifier, std::move(make_channel_handler)}};
 }
 
 frame_index_t buffering_resource::all_writing_frame_for_test() const {
