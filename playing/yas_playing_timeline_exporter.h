@@ -7,6 +7,7 @@
 #include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_result.h>
 #include <cpp_utils/yas_task.h>
+#include <playing/yas_playing_exporter_resource.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_timeline_container.h>
 #include <processing/yas_processing_timeline.h>
@@ -55,14 +56,7 @@ struct timeline_exporter final {
     chaining::notifier_ptr<event> const _event_notifier = chaining::notifier<event>::make_shared();
     chaining::observer_pool _pool;
 
-    struct background {
-        std::string identifier;
-        proc::timeline_ptr timeline;
-        std::optional<proc::sync_source> sync_source;
-    };
-
-    background _bg;
-
+    exporter_resource_ptr const _resource = exporter_resource::make_shared();
     timeline_exporter_wptr _weak_exporter;
 
     timeline_exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority const &,
@@ -81,7 +75,7 @@ struct timeline_exporter final {
     void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
-    void _export_fragments(proc::time::range const &frags_range, task const &task);
+    void _export_fragments_on_bg(proc::time::range const &frags_range, task const &task);
 
     [[nodiscard]] std::optional<error> _export_fragment_on_bg(proc::time::range const &frag_range,
                                                               proc::stream const &stream);
