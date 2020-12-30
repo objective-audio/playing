@@ -82,6 +82,7 @@ struct timeline_exporter final {
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
     void _export_fragments(proc::time::range const &frags_range, task const &task);
+
     [[nodiscard]] std::optional<error> _export_fragment_on_bg(proc::time::range const &frag_range,
                                                               proc::stream const &stream);
     [[nodiscard]] std::optional<error> _remove_fragments_on_bg(proc::time::range const &frags_range, task const &task);
