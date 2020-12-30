@@ -31,7 +31,8 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
       _queue(queue),
       _priority(priority),
       _src_container(
-          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared(sample_rate))) {
+          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared(sample_rate))),
+      _resource(exporter_resource::make_shared(root_path)) {
     this->_pool += this->_src_container->chain()
                        .perform([observer = chaining::any_observer_ptr{nullptr},
                                  this](timeline_container_ptr const &container) mutable {

@@ -32,7 +32,7 @@ struct exporter final {
 
     chaining::observer_pool _pool;
 
-    exporter_resource_ptr const _resource = exporter_resource::make_shared();
+    exporter_resource_ptr const _resource;
     exporter_wptr _weak_exporter;
 
     exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority_t const &,
