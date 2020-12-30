@@ -25,7 +25,6 @@ struct exporter final {
                                     task_priority_t const &, proc::sample_rate_t const);
 
    private:
-    std::string const _root_path;
     std::shared_ptr<task_queue> const _queue;
     task_priority_t const _priority;
     chaining::value::holder_ptr<timeline_container_ptr> const _src_container;

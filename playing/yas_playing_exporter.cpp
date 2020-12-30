@@ -27,8 +27,7 @@ using namespace yas::playing;
 
 exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
                    task_priority_t const &priority, proc::sample_rate_t const sample_rate)
-    : _root_path(root_path),
-      _queue(queue),
+    : _queue(queue),
       _priority(priority),
       _src_container(
           chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared(sample_rate))),
@@ -122,8 +121,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
-         sample_rate = container->sample_rate(), weak_exporter = this->_weak_exporter,
-         root_path = this->_root_path](yas::task const &task) mutable {
+         sample_rate = container->sample_rate(), weak_exporter = this->_weak_exporter](yas::task const &task) mutable {
             if (auto exporter = weak_exporter.lock()) {
                 resource->identifier = identifier;
                 resource->timeline = proc::timeline::make_shared(std::move(tracks));
@@ -135,7 +133,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
                 resource->send_method_on_task(method_t::reset, std::nullopt);
 
-                if (auto const result = file_manager::remove_content(root_path); !result) {
+                if (auto const result = file_manager::remove_content(resource->root_path); !result) {
                     std::runtime_error("remove timeline root directory failed.");
                 }
 
@@ -318,10 +316,9 @@ void exporter::_push_export_task(proc::time::range const &range) {
     exporter_resource_ptr const &resource, proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
-    auto const &root_path = this->_root_path;
     auto const &sync_source = resource->sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{root_path, resource->identifier, sample_rate};
+    path::timeline const tl_path{resource->root_path, resource->identifier, sample_rate};
 
     auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
     if (!ch_paths_result) {
