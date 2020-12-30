@@ -21,12 +21,14 @@
 using namespace yas;
 using namespace yas::playing;
 
-coordinator::coordinator(std::string const &root_path, audio::io_device_ptr const &device)
+coordinator::coordinator(std::string const &root_path, std::string const &identifier,
+                         audio::io_device_ptr const &device)
     : _device(device),
-      _player(player::make_shared(this->_renderer, root_path, this->_worker, {},
-                                  player_resource::make_shared(reading_resource::make_shared(),
-                                                               buffering_resource::make_shared(
-                                                                   3, root_path, playing::make_buffering_channel)))) {
+      _player(player::make_shared(
+          root_path, identifier, this->_renderer, this->_worker, {},
+          player_resource::make_shared(
+              reading_resource::make_shared(),
+              buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))) {
     this->_worker->start();
 }
 
@@ -86,6 +88,7 @@ chaining::chain_sync_t<bool> coordinator::is_playing_chain() const {
     return this->_player->is_playing_chain();
 }
 
-coordinator_ptr coordinator::make_shared(std::string const &root_path, audio::io_device_ptr const &device) {
-    return coordinator_ptr(new coordinator{root_path, device});
+coordinator_ptr coordinator::make_shared(std::string const &root_path, std::string const &identifier,
+                                         audio::io_device_ptr const &device) {
+    return coordinator_ptr(new coordinator{root_path, identifier, device});
 }

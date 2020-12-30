@@ -7,38 +7,24 @@
 using namespace yas;
 using namespace yas::playing;
 
-struct timeline_container::impl {
-    std::string const identifier;
-    proc::sample_rate_t const sample_rate;
-    std::optional<proc::timeline_ptr> const timeline;
-
-    impl(std::string const &identifier, proc::sample_rate_t const sample_rate, proc::timeline_ptr const &timeline)
-        : identifier(identifier), sample_rate(sample_rate), timeline(timeline) {
-    }
-
-    impl(proc::sample_rate_t const sample_rate) : sample_rate(sample_rate) {
-    }
-};
-
 timeline_container::timeline_container(std::string const &identifier, proc::sample_rate_t const sample_rate,
                                        proc::timeline_ptr const &timeline)
-    : _impl(std::make_shared<impl>(identifier, sample_rate, timeline)) {
+    : _identifier(identifier), _sample_rate(sample_rate), _timeline(timeline) {
 }
 
-timeline_container::timeline_container(proc::sample_rate_t const sample_rate)
-    : _impl(std::make_shared<impl>(sample_rate)) {
+timeline_container::timeline_container(proc::sample_rate_t const sample_rate) : _sample_rate(sample_rate) {
 }
 
 std::string const &timeline_container::identifier() const {
-    return this->_impl->identifier;
+    return this->_identifier;
 }
 
 proc::sample_rate_t const &timeline_container::sample_rate() const {
-    return this->_impl->sample_rate;
+    return this->_sample_rate;
 }
 
 std::optional<proc::timeline_ptr> const &timeline_container::timeline() const {
-    return this->_impl->timeline;
+    return this->_timeline;
 }
 
 timeline_container_ptr timeline_container::make_shared(std::string const &identifier,

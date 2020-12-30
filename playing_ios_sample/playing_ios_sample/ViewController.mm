@@ -15,9 +15,8 @@ struct view_controller_cpp {
     std::shared_ptr<sample::controller> controller{nullptr};
 
     chaining::value::holder_ptr<bool> is_playing = chaining::value::holder<bool>::make_shared(false);
-    chaining::value::holder_ptr<audio_configuration> configuration =
-        chaining::value::holder<audio_configuration>::make_shared(
-            audio_configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
+    chaining::value::holder_ptr<configuration> config = chaining::value::holder<configuration>::make_shared(
+        configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
 
     chaining::observer_pool pool;
 
@@ -52,7 +51,7 @@ struct view_controller_cpp {
     auto const &controller = self->_cpp.controller;
 
     controller->pool += controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync();
-    controller->pool += controller->coordinator->configuration_chain().send_to(self->_cpp.configuration).sync();
+    controller->pool += controller->coordinator->configuration_chain().send_to(self->_cpp.config).sync();
 
     controller->pool += self->_cpp.is_playing->chain()
                             .perform([unowned_self](bool const &is_playing) {
@@ -61,7 +60,7 @@ struct view_controller_cpp {
                                 [viewController.playButton setTitle:title forState:UIControlStateNormal];
                             })
                             .sync();
-    controller->pool += self->_cpp.configuration->chain()
+    controller->pool += self->_cpp.config->chain()
                             .perform([unowned_self](auto const &) {
                                 ViewController *viewController = [unowned_self.object() object];
                                 [viewController _update_configuration_label];
@@ -94,12 +93,12 @@ struct view_controller_cpp {
 
 - (IBAction)minusButtonTapped:(UIButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
-    coordinator->seek(coordinator->play_frame() - coordinator->sample_rate());
+    coordinator->seek(coordinator->current_frame() - coordinator->sample_rate());
 }
 
 - (IBAction)plusButtonTapped:(UIButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
-    coordinator->seek(coordinator->play_frame() + coordinator->sample_rate());
+    coordinator->seek(coordinator->current_frame() + coordinator->sample_rate());
 }
 
 - (void)_update_configuration_label {
@@ -122,7 +121,7 @@ struct view_controller_cpp {
 
 - (void)update_play_frame:(CADisplayLink *)displayLink {
     std::string const play_frame_str =
-        "play_frame : " + std::to_string(self->_cpp.controller->coordinator->play_frame());
+        "play_frame : " + std::to_string(self->_cpp.controller->coordinator->current_frame());
     self.playFrameLabel.text = (__bridge NSString *)to_cf_object(play_frame_str);
 }
 @end

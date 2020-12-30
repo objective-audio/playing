@@ -50,7 +50,8 @@ using namespace yas::playing;
         called_set_is_rendering.emplace_back(is_rendering);
     };
 
-    auto const player = player::make_shared(renderer, test_utils::root_path(), worker, priority, rendering);
+    auto const player =
+        player::make_shared(test_utils::root_path(), test_utils::identifier(), renderer, worker, priority, rendering);
 
     XCTAssertEqual(called_set_ch_mapping.size(), 1);
     XCTAssertEqual(called_set_ch_mapping.at(0)->indices.size(), 0);
