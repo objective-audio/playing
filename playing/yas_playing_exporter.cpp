@@ -120,40 +120,38 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
-         sample_rate = container->sample_rate(), weak_exporter = this->_weak_exporter](yas::task const &task) mutable {
-            if (auto exporter = weak_exporter.lock()) {
-                resource->identifier = identifier;
-                resource->timeline = proc::timeline::make_shared(std::move(tracks));
-                resource->sync_source.emplace(sample_rate, sample_rate);
+         sample_rate = container->sample_rate()](yas::task const &task) mutable {
+            resource->identifier = identifier;
+            resource->timeline = proc::timeline::make_shared(std::move(tracks));
+            resource->sync_source.emplace(sample_rate, sample_rate);
 
-                if (task.is_canceled()) {
-                    return;
-                }
-
-                resource->send_method_on_task(method_t::reset, std::nullopt);
-
-                if (auto const result = file_manager::remove_content(resource->root_path); !result) {
-                    std::runtime_error("remove timeline root directory failed.");
-                }
-
-                if (task.is_canceled()) {
-                    return;
-                }
-
-                proc::timeline_ptr const &timeline = exporter->_resource->timeline;
-
-                auto total_range = timeline->total_range();
-                if (!total_range.has_value()) {
-                    return;
-                }
-
-                auto const &sync_source = resource->sync_source.value();
-                auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
-
-                resource->send_method_on_task(method_t::export_began, frags_range);
-
-                resource->export_fragments_on_task(resource, frags_range, task);
+            if (task.is_canceled()) {
+                return;
             }
+
+            resource->send_method_on_task(method_t::reset, std::nullopt);
+
+            if (auto const result = file_manager::remove_content(resource->root_path); !result) {
+                std::runtime_error("remove timeline root directory failed.");
+            }
+
+            if (task.is_canceled()) {
+                return;
+            }
+
+            proc::timeline_ptr const &timeline = resource->timeline;
+
+            auto total_range = timeline->total_range();
+            if (!total_range.has_value()) {
+                return;
+            }
+
+            auto const &sync_source = resource->sync_source.value();
+            auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
+
+            resource->send_method_on_task(method_t::export_began, frags_range);
+
+            resource->export_fragments_on_task(resource, frags_range, task);
         },
         {.priority = this->_priority.timeline});
 
@@ -291,19 +289,17 @@ void exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [resource = this->_resource, range, weak_exporter = this->_weak_exporter](task const &task) {
-            if (auto exporter = weak_exporter.lock()) {
-                auto const &sync_source = resource->sync_source.value();
-                auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+        [resource = this->_resource, range](task const &task) {
+            auto const &sync_source = resource->sync_source.value();
+            auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                resource->send_method_on_task(method_t::export_began, frags_range);
+            resource->send_method_on_task(method_t::export_began, frags_range);
 
-                if (auto const error = resource->remove_fragments_on_task(resource, frags_range, task)) {
-                    resource->send_error_on_task(*error, range);
-                    return;
-                } else {
-                    resource->export_fragments_on_task(resource, frags_range, task);
-                }
+            if (auto const error = resource->remove_fragments_on_task(resource, frags_range, task)) {
+                resource->send_error_on_task(*error, range);
+                return;
+            } else {
+                resource->export_fragments_on_task(resource, frags_range, task);
             }
         },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
@@ -313,9 +309,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
                                    task_priority_t const &task_priority, proc::sample_rate_t const sample_rate) {
-    auto shared = exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
-    shared->_weak_exporter = to_weak(shared);
-    return shared;
+    return exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
 }
 
 std::string yas::to_string(exporter::method_t const &method) {
