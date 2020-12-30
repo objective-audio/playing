@@ -344,7 +344,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
     assert(!thread::is_main());
 
     auto const &sync_source = resource->sync_source.value();
-    path::timeline const tl_path{this->_root_path, "0", sync_source.sample_rate};
+    path::timeline const tl_path{this->_root_path, resource->identifier, sync_source.sample_rate};
 
     auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
@@ -400,7 +400,7 @@ void exporter::_export_fragments_on_task(exporter_resource_ptr const &resource, 
     auto const &root_path = this->_root_path;
     auto const &sync_source = resource->sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{root_path, "0", sample_rate};
+    path::timeline const tl_path{root_path, resource->identifier, sample_rate};
 
     auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
     if (!ch_paths_result) {
