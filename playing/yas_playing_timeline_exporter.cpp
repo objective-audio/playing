@@ -149,12 +149,12 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
                     return;
                 }
 
-                auto const &sync_source = exporter->_sync_source_on_bg();
+                auto const &sync_source = resource->sync_source.value();
                 auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
                 exporter->_send_method_on_bg(method::export_began, frags_range);
 
-                exporter->_export_fragments_on_bg(frags_range, task);
+                exporter->_export_fragments_on_bg(resource, frags_range, task);
             }
         },
         {.priority = this->_priority.timeline});
@@ -295,18 +295,18 @@ void timeline_exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [range, weak_exporter = this->_weak_exporter](task const &task) {
+        [resource = this->_resource, range, weak_exporter = this->_weak_exporter](task const &task) {
             if (auto exporter = weak_exporter.lock()) {
-                auto const &sync_source = exporter->_sync_source_on_bg();
+                auto const &sync_source = resource->sync_source.value();
                 auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
                 exporter->_send_method_on_bg(method::export_began, frags_range);
 
-                if (auto const error = exporter->_remove_fragments_on_bg(frags_range, task)) {
+                if (auto const error = exporter->_remove_fragments_on_bg(resource, frags_range, task)) {
                     exporter->_send_error_on_bg(*error, range);
                     return;
                 } else {
-                    exporter->_export_fragments_on_bg(frags_range, task);
+                    exporter->_export_fragments_on_bg(resource, frags_range, task);
                 }
             }
         },
@@ -315,34 +315,36 @@ void timeline_exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->push_back(std::move(export_task));
 }
 
-void timeline_exporter::_export_fragments_on_bg(proc::time::range const &frags_range, task const &task) {
+void timeline_exporter::_export_fragments_on_bg(exporter_resource_ptr const &resource,
+                                                proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
         return;
     }
 
-    this->_resource->timeline->process(frags_range, this->_sync_source_on_bg(),
-                                       [&task, this](proc::time::range const &range, proc::stream const &stream) {
-                                           if (task.is_canceled()) {
-                                               return proc::continuation::abort;
-                                           }
+    this->_resource->timeline->process(
+        frags_range, resource->sync_source.value(),
+        [&resource, &task, this](proc::time::range const &range, proc::stream const &stream) {
+            if (task.is_canceled()) {
+                return proc::continuation::abort;
+            }
 
-                                           if (auto error = this->_export_fragment_on_bg(range, stream)) {
-                                               this->_send_error_on_bg(*error, range);
-                                           } else {
-                                               this->_send_method_on_bg(method::export_ended, range);
-                                           }
+            if (auto error = this->_export_fragment_on_bg(resource, range, stream)) {
+                this->_send_error_on_bg(*error, range);
+            } else {
+                this->_send_method_on_bg(method::export_ended, range);
+            }
 
-                                           return proc::continuation::keep;
-                                       });
+            return proc::continuation::keep;
+        });
 }
 
 [[nodiscard]] std::optional<timeline_exporter::error> timeline_exporter::_export_fragment_on_bg(
-    proc::time::range const &frag_range, proc::stream const &stream) {
+    exporter_resource_ptr const &resource, proc::time::range const &frag_range, proc::stream const &stream) {
     assert(!thread::is_main());
 
-    auto const &sync_source = this->_sync_source_on_bg();
+    auto const &sync_source = resource->sync_source.value();
     path::timeline const tl_path{this->_root_path, "0", sync_source.sample_rate};
 
     auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
@@ -393,11 +395,11 @@ void timeline_exporter::_export_fragments_on_bg(proc::time::range const &frags_r
 }
 
 [[nodiscard]] std::optional<timeline_exporter::error> timeline_exporter::_remove_fragments_on_bg(
-    proc::time::range const &frags_range, task const &task) {
+    exporter_resource_ptr const &resource, proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     auto const &root_path = this->_root_path;
-    auto const &sync_source = this->_sync_source_on_bg();
+    auto const &sync_source = resource->sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
     path::timeline const tl_path{root_path, "0", sample_rate};
 
@@ -460,10 +462,6 @@ void timeline_exporter::_send_event_on_bg(event event) {
     dispatch_async(dispatch_get_main_queue(), ^{
         lambda();
     });
-}
-
-proc::sync_source const &timeline_exporter::_sync_source_on_bg() {
-    return *this->_resource->sync_source;
 }
 
 timeline_exporter_ptr timeline_exporter::make_shared(std::string const &root_path,
