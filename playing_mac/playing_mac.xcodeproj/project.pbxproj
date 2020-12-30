@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B603FD5725877F5F007F4D78 /* yas_playing_player_resource_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B603FD5625877F5F007F4D78 /* yas_playing_player_resource_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6081264259C8F0C00BB580C /* yas_playing_exporter_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B6081262259C8F0C00BB580C /* yas_playing_exporter_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6081265259C8F0C00BB580C /* yas_playing_exporter_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6081263259C8F0C00BB580C /* yas_playing_exporter_resource.cpp */; };
 		B61DF5D7254EDC3100972B05 /* yas_playing_reading_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61DF5D5254EDC3100972B05 /* yas_playing_reading_resource.cpp */; };
 		B61DF5D8254EDC3100972B05 /* yas_playing_reading_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B61DF5D6254EDC3100972B05 /* yas_playing_reading_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B64649542558397100398A97 /* yas_playing_player_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B64649522558397100398A97 /* yas_playing_player_resource.cpp */; };
@@ -67,6 +69,8 @@
 
 /* Begin PBXFileReference section */
 		B603FD5625877F5F007F4D78 /* yas_playing_player_resource_protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_resource_protocol.h; sourceTree = "<group>"; };
+		B6081262259C8F0C00BB580C /* yas_playing_exporter_resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_exporter_resource.h; sourceTree = "<group>"; };
+		B6081263259C8F0C00BB580C /* yas_playing_exporter_resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_exporter_resource.cpp; sourceTree = "<group>"; };
 		B61DF5D5254EDC3100972B05 /* yas_playing_reading_resource.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_reading_resource.cpp; sourceTree = "<group>"; };
 		B61DF5D6254EDC3100972B05 /* yas_playing_reading_resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading_resource.h; sourceTree = "<group>"; };
 		B64649522558397100398A97 /* yas_playing_player_resource.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_player_resource.cpp; sourceTree = "<group>"; };
@@ -232,6 +236,8 @@
 				B6FB00E9229B6A19000C22F5 /* yas_playing_timeline_exporter.h */,
 				B6FB00E6229B6A19000C22F5 /* yas_playing_timeline_utils.cpp */,
 				B6FB00D2229B6A19000C22F5 /* yas_playing_timeline_utils.h */,
+				B6081263259C8F0C00BB580C /* yas_playing_exporter_resource.cpp */,
+				B6081262259C8F0C00BB580C /* yas_playing_exporter_resource.h */,
 				B6FB00DF229B6A19000C22F5 /* yas_playing_types.h */,
 				B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.h */,
 			);
@@ -266,6 +272,7 @@
 				B6FB010B229B6A1A000C22F5 /* yas_playing_numbers_file.h in Headers */,
 				B66827F8254E6A4D00306B0D /* yas_playing_renderer_protocol.h in Headers */,
 				B6FB0110229B6A1A000C22F5 /* yas_playing_path.h in Headers */,
+				B6081264259C8F0C00BB580C /* yas_playing_exporter_resource.h in Headers */,
 				B64649552558397100398A97 /* yas_playing_player_resource.h in Headers */,
 				B66827D7254D4B9500306B0D /* yas_playing_player.h in Headers */,
 				B6AC810725826147003A4CEC /* yas_playing_reading_resource_protocol.h in Headers */,
@@ -350,6 +357,7 @@
 				B6B30F8025595FCF0022D37A /* yas_playing_buffering_channel.cpp in Sources */,
 				B6FB0111229B6A1A000C22F5 /* yas_playing_signal_file_info.cpp in Sources */,
 				B6FB00FA229B6A1A000C22F5 /* yas_playing_timeline_canceling.cpp in Sources */,
+				B6081265259C8F0C00BB580C /* yas_playing_exporter_resource.cpp in Sources */,
 				B67D29632599E7CE00692980 /* yas_playing_channel_mapping.cpp in Sources */,
 				B6FB0105229B6A1A000C22F5 /* yas_playing_timeline_exporter.cpp in Sources */,
 				B6B30F862559601D0022D37A /* yas_playing_buffering_element.cpp in Sources */,

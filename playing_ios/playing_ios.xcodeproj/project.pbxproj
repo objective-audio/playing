@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B603FD5E25877FA7007F4D78 /* yas_playing_player_resource_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B603FD5D25877FA7007F4D78 /* yas_playing_player_resource_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6081257259C8E1000BB580C /* yas_playing_exporter_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6081255259C8E1000BB580C /* yas_playing_exporter_resource.cpp */; };
+		B6081258259C8E1000BB580C /* yas_playing_exporter_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B6081256259C8E1000BB580C /* yas_playing_exporter_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B61DF5DF254EE26700972B05 /* yas_playing_reading_resource.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B61DF5DD254EE26700972B05 /* yas_playing_reading_resource.cpp */; };
 		B61DF5E0254EE26700972B05 /* yas_playing_reading_resource.h in Headers */ = {isa = PBXBuildFile; fileRef = B61DF5DE254EE26700972B05 /* yas_playing_reading_resource.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6300165257E42B300CC206B /* yas_playing_buffering_channel_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6300163257E42B300CC206B /* yas_playing_buffering_channel_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -67,6 +69,8 @@
 
 /* Begin PBXFileReference section */
 		B603FD5D25877FA7007F4D78 /* yas_playing_player_resource_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_resource_protocol.h; sourceTree = "<group>"; };
+		B6081255259C8E1000BB580C /* yas_playing_exporter_resource.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_exporter_resource.cpp; sourceTree = "<group>"; };
+		B6081256259C8E1000BB580C /* yas_playing_exporter_resource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_exporter_resource.h; sourceTree = "<group>"; };
 		B61DF5DD254EE26700972B05 /* yas_playing_reading_resource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_reading_resource.cpp; sourceTree = "<group>"; };
 		B61DF5DE254EE26700972B05 /* yas_playing_reading_resource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_reading_resource.h; sourceTree = "<group>"; };
 		B6300163257E42B300CC206B /* yas_playing_buffering_channel_protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_channel_protocol.h; sourceTree = "<group>"; };
@@ -218,6 +222,8 @@
 				B6DCC429229AAEE7007F88B7 /* yas_playing_timeline_container.h */,
 				B6DCC42B229AAEE7007F88B7 /* yas_playing_timeline_exporter.cpp */,
 				B6DCC432229AAEE7007F88B7 /* yas_playing_timeline_exporter.h */,
+				B6081255259C8E1000BB580C /* yas_playing_exporter_resource.cpp */,
+				B6081256259C8E1000BB580C /* yas_playing_exporter_resource.h */,
 				B6DCC42F229AAEE7007F88B7 /* yas_playing_timeline_utils.cpp */,
 				B6DCC41B229AAEE7007F88B7 /* yas_playing_timeline_utils.h */,
 				B6DCC428229AAEE7007F88B7 /* yas_playing_types.h */,
@@ -248,6 +254,7 @@
 			files = (
 				B6C3053D2332682000D8C657 /* yas_playing_ptr.h in Headers */,
 				B6DCC455229AAEE7007F88B7 /* yas_playing_timeline_exporter.h in Headers */,
+				B6081258259C8E1000BB580C /* yas_playing_exporter_resource.h in Headers */,
 				B6DCC44C229AAEE7007F88B7 /* yas_playing_timeline_container.h in Headers */,
 				B6300166257E42B300CC206B /* yas_playing_buffering_element_protocol.h in Headers */,
 				B6DCC43E229AAEE7007F88B7 /* yas_playing_timeline_utils.h in Headers */,
@@ -350,6 +357,7 @@
 				B6DCC45A229AAEE7007F88B7 /* yas_playing_signal_file_info.cpp in Sources */,
 				B6DCC443229AAEE7007F88B7 /* yas_playing_timeline_canceling.cpp in Sources */,
 				B6DCC44E229AAEE7007F88B7 /* yas_playing_timeline_exporter.cpp in Sources */,
+				B6081257259C8E1000BB580C /* yas_playing_exporter_resource.cpp in Sources */,
 				B67D29792599E92200692980 /* yas_playing_channel_mapping.cpp in Sources */,
 				B6DCC43A229AAEE7007F88B7 /* yas_playing_timeline_container.cpp in Sources */,
 				B6DCC442229AAEE7007F88B7 /* yas_playing_renderer.cpp in Sources */,
