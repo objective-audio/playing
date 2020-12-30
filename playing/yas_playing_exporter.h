@@ -28,10 +28,9 @@ struct exporter final {
     std::shared_ptr<task_queue> const _queue;
     task_priority_t const _priority;
     chaining::value::holder_ptr<timeline_container_ptr> const _src_container;
+    exporter_resource_ptr const _resource;
 
     chaining::observer_pool _pool;
-
-    exporter_resource_ptr const _resource;
 
     exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority_t const &,
              proc::sample_rate_t const);
