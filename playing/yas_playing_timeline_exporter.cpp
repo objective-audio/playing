@@ -32,6 +32,24 @@ timeline_exporter::timeline_exporter(std::string const &root_path, std::shared_p
       _priority(priority),
       _src_container(
           chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared(sample_rate))) {
+    this->_pool += this->_src_container->chain()
+                       .perform([observer = chaining::any_observer_ptr{nullptr},
+                                 this](timeline_container_ptr const &container) mutable {
+                           if (observer) {
+                               observer->invalidate();
+                               observer = nullptr;
+                           }
+
+                           if (auto const &timeline = container->timeline()) {
+                               observer = timeline->get()
+                                              ->chain()
+                                              .perform([this](proc::timeline::event_t const &event) {
+                                                  this->_receive_timeline_event(event);
+                                              })
+                                              .sync();
+                           }
+                       })
+                       .end();
 }
 
 void timeline_exporter::set_timeline_container(timeline_container_ptr const &container) {
@@ -45,60 +63,39 @@ chaining::chain_unsync_t<timeline_exporter::event> timeline_exporter::event_chai
 }
 
 void timeline_exporter::_prepare(timeline_exporter_ptr const &exporter) {
-    this->_pool += this->_src_container->chain()
-                       .perform([observer = chaining::any_observer_ptr{nullptr},
-                                 weak_exporter = to_weak(exporter)](timeline_container_ptr const &container) mutable {
-                           if (observer) {
-                               observer->invalidate();
-                               observer = nullptr;
-                           }
-
-                           if (auto const &timeline = container->timeline()) {
-                               observer = timeline->get()
-                                              ->chain()
-                                              .perform([weak_exporter](proc::timeline::event_t const &event) {
-                                                  if (auto exporter = weak_exporter.lock()) {
-                                                      exporter->_receive_timeline_event(event, exporter);
-                                                  }
-                                              })
-                                              .sync();
-                           }
-                       })
-                       .end();
+    this->_weak_exporter = to_weak(exporter);
 }
 
-void timeline_exporter::_receive_timeline_event(proc::timeline::event_t const &event,
-                                                timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_receive_timeline_event(proc::timeline::event_t const &event) {
     switch (event.type()) {
         case proc::timeline::event_type_t::fetched: {
             auto const fetched_event = event.get<proc::timeline::fetched_event_t>();
-            this->_update_timeline(proc::copy_tracks(fetched_event.elements), exporter);
+            this->_update_timeline(proc::copy_tracks(fetched_event.elements));
         } break;
         case proc::timeline::event_type_t::inserted: {
-            this->_insert_tracks(event.get<proc::timeline::inserted_event_t>(), exporter);
+            this->_insert_tracks(event.get<proc::timeline::inserted_event_t>());
         } break;
         case proc::timeline::event_type_t::erased: {
-            this->_erase_tracks(event.get<proc::timeline::erased_event_t>(), exporter);
+            this->_erase_tracks(event.get<proc::timeline::erased_event_t>());
         } break;
         case proc::timeline::event_type_t::relayed: {
-            this->_receive_relayed_timeline_event(event.get<proc::timeline::relayed_event_t>(), exporter);
+            this->_receive_relayed_timeline_event(event.get<proc::timeline::relayed_event_t>());
         } break;
         default:
             throw std::runtime_error("unreachable code.");
     }
 }
 
-void timeline_exporter::_receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event,
-                                                        timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event) {
     switch (event.relayed.type()) {
         case proc::track::event_type_t::inserted: {
-            this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>(), exporter);
+            this->_insert_modules(event.key, event.relayed.get<proc::track::inserted_event_t>());
         } break;
         case proc::track::event_type_t::erased: {
-            this->_erase_modules(event.key, event.relayed.get<proc::track::erased_event_t>(), exporter);
+            this->_erase_modules(event.key, event.relayed.get<proc::track::erased_event_t>());
         } break;
         case proc::track::event_type_t::relayed: {
-            this->_receive_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), event.key, exporter);
+            this->_receive_relayed_track_event(event.relayed.get<proc::track::relayed_event_t>(), event.key);
         } break;
         default:
             throw std::runtime_error("unreachable code.");
@@ -106,22 +103,20 @@ void timeline_exporter::_receive_relayed_timeline_event(proc::timeline::relayed_
 }
 
 void timeline_exporter::_receive_relayed_track_event(proc::track::relayed_event_t const &event,
-                                                     proc::track_index_t const trk_idx,
-                                                     timeline_exporter_ptr const &exporter) {
+                                                     proc::track_index_t const trk_idx) {
     switch (event.relayed.type()) {
         case proc::module_vector::event_type_t::inserted:
-            this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>(),
-                                 exporter);
+            this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>());
             break;
         case proc::module_vector::event_type_t::erased:
-            this->_erase_module(trk_idx, event.key, event.relayed.get<proc::module_vector::erased_event_t>(), exporter);
+            this->_erase_module(trk_idx, event.key, event.relayed.get<proc::module_vector::erased_event_t>());
             break;
         default:
             throw std::runtime_error("unreachable code.");
     }
 }
 
-void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
     assert(thread::is_main());
 
     this->_queue->cancel_all();
@@ -130,7 +125,7 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
 
     auto task = task::make_shared(
         [tracks = std::move(tracks), identifier = container->identifier(), sample_rate = container->sample_rate(),
-         weak_exporter = to_weak(exporter)](yas::task const &task) mutable {
+         weak_exporter = this->_weak_exporter](yas::task const &task) mutable {
             if (auto exporter = weak_exporter.lock()) {
                 auto &bg = exporter->_bg;
                 bg.identifier = identifier;
@@ -141,7 +136,7 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
                     return;
                 }
 
-                exporter->_send_method_on_bg(method::reset, std::nullopt, weak_exporter);
+                exporter->_send_method_on_bg(method::reset, std::nullopt);
 
                 auto const &root_path = exporter->_root_path;
 
@@ -163,9 +158,9 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
                 auto const &sync_source = exporter->_sync_source_on_bg();
                 auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-                exporter->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+                exporter->_send_method_on_bg(method::export_began, frags_range);
 
-                exporter->_export_fragments(frags_range, task, weak_exporter);
+                exporter->_export_fragments(frags_range, task);
             }
         },
         {.priority = this->_priority.timeline});
@@ -173,8 +168,7 @@ void timeline_exporter::_update_timeline(proc::timeline::track_map_t &&tracks, t
     this->_queue->push_back(std::move(task));
 }
 
-void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &event,
-                                       timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto tracks = proc::copy_tracks(event.elements);
@@ -184,7 +178,7 @@ void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &e
     for (auto &pair : tracks) {
         auto insert_task = task::make_shared(
             [trk_idx = pair.first, track = std::move(pair.second),
-             weak_exporter = to_weak(exporter)](auto const &) mutable {
+             weak_exporter = this->_weak_exporter](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     exporter->_bg.timeline->insert_track(trk_idx, std::move(track));
                 }
@@ -195,12 +189,11 @@ void timeline_exporter::_insert_tracks(proc::timeline::inserted_event_t const &e
     }
 
     if (total_range) {
-        this->_push_export_task(*total_range, exporter);
+        this->_push_export_task(*total_range);
     }
 }
 
-void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &event,
-                                      timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto track_indices = to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
@@ -209,7 +202,7 @@ void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &even
 
     for (auto &trk_idx : track_indices) {
         auto erase_task = task::make_shared(
-            [trk_idx = trk_idx, weak_exporter = to_weak(exporter)](auto const &) mutable {
+            [trk_idx = trk_idx, weak_exporter = this->_weak_exporter](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     exporter->_bg.timeline->erase_track(trk_idx);
                 }
@@ -220,12 +213,11 @@ void timeline_exporter::_erase_tracks(proc::timeline::erased_event_t const &even
     }
 
     if (total_range) {
-        this->_push_export_task(*total_range, exporter);
+        this->_push_export_task(*total_range);
     }
 }
 
-void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event,
-                                        timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto modules = proc::copy_to_modules(event.elements);
@@ -234,7 +226,7 @@ void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc:
         auto const &range = pair.first;
         auto task = task::make_shared(
             [trk_idx, range = range, modules = std::move(pair.second),
-             weak_exporter = to_weak(exporter)](auto const &) mutable {
+             weak_exporter = this->_weak_exporter](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     auto const &track = exporter->_bg.timeline->track(trk_idx);
                     assert(track->modules().count(range) == 0);
@@ -250,12 +242,11 @@ void timeline_exporter::_insert_modules(proc::track_index_t const trk_idx, proc:
 
     for (auto const &pair : modules) {
         auto const &range = pair.first;
-        this->_push_export_task(range, exporter);
+        this->_push_export_task(range);
     }
 }
 
-void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event,
-                                       timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto modules = proc::copy_to_modules(event.elements);
@@ -264,7 +255,7 @@ void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::
         auto const &range = pair.first;
         auto task = task::make_shared(
             [trk_idx, range = range, module = std::move(pair.second),
-             weak_exporter = to_weak(exporter)](auto const &) mutable {
+             weak_exporter = this->_weak_exporter](auto const &) mutable {
                 if (auto exporter = weak_exporter.lock()) {
                     auto const &track = exporter->_bg.timeline->track(trk_idx);
                     assert(track->modules().count(range) > 0);
@@ -278,18 +269,17 @@ void timeline_exporter::_erase_modules(proc::track_index_t const trk_idx, proc::
 
     for (auto const &pair : modules) {
         auto const &range = pair.first;
-        this->_push_export_task(range, exporter);
+        this->_push_export_task(range);
     }
 }
 
 void timeline_exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
-                                       proc::module_vector::inserted_event_t const &event,
-                                       timeline_exporter_ptr const &exporter) {
+                                       proc::module_vector::inserted_event_t const &event) {
     assert(thread::is_main());
 
     auto task = task::make_shared(
         [trk_idx, range, module_idx = event.index, module = event.element->copy(),
-         weak_exporter = to_weak(exporter)](auto const &) mutable {
+         weak_exporter = this->_weak_exporter](auto const &) mutable {
             if (auto exporter = weak_exporter.lock()) {
                 auto const &track = exporter->_bg.timeline->track(trk_idx);
                 assert(track->modules().count(range) > 0);
@@ -300,16 +290,15 @@ void timeline_exporter::_insert_module(proc::track_index_t const trk_idx, proc::
 
     this->_queue->push_back(std::move(task));
 
-    this->_push_export_task(range, exporter);
+    this->_push_export_task(range);
 }
 
 void timeline_exporter::_erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
-                                      proc::module_vector::erased_event_t const &event,
-                                      timeline_exporter_ptr const &exporter) {
+                                      proc::module_vector::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto task = task::make_shared(
-        [trk_idx, range, module_idx = event.index, weak_exporter = to_weak(exporter)](auto const &) mutable {
+        [trk_idx, range, module_idx = event.index, weak_exporter = this->_weak_exporter](auto const &) mutable {
             if (auto exporter = weak_exporter.lock()) {
                 auto const &track = exporter->_bg.timeline->track(trk_idx);
                 assert(track->modules().count(range) > 0);
@@ -320,25 +309,25 @@ void timeline_exporter::_erase_module(proc::track_index_t const trk_idx, proc::t
 
     this->_queue->push_back(std::move(task));
 
-    this->_push_export_task(range, exporter);
+    this->_push_export_task(range);
 }
 
-void timeline_exporter::_push_export_task(proc::time::range const &range, timeline_exporter_ptr const &exporter) {
+void timeline_exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [range, weak_exporter = to_weak(exporter)](task const &task) {
+        [range, weak_exporter = this->_weak_exporter](task const &task) {
             if (auto exporter = weak_exporter.lock()) {
                 auto const &sync_source = exporter->_sync_source_on_bg();
                 auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-                exporter->_send_method_on_bg(method::export_began, frags_range, weak_exporter);
+                exporter->_send_method_on_bg(method::export_began, frags_range);
 
                 if (auto const error = exporter->_remove_fragments_on_bg(frags_range, task)) {
-                    exporter->_send_error_on_bg(*error, range, weak_exporter);
+                    exporter->_send_error_on_bg(*error, range);
                     return;
                 } else {
-                    exporter->_export_fragments(frags_range, task, weak_exporter);
+                    exporter->_export_fragments(frags_range, task);
                 }
             }
         },
@@ -347,29 +336,27 @@ void timeline_exporter::_push_export_task(proc::time::range const &range, timeli
     this->_queue->push_back(std::move(export_task));
 }
 
-void timeline_exporter::_export_fragments(proc::time::range const &frags_range, task const &task,
-                                          timeline_exporter_wptr const &weak_exporter) {
+void timeline_exporter::_export_fragments(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
         return;
     }
 
-    this->_bg.timeline->process(
-        frags_range, this->_sync_source_on_bg(),
-        [&task, this, &weak_exporter](proc::time::range const &range, proc::stream const &stream) {
-            if (task.is_canceled()) {
-                return proc::continuation::abort;
-            }
+    this->_bg.timeline->process(frags_range, this->_sync_source_on_bg(),
+                                [&task, this](proc::time::range const &range, proc::stream const &stream) {
+                                    if (task.is_canceled()) {
+                                        return proc::continuation::abort;
+                                    }
 
-            if (auto error = this->_export_fragment_on_bg(range, stream)) {
-                this->_send_error_on_bg(*error, range, weak_exporter);
-            } else {
-                this->_send_method_on_bg(method::export_ended, range, weak_exporter);
-            }
+                                    if (auto error = this->_export_fragment_on_bg(range, stream)) {
+                                        this->_send_error_on_bg(*error, range);
+                                    } else {
+                                        this->_send_method_on_bg(method::export_ended, range);
+                                    }
 
-            return proc::continuation::keep;
-        });
+                                    return proc::continuation::keep;
+                                });
 }
 
 [[nodiscard]] std::optional<timeline_exporter::error> timeline_exporter::_export_fragment_on_bg(
@@ -472,22 +459,20 @@ void timeline_exporter::_export_fragments(proc::time::range const &frags_range, 
     return std::nullopt;
 }
 
-void timeline_exporter::_send_method_on_bg(method const type, std::optional<proc::time::range> const &range,
-                                           timeline_exporter_wptr const &weak_exporter) {
+void timeline_exporter::_send_method_on_bg(method const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_bg(event{.result = result_t{type}, .range = range}, weak_exporter);
+    this->_send_event_on_bg(event{.result = result_t{type}, .range = range});
 }
 
-void timeline_exporter::_send_error_on_bg(error const type, std::optional<proc::time::range> const &range,
-                                          timeline_exporter_wptr const &weak_exporter) {
+void timeline_exporter::_send_error_on_bg(error const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
-    this->_send_event_on_bg(event{.result = result_t{type}, .range = range}, weak_exporter);
+    this->_send_event_on_bg(event{.result = result_t{type}, .range = range});
 }
 
-void timeline_exporter::_send_event_on_bg(event event, timeline_exporter_wptr const &weak_exporter) {
-    auto lambda = [this, event = std::move(event), weak_exporter] {
+void timeline_exporter::_send_event_on_bg(event event) {
+    auto lambda = [this, event = std::move(event), weak_exporter = this->_weak_exporter] {
         if (auto exporter = weak_exporter.lock()) {
             exporter->_event_notifier->notify(event);
         }
