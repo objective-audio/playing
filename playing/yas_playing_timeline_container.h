@@ -19,9 +19,9 @@ struct timeline_container final {
     static timeline_container_ptr make_shared(sample_rate_t const sample_rate);
 
    private:
-    class impl;
-
-    std::shared_ptr<impl> _impl;
+    std::string const _identifier;
+    proc::sample_rate_t const _sample_rate;
+    std::optional<proc::timeline_ptr> const _timeline;
 
     timeline_container(std::string const &identifier, sample_rate_t const sample_rate,
                        proc::timeline_ptr const &timeline);
