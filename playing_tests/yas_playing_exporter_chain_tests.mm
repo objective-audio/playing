@@ -39,7 +39,7 @@ struct cpp {
     proc::sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
 
-    auto exporter = exporter::make_shared(root_path, queue, self->_cpp.priority, sample_rate);
+    auto exporter = exporter::make_shared(root_path, queue, self->_cpp.priority);
 
     queue->wait_until_all_tasks_are_finished();
 

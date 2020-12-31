@@ -42,9 +42,8 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
-    proc::sample_rate_t const sample_rate = 2;
 
-    auto exporter = exporter::make_shared(root_path, queue, priority, sample_rate);
+    auto exporter = exporter::make_shared(root_path, queue, priority);
 
     queue->wait_until_all_tasks_are_finished();
 
@@ -59,7 +58,7 @@ struct cpp {
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    auto exporter = exporter::make_shared(root_path, queue, priority, sample_rate);
+    auto exporter = exporter::make_shared(root_path, queue, priority);
 
     queue->wait_until_all_tasks_are_finished();
 
@@ -161,7 +160,7 @@ struct cpp {
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, post_sample_rate};
 
-    auto exporter = exporter::make_shared(root_path, queue, priority, pre_sample_rate);
+    auto exporter = exporter::make_shared(root_path, queue, priority);
 
     queue->wait_until_all_tasks_are_finished();
 
@@ -259,7 +258,7 @@ struct cpp {
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
-    auto exporter = exporter::make_shared(root_path, queue, priority, sample_rate);
+    auto exporter = exporter::make_shared(root_path, queue, priority);
 
     queue->wait_until_all_tasks_are_finished();
 

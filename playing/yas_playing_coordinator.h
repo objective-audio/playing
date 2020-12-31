@@ -16,6 +16,7 @@
 
 namespace yas::playing {
 struct coordinator final {
+    void set_timeline(proc::timeline_ptr const &);
     void set_channel_mapping(channel_mapping_ptr const &);
     void set_playing(bool const);
     void seek(frame_index_t const);
@@ -35,18 +36,18 @@ struct coordinator final {
                                                      audio::io_device_ptr const &);
 
    private:
+    std::string const _identifier;
     audio::io_device_ptr const _device;
     workable_ptr const _worker = worker::make_shared();
     coordinator_renderable_ptr const _renderer = renderer::make_shared(this->_device);
     playable_ptr const _player;
+    exporter_ptr const _exporter;
+    std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
     chaining::observer_pool _pool;
 
     coordinator(std::string const &root_path, std::string const &identifier, audio::io_device_ptr const &);
 
-    coordinator(coordinator const &) = delete;
-    coordinator(coordinator &&) = delete;
-    coordinator &operator=(coordinator const &) = delete;
-    coordinator &operator=(coordinator &&) = delete;
+    void _update_exporter();
 };
 }  // namespace yas::playing

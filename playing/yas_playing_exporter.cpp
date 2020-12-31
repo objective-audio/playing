@@ -25,7 +25,7 @@ using namespace yas;
 using namespace yas::playing;
 
 exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
-                   task_priority_t const &priority, proc::sample_rate_t const sample_rate)
+                   task_priority_t const &priority)
     : _queue(queue),
       _priority(priority),
       _src_container(
@@ -130,11 +130,11 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
                 return;
             }
 
-            resource->send_method_on_task(method_t::reset, std::nullopt);
-
             if (auto const result = file_manager::remove_content(resource->root_path); !result) {
                 std::runtime_error("remove timeline root directory failed.");
             }
+
+            resource->send_method_on_task(method_t::reset, std::nullopt);
 
             if (task.is_canceled()) {
                 return;
@@ -309,8 +309,8 @@ void exporter::_push_export_task(proc::time::range const &range) {
 }
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
-                                   task_priority_t const &task_priority, proc::sample_rate_t const sample_rate) {
-    return exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
+                                   task_priority_t const &task_priority) {
+    return exporter_ptr(new exporter{root_path, task_queue, task_priority});
 }
 
 std::string yas::to_string(exporter::method_t const &method) {
