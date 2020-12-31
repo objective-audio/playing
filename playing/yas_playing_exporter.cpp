@@ -130,11 +130,11 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
                 return;
             }
 
-            resource->send_method_on_task(method_t::reset, std::nullopt);
-
             if (auto const result = file_manager::remove_content(resource->root_path); !result) {
                 std::runtime_error("remove timeline root directory failed.");
             }
+
+            resource->send_method_on_task(method_t::reset, std::nullopt);
 
             if (task.is_canceled()) {
                 return;
