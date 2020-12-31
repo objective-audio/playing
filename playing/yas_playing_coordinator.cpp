@@ -13,6 +13,7 @@
 #include "yas_playing_buffering_element.h"
 #include "yas_playing_buffering_resource.h"
 #include "yas_playing_channel_mapping.h"
+#include "yas_playing_exporter.h"
 #include "yas_playing_player_resource.h"
 #include "yas_playing_reading_resource.h"
 #include "yas_playing_timeline_utils.h"
@@ -28,7 +29,9 @@ coordinator::coordinator(std::string const &root_path, std::string const &identi
           root_path, identifier, this->_renderer, this->_worker, {},
           player_resource::make_shared(
               reading_resource::make_shared(),
-              buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))) {
+              buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))),
+      _exporter(exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1},
+                                      this->_renderer->sample_rate())) {
     this->_worker->start();
 }
 
