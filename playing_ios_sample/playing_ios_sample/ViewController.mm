@@ -19,9 +19,6 @@ struct view_controller_cpp {
         configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
 
     chaining::observer_pool pool;
-
-    objc_ptr<CADisplayLink *> frame_display_link;
-    objc_ptr<CADisplayLink *> status_display_link;
 };
 }
 
@@ -34,10 +31,18 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet UILabel *configurationLabel;
 @property (nonatomic, weak) IBOutlet UILabel *stateLabel;
 
+@property (nonatomic) CADisplayLink *frameDisplayLink;
+@property (nonatomic) CADisplayLink *statusDisplayLink;
+
 @end
 
 @implementation ViewController {
     sample::view_controller_cpp _cpp;
+}
+
+- (void)dealloc {
+    [self.frameDisplayLink invalidate];
+    [self.statusDisplayLink invalidate];
 }
 
 - (void)viewDidLoad {
@@ -63,26 +68,20 @@ struct view_controller_cpp {
     controller->pool += self->_cpp.config->chain()
                             .perform([unowned_self](auto const &) {
                                 ViewController *viewController = [unowned_self.object() object];
-                                [viewController _update_configuration_label];
+                                [viewController _updateConfigurationLabel];
                             })
                             .sync();
 
-    self->_cpp.frame_display_link = objc_ptr<CADisplayLink *>([self]() {
-        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update_play_frame:)];
-        displayLink.preferredFramesPerSecond = 30;
-        [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-        return displayLink;
-    });
+    self.frameDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_updatePlayFrame:)];
+    self.frameDisplayLink.preferredFramesPerSecond = 30;
+    [self.frameDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 
-    self->_cpp.frame_display_link = objc_ptr<CADisplayLink *>([self]() {
-        CADisplayLink *displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(update_state_label:)];
-        displayLink.preferredFramesPerSecond = 10;
-        [displayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-        return displayLink;
-    });
+    self.statusDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_updateStateLabel:)];
+    self.statusDisplayLink.preferredFramesPerSecond = 10;
+    [self.statusDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 }
 
-- (void)set_controller:(std::shared_ptr<yas::playing::sample::controller>)controller {
+- (void)setController:(std::shared_ptr<yas::playing::sample::controller>)controller {
     self->_cpp.controller = std::move(controller);
 }
 
@@ -101,7 +100,7 @@ struct view_controller_cpp {
     coordinator->seek(coordinator->current_frame() + coordinator->sample_rate());
 }
 
-- (void)_update_configuration_label {
+- (void)_updateConfigurationLabel {
     std::vector<std::string> texts;
 
     auto const &coordinator = self->_cpp.controller->coordinator;
@@ -114,14 +113,15 @@ struct view_controller_cpp {
     self.configurationLabel.text = (__bridge NSString *)to_cf_object(text);
 }
 
-- (void)update_state_label:(CADisplayLink *)displayLink {
+- (void)_updateStateLabel:(CADisplayLink *)displayLink {
     std::vector<std::string> ch_texts;
     self.stateLabel.text = (__bridge NSString *)to_cf_object(joined(ch_texts, "\n"));
 }
 
-- (void)update_play_frame:(CADisplayLink *)displayLink {
+- (void)_updatePlayFrame:(CADisplayLink *)displayLink {
     std::string const play_frame_str =
         "play_frame : " + std::to_string(self->_cpp.controller->coordinator->current_frame());
     self.playFrameLabel.text = (__bridge NSString *)to_cf_object(play_frame_str);
 }
+
 @end

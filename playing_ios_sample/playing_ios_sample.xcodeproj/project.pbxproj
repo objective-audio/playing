@@ -72,8 +72,8 @@
 		B6FB01A122A242C3000C22F5 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		B6FB01A322A242CA000C22F5 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B6FB01A522A242D3000C22F5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
-		B6FB01A722A38BE8000C22F5 /* yas_playing_sample_controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_sample_controller.cpp; sourceTree = "<group>"; };
-		B6FB01A822A38BE8000C22F5 /* yas_playing_sample_controller.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = yas_playing_sample_controller.hpp; sourceTree = "<group>"; };
+		B6FB01A722A38BE8000C22F5 /* yas_playing_sample_controller.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = yas_playing_sample_controller.cpp; path = ../../playing_sample/yas_playing_sample_controller.cpp; sourceTree = "<group>"; };
+		B6FB01A822A38BE8000C22F5 /* yas_playing_sample_controller.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = yas_playing_sample_controller.hpp; path = ../../playing_sample/yas_playing_sample_controller.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
