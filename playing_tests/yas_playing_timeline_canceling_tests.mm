@@ -28,7 +28,7 @@ using namespace yas::playing;
 
     XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_a));
     XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_b));
-    XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_c), );
+    XCTAssertTrue(task_cancel_id::cast(matcher)->is_equal(range_request_c));
     XCTAssertTrue(task_cancel_id::cast(range_request_a)->is_equal(matcher));
     XCTAssertTrue(task_cancel_id::cast(range_request_b)->is_equal(matcher));
     XCTAssertTrue(task_cancel_id::cast(range_request_c)->is_equal(matcher));
