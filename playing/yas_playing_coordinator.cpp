@@ -32,6 +32,9 @@ coordinator::coordinator(std::string const &root_path, std::string const &identi
               buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))),
       _exporter(exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1},
                                       this->_renderer->sample_rate())) {
+    this->_renderer->configuration_chain().perform([](auto const &) {
+        
+    }).end()->add_to(this->_pool);
     this->_worker->start();
 }
 
