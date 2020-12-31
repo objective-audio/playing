@@ -7,7 +7,8 @@
 #include <memory>
 
 namespace yas::playing {
-class timeline_exporter;
+class exporter;
+class exporter_resource;
 class timeline_container;
 class timeline_cancel_matcher;
 class timeline_range_cancel_request;
@@ -31,8 +32,9 @@ class buffering_resource_protocol;
 class reading_resource_protocol;
 class player_resource_protocol;
 
-using timeline_exporter_ptr = std::shared_ptr<timeline_exporter>;
-using timeline_exporter_wptr = std::weak_ptr<timeline_exporter>;
+using exporter_ptr = std::shared_ptr<exporter>;
+using exporter_resource_ptr = std::shared_ptr<exporter_resource>;
+using exporter_wptr = std::weak_ptr<exporter>;
 using timeline_container_ptr = std::shared_ptr<timeline_container>;
 using coordinator_ptr = std::shared_ptr<coordinator>;
 using timeline_cancel_matcher_ptr = std::shared_ptr<timeline_cancel_matcher>;
