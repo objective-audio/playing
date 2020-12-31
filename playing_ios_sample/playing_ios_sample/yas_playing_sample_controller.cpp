@@ -12,8 +12,7 @@ using namespace yas::playing;
 sample::controller::controller() {
     proc::sample_rate_t const sample_rate = this->coordinator->sample_rate();
     auto timeline = this->make_sine_timeline(sample_rate);
-    auto container = timeline_container::make_shared(this->identifier, sample_rate, timeline);
-    this->exporter->set_timeline_container(container);
+    this->coordinator->set_timeline(timeline);
 
     std::cout << "root_path:" << this->root_path << std::endl;
 }
