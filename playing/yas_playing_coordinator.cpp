@@ -24,7 +24,8 @@ using namespace yas::playing;
 
 coordinator::coordinator(std::string const &root_path, std::string const &identifier,
                          audio::io_device_ptr const &device)
-    : _device(device),
+    : _identifier(identifier),
+      _device(device),
       _player(player::make_shared(
           root_path, identifier, this->_renderer, this->_worker, {},
           player_resource::make_shared(
@@ -32,12 +33,17 @@ coordinator::coordinator(std::string const &root_path, std::string const &identi
               buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))),
       _exporter(exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1})) {
     this->_renderer->configuration_chain()
-        .perform([](auto const &) {
+        .perform([](auto const &config) {
 
         })
         .end()
         ->add_to(this->_pool);
     this->_worker->start();
+}
+
+void coordinator::set_timeline(proc::timeline_ptr const &timeline) {
+    auto const &sample_rate = this->_renderer->sample_rate();
+    this->_exporter->set_timeline_container(timeline_container::make_shared(this->_identifier, sample_rate, timeline));
 }
 
 void coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
