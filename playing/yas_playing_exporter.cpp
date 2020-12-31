@@ -25,7 +25,7 @@ using namespace yas;
 using namespace yas::playing;
 
 exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
-                   task_priority_t const &priority, proc::sample_rate_t const sample_rate)
+                   task_priority_t const &priority)
     : _queue(queue),
       _priority(priority),
       _src_container(
@@ -309,8 +309,8 @@ void exporter::_push_export_task(proc::time::range const &range) {
 }
 
 exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
-                                   task_priority_t const &task_priority, proc::sample_rate_t const sample_rate) {
-    return exporter_ptr(new exporter{root_path, task_queue, task_priority, sample_rate});
+                                   task_priority_t const &task_priority) {
+    return exporter_ptr(new exporter{root_path, task_queue, task_priority});
 }
 
 std::string yas::to_string(exporter::method_t const &method) {

@@ -17,8 +17,7 @@ struct controller {
     audio::io_device_ptr const device = audio::ios_device::make_renewable_device(audio::ios_session::shared());
     coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, this->identifier, this->device);
     exporter_ptr const exporter =
-        exporter::make_shared(this->root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1},
-                              this->coordinator->sample_rate());
+        exporter::make_shared(this->root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1});
     chaining::observer_pool pool;
 
     static std::shared_ptr<controller> make_shared();

@@ -22,7 +22,7 @@ struct exporter final {
     chaining::chain_unsync_t<event_t> event_chain() const;
 
     static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
-                                    task_priority_t const &, proc::sample_rate_t const);
+                                    task_priority_t const &);
 
    private:
     std::shared_ptr<task_queue> const _queue;
@@ -32,8 +32,7 @@ struct exporter final {
 
     chaining::observer_pool _pool;
 
-    exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority_t const &,
-             proc::sample_rate_t const);
+    exporter(std::string const &root_path, std::shared_ptr<task_queue> const &, task_priority_t const &);
 
     void _receive_timeline_event(proc::timeline::event_t const &event);
     void _receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event);
