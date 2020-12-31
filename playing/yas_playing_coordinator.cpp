@@ -32,6 +32,19 @@ coordinator::coordinator(std::string const &root_path, std::string const &identi
               reading_resource::make_shared(),
               buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)))),
       _exporter(exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1})) {
+    this->_exporter->event_chain()
+        .perform([this](exporter_event const &event) {
+            if (event.result.is_success()) {
+                if (event.result.value() == exporter_method::export_ended) {
+                    if (event.range.has_value()) {
+                        this->overwrite(event.range.value());
+                    }
+                }
+            }
+        })
+        .end()
+        ->add_to(this->_pool);
+
     this->_renderer->configuration_chain()
         .perform([this](auto const &) { this->_update_exporter(); })
         .end()
@@ -68,6 +81,7 @@ void coordinator::overwrite(proc::time::range const &range) {
     while (yas_each_next(frag_each)) {
         auto ch_each = make_fast_each(ch_count);
         while (yas_each_next(ch_each)) {
+#warning todo chを変換する
             player->overwrite(yas_each_index(ch_each), yas_each_index(frag_each));
         }
     }
