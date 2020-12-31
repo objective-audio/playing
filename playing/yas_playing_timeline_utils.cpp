@@ -145,7 +145,7 @@ std::type_info const &timeline_utils::to_sample_type(sample_store_type const &st
         case sample_store_type::int32:
             return typeid(int32_t);
         case sample_store_type::uint32:
-            return typeid(int32_t);
+            return typeid(uint32_t);
         case sample_store_type::int16:
             return typeid(int16_t);
         case sample_store_type::uint16:

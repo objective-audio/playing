@@ -14,9 +14,11 @@ struct timeline_container final {
     proc::sample_rate_t const &sample_rate() const;
     std::optional<proc::timeline_ptr> const &timeline() const;
 
+    bool is_available() const;
+
     static timeline_container_ptr make_shared(std::string const &identifier, proc::sample_rate_t const sample_rate,
-                                              proc::timeline_ptr const &timeline);
-    static timeline_container_ptr make_shared(sample_rate_t const sample_rate);
+                                              std::optional<proc::timeline_ptr> const &timeline);
+    static timeline_container_ptr make_shared_empty();
 
    private:
     std::string const _identifier;
@@ -24,7 +26,6 @@ struct timeline_container final {
     std::optional<proc::timeline_ptr> const _timeline;
 
     timeline_container(std::string const &identifier, sample_rate_t const sample_rate,
-                       proc::timeline_ptr const &timeline);
-    timeline_container(proc::sample_rate_t const sample_rate);
+                       std::optional<proc::timeline_ptr> const &timeline);
 };
 }  // namespace yas::playing

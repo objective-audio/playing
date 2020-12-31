@@ -29,7 +29,7 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
     : _queue(queue),
       _priority(priority),
       _src_container(
-          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared(sample_rate))),
+          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
       _resource(exporter_resource::make_shared(root_path)) {
     this->_pool += this->_src_container->chain()
                        .perform([observer = chaining::any_observer_ptr{nullptr},
@@ -39,8 +39,9 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
                                observer = nullptr;
                            }
 
-                           if (auto const &timeline = container->timeline()) {
-                               observer = timeline->get()
+                           if (container->is_available()) {
+                               observer = container->timeline()
+                                              ->get()
                                               ->chain()
                                               .perform([this](proc::timeline::event_t const &event) {
                                                   this->_receive_timeline_event(event);
