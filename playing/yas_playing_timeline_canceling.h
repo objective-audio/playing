@@ -24,6 +24,8 @@ struct timeline_cancel_matcher : task_cancel_id {
 };
 
 struct timeline_cancel_request {
+    virtual ~timeline_cancel_request() = default;
+
     virtual bool is_match(timeline_cancel_matcher_ptr const &) const = 0;
 };
 
