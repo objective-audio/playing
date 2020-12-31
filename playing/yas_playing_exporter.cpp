@@ -39,8 +39,9 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
                                observer = nullptr;
                            }
 
-                           if (auto const &timeline = container->timeline()) {
-                               observer = timeline->get()
+                           if (container->is_available()) {
+                               observer = container->timeline()
+                                              ->get()
                                               ->chain()
                                               .perform([this](proc::timeline::event_t const &event) {
                                                   this->_receive_timeline_event(event);

@@ -14,6 +14,8 @@ struct timeline_container final {
     proc::sample_rate_t const &sample_rate() const;
     std::optional<proc::timeline_ptr> const &timeline() const;
 
+    bool is_available() const;
+
     static timeline_container_ptr make_shared(std::string const &identifier, proc::sample_rate_t const sample_rate,
                                               proc::timeline_ptr const &timeline);
     static timeline_container_ptr make_shared(sample_rate_t const sample_rate);

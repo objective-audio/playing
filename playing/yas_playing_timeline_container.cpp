@@ -27,6 +27,10 @@ std::optional<proc::timeline_ptr> const &timeline_container::timeline() const {
     return this->_timeline;
 }
 
+bool timeline_container::is_available() const {
+    return !this->_identifier.empty() && this->_sample_rate > 0 && this->_timeline.has_value();
+}
+
 timeline_container_ptr timeline_container::make_shared(std::string const &identifier,
                                                        proc::sample_rate_t const sample_rate,
                                                        proc::timeline_ptr const &timeline) {
