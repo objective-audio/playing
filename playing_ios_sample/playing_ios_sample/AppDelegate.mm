@@ -18,6 +18,7 @@ struct app_delegate_cpp {
     app_delegate_cpp() {
         auto const session = audio::ios_session::shared();
         this->device = audio::ios_device::make_renewable_device(session);
+        auto result = session->activate();
         this->controller = sample::controller::make_shared(this->device);
     }
 };
