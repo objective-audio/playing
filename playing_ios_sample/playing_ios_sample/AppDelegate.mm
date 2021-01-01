@@ -3,39 +3,14 @@
 //
 
 #import "AppDelegate.h"
-#import <cpp_utils/yas_objc_cast.h>
-#import "ViewController.h"
-#import "yas_playing_sample_controller.hpp"
-
-using namespace yas;
-using namespace yas::playing;
-
-namespace yas::playing::sample {
-struct app_delegate_cpp {
-    audio::io_device_ptr device;
-    std::shared_ptr<sample::controller> controller;
-
-    app_delegate_cpp() {
-        auto const session = audio::ios_session::shared();
-        this->device = audio::ios_device::make_renewable_device(session);
-        auto result = session->activate();
-        this->controller = sample::controller::make_shared(this->device);
-    }
-};
-}
 
 @interface AppDelegate ()
 
 @end
 
-@implementation AppDelegate {
-    sample::app_delegate_cpp _cpp;
-}
+@implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    if (auto viewController = objc_cast<ViewController>(self.window.rootViewController)) {
-        [viewController setController:self->_cpp.controller];
-    }
     return YES;
 }
 

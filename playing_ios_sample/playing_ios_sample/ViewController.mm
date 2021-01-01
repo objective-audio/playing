@@ -12,6 +12,7 @@ using namespace yas::playing;
 
 namespace yas::playing::sample {
 struct view_controller_cpp {
+    audio::io_device_ptr device;
     std::shared_ptr<sample::controller> controller{nullptr};
 
     chaining::value::holder_ptr<bool> is_playing = chaining::value::holder<bool>::make_shared(false);
@@ -19,6 +20,13 @@ struct view_controller_cpp {
         configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
 
     chaining::observer_pool pool;
+
+    view_controller_cpp() {
+        auto const session = audio::ios_session::shared();
+        this->device = audio::ios_device::make_renewable_device(session);
+        auto result = session->activate();
+        this->controller = sample::controller::make_shared(this->device);
+    }
 };
 }
 
@@ -79,10 +87,6 @@ struct view_controller_cpp {
     self.statusDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_updateStateLabel:)];
     self.statusDisplayLink.preferredFramesPerSecond = 10;
     [self.statusDisplayLink addToRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-}
-
-- (void)setController:(std::shared_ptr<yas::playing::sample::controller>)controller {
-    self->_cpp.controller = std::move(controller);
 }
 
 - (IBAction)playButtonTapped:(UIButton *)sender {
