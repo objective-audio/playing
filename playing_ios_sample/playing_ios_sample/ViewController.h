@@ -11,6 +11,6 @@ struct controller;
 
 @interface ViewController : UIViewController
 
-- (void)set_controller:(std::shared_ptr<yas::playing::sample::controller>)controller;
+- (void)setController:(std::shared_ptr<yas::playing::sample::controller>)controller;
 
 @end

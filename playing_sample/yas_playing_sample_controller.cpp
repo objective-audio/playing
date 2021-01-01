@@ -9,7 +9,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-sample::controller::controller() {
+sample::controller::controller(audio::io_device_ptr const &device) : device(device) {
     proc::sample_rate_t const sample_rate = this->coordinator->sample_rate();
     auto timeline = this->make_sine_timeline(sample_rate);
     this->coordinator->set_timeline(timeline);
@@ -99,7 +99,6 @@ proc::timeline_ptr sample::controller::make_sine_timeline(proc::sample_rate_t co
     return timeline;
 }
 
-std::shared_ptr<sample::controller> sample::controller::make_shared() {
-    auto result = audio::ios_session::shared()->activate();
-    return std::shared_ptr<sample::controller>(new sample::controller{});
+std::shared_ptr<sample::controller> sample::controller::make_shared(audio::io_device_ptr const &device) {
+    return std::shared_ptr<sample::controller>(new sample::controller{device});
 }

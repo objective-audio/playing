@@ -11,17 +11,18 @@
 
 namespace yas::playing::sample {
 struct controller {
+    audio::io_device_ptr const device;
     std::string const root_path =
         file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("sample").string();
     std::string const identifier = "0";
-    audio::io_device_ptr const device = audio::ios_device::make_renewable_device(audio::ios_session::shared());
     coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, this->identifier, this->device);
+
     chaining::observer_pool pool;
 
-    static std::shared_ptr<controller> make_shared();
+    static std::shared_ptr<controller> make_shared(audio::io_device_ptr const &);
 
    private:
-    controller();
+    controller(audio::io_device_ptr const &);
 
     proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const);
 };

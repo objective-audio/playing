@@ -12,7 +12,14 @@ using namespace yas::playing;
 
 namespace yas::playing::sample {
 struct app_delegate_cpp {
-    std::shared_ptr<sample::controller> const controller = sample::controller::make_shared();
+    audio::io_device_ptr device;
+    std::shared_ptr<sample::controller> controller;
+
+    app_delegate_cpp() {
+        auto const session = audio::ios_session::shared();
+        this->device = audio::ios_device::make_renewable_device(session);
+        this->controller = sample::controller::make_shared(this->device);
+    }
 };
 }
 
@@ -26,7 +33,7 @@ struct app_delegate_cpp {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     if (auto viewController = objc_cast<ViewController>(self.window.rootViewController)) {
-        [viewController set_controller:self->_cpp.controller];
+        [viewController setController:self->_cpp.controller];
     }
     return YES;
 }
