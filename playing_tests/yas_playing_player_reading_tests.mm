@@ -31,7 +31,7 @@ using namespace yas::playing;
     auto const &reading = self->_cpp.reading;
 
     reading->state_handler = [] { return playing::reading_resource_state::initial; };
-    reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
+    reading->set_creating_handler = [&called_set_create](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t ch_count) {
         called_set_create.emplace_back(sample_rate, pcm_format, ch_count);
     };
@@ -55,7 +55,7 @@ using namespace yas::playing;
     auto const &reading = self->_cpp.reading;
 
     reading->state_handler = [] { return playing::reading_resource_state::creating; };
-    reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
+    reading->set_creating_handler = [&called_set_create](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t ch_count) {
         called_set_create.emplace_back(sample_rate, pcm_format, ch_count);
     };
@@ -80,12 +80,12 @@ using namespace yas::playing;
     auto const &buffering = self->_cpp.buffering;
 
     reading->state_handler = [] { return playing::reading_resource_state::rendering; };
-    reading->set_creating_handler = [&called_set_create](double sample_rate, audio::pcm_format pcm_format,
+    reading->set_creating_handler = [&called_set_create](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                          uint32_t length) {
         called_set_create.emplace_back(sample_rate, pcm_format, length);
     };
     reading->needs_create_handler = [&called_needs_create, &needs_create](
-                                        double sample_rate, audio::pcm_format pcm_format, uint32_t length) {
+                                        sample_rate_t sample_rate, audio::pcm_format pcm_format, uint32_t length) {
         called_needs_create.emplace_back(sample_rate, pcm_format, length);
         return needs_create;
     };

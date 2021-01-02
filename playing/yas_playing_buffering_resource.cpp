@@ -50,7 +50,7 @@ sample_rate_t buffering_resource::fragment_length_on_render() const {
     return this->_frag_length;
 }
 
-void buffering_resource::set_creating_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+void buffering_resource::set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                                 uint32_t const ch_count) {
     if (this->_setup_state.load() == setup_state_t::creating) {
         throw std::runtime_error("state is already creating.");
@@ -63,7 +63,7 @@ void buffering_resource::set_creating_on_render(double const sample_rate, audio:
     this->_setup_state.store(setup_state_t::creating);
 }
 
-bool buffering_resource::needs_create_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+bool buffering_resource::needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                                 uint32_t const ch_count) {
     if (this->_setup_state.load() != setup_state_t::rendering) {
         throw std::runtime_error("state is not rendering.");
@@ -107,8 +107,10 @@ void buffering_resource::create_buffer_on_task() {
         throw std::runtime_error("ch_count is zero.");
     }
 
-    audio::format const format{
-        {.sample_rate = this->_sample_rate, .pcm_format = this->_pcm_format, .interleaved = false, .channel_count = 1}};
+    audio::format const format{{.sample_rate = static_cast<double>(this->_sample_rate),
+                                .pcm_format = this->_pcm_format,
+                                .interleaved = false,
+                                .channel_count = 1}};
 
     this->_format = format;
 

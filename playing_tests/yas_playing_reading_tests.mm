@@ -28,7 +28,7 @@ using namespace yas::playing;
     std::promise<void> create_promise;
     std::promise<void> render_promise;
 
-    double const sample_rate = 44100;
+    sample_rate_t const sample_rate = 44100;
     auto const pcm_format = audio::pcm_format::float32;
     uint32_t const length = 2;
 

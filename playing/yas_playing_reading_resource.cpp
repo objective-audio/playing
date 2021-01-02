@@ -24,7 +24,7 @@ audio::pcm_buffer *reading_resource::buffer_on_render() {
     return this->_buffer.get();
 }
 
-bool reading_resource::needs_create_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+bool reading_resource::needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const pcm_format,
                                               uint32_t const length) const {
     if (this->_current_state != state_t::rendering) {
         throw std::runtime_error("state is not rendering");
@@ -33,7 +33,7 @@ bool reading_resource::needs_create_on_render(double const sample_rate, audio::p
     return this->_buffer->format().sample_rate() != sample_rate || this->_buffer->frame_capacity() < length;
 }
 
-void reading_resource::set_creating_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+void reading_resource::set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const pcm_format,
                                               uint32_t const length) {
     if (this->_current_state == state_t::creating) {
         throw std::runtime_error("state is already creating.");
@@ -67,8 +67,10 @@ void reading_resource::create_buffer_on_task() {
         throw std::runtime_error("length is zero.");
     }
 
-    audio::format const format{
-        {.sample_rate = this->_sample_rate, .pcm_format = this->_pcm_format, .interleaved = false, .channel_count = 1}};
+    audio::format const format{{.sample_rate = static_cast<double>(this->_sample_rate),
+                                .pcm_format = this->_pcm_format,
+                                .interleaved = false,
+                                .channel_count = 1}};
 
     this->_buffer = std::make_shared<audio::pcm_buffer>(format, this->_length);
     this->_sample_rate = 0;

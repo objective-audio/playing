@@ -59,9 +59,9 @@ struct buffering_resource_protocol {
     [[nodiscard]] virtual std::size_t channel_count_on_render() const = 0;
     [[nodiscard]] virtual sample_rate_t fragment_length_on_render() const = 0;
 
-    virtual void set_creating_on_render(double const sample_rate, audio::pcm_format const &,
+    virtual void set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const &,
                                         uint32_t const ch_count) = 0;
-    [[nodiscard]] virtual bool needs_create_on_render(double const sample_rate, audio::pcm_format const &,
+    [[nodiscard]] virtual bool needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const &,
                                                       uint32_t const ch_count) = 0;
 
     virtual void create_buffer_on_task() = 0;

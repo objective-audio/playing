@@ -99,8 +99,8 @@ struct resource : player_resource_protocol {
 struct reading : reading_resource_protocol {
     std::function<state_t(void)> state_handler;
     std::function<audio::pcm_buffer *(void)> buffer_handler;
-    std::function<bool(double, audio::pcm_format, uint32_t)> needs_create_handler;
-    std::function<void(double, audio::pcm_format, uint32_t)> set_creating_handler;
+    std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;
+    std::function<void(sample_rate_t, audio::pcm_format, uint32_t)> set_creating_handler;
     std::function<void(void)> create_buffer_handler;
 
     state_t state() const override {
@@ -111,12 +111,12 @@ struct reading : reading_resource_protocol {
         return this->buffer_handler();
     }
 
-    bool needs_create_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+    bool needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const pcm_format,
                                 uint32_t const length) const override {
         return this->needs_create_handler(sample_rate, pcm_format, length);
     }
 
-    void set_creating_on_render(double const sample_rate, audio::pcm_format const pcm_format,
+    void set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const pcm_format,
                                 uint32_t const length) override {
         this->set_creating_handler(sample_rate, pcm_format, length);
     }
@@ -132,8 +132,8 @@ struct buffering : buffering_resource_protocol {
     std::function<std::size_t(void)> element_count_handler;
     std::function<std::size_t(void)> channel_count_handler;
     std::function<sample_rate_t(void)> fragment_length_handler;
-    std::function<void(double, audio::pcm_format, uint32_t)> set_creating_handler;
-    std::function<bool(double, audio::pcm_format, uint32_t)> needs_create_handler;
+    std::function<void(sample_rate_t, audio::pcm_format, uint32_t)> set_creating_handler;
+    std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;
     std::function<void(void)> create_buffer_handler;
     std::function<void(frame_index_t, std::optional<channel_mapping_ptr> &&)> set_all_writing_handler;
     std::function<void(void)> write_all_elements_handler;
@@ -162,12 +162,12 @@ struct buffering : buffering_resource_protocol {
         return this->fragment_length_handler();
     }
 
-    void set_creating_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+    void set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                 uint32_t const ch_count) override {
         this->set_creating_handler(sample_rate, pcm_format, ch_count);
     }
 
-    bool needs_create_on_render(double const sample_rate, audio::pcm_format const &pcm_format,
+    bool needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                 uint32_t const ch_count) override {
         return this->needs_create_handler(sample_rate, pcm_format, ch_count);
     }
@@ -204,7 +204,7 @@ struct buffering : buffering_resource_protocol {
 };
 
 struct audio_player_cpp {
-    static double constexpr sample_rate = 4;
+    static sample_rate_t constexpr sample_rate = 4;
     static audio::pcm_format constexpr pcm_format = audio::pcm_format::int16;
     static uint32_t constexpr ch_count = 3;
     static std::size_t constexpr length = 2;
