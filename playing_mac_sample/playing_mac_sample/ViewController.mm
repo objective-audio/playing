@@ -27,6 +27,7 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet NSButton *playButton;
 @property (nonatomic, weak) IBOutlet NSButton *minusButton;
 @property (nonatomic, weak) IBOutlet NSButton *plusButton;
+@property (nonatomic, weak) IBOutlet NSSlider *frequencySlider;
 @property (nonatomic, weak) IBOutlet NSTextField *playFrameLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *configurationLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *stateLabel;
@@ -54,23 +55,28 @@ struct view_controller_cpp {
     auto unowned_self = objc_ptr_with_move_object([[YASUnownedObject<ViewController *> alloc] initWithObject:self]);
 
     auto const &controller = self->_cpp.controller;
+    auto &pool = self->_cpp.pool;
 
-    controller->pool += controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync();
-    controller->pool += controller->coordinator->configuration_chain().send_to(self->_cpp.config).sync();
+    self.frequencySlider.floatValue = controller->frequency->raw();
 
-    controller->pool += self->_cpp.is_playing->chain()
-                            .perform([unowned_self](bool const &is_playing) {
-                                NSString *title = is_playing ? @"Stop" : @"Play";
-                                ViewController *viewController = [unowned_self.object() object];
-                                [viewController.playButton setTitle:title];
-                            })
-                            .sync();
-    controller->pool += self->_cpp.config->chain()
-                            .perform([unowned_self](auto const &) {
-                                ViewController *viewController = [unowned_self.object() object];
-                                [viewController _updateConfigurationLabel];
-                            })
-                            .sync();
+    controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync()->add_to(pool);
+    controller->coordinator->configuration_chain().send_to(self->_cpp.config).sync()->add_to(pool);
+
+    self->_cpp.is_playing->chain()
+        .perform([unowned_self](bool const &is_playing) {
+            NSString *title = is_playing ? @"Stop" : @"Play";
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController.playButton setTitle:title];
+        })
+        .sync()
+        ->add_to(pool);
+    self->_cpp.config->chain()
+        .perform([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateConfigurationLabel];
+        })
+        .sync()
+        ->add_to(pool);
 
     self.frameTimer = [NSTimer timerWithTimeInterval:1.0 / 30.0
                                               target:self
@@ -84,7 +90,7 @@ struct view_controller_cpp {
                                              selector:@selector(_updateStateLabel:)
                                              userInfo:nil
                                               repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:self.frameTimer forMode:NSRunLoopCommonModes];
+    [[NSRunLoop currentRunLoop] addTimer:self.statusTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)setRepresentedObject:(id)representedObject {
@@ -104,6 +110,10 @@ struct view_controller_cpp {
 - (IBAction)plusButtonTapped:(NSButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
     coordinator->seek(coordinator->current_frame() + coordinator->sample_rate());
+}
+
+- (IBAction)freqencySliderChanged:(NSSlider *)sender {
+    self->_cpp.controller->frequency->set_value(sender.floatValue);
 }
 
 - (void)_updateConfigurationLabel {

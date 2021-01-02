@@ -10,18 +10,37 @@ using namespace yas;
 using namespace yas::playing;
 
 sample::controller::controller(audio::io_device_ptr const &device) : device(device) {
-    proc::sample_rate_t const sample_rate = this->coordinator->sample_rate();
-    auto timeline = this->make_sine_timeline(sample_rate);
-    this->coordinator->set_timeline(timeline);
-
     std::cout << "root_path:" << this->root_path << std::endl;
+
+    this->coordinator->configuration_chain()
+        .to([](configuration const &config) { return config.sample_rate; })
+        .send_to(this->_sample_rate)
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_sample_rate->chain()
+        .perform([this](proc::sample_rate_t const &) { this->_update_timeline(); })
+        .end()
+        ->add_to(this->_pool);
+
+    this->frequency->chain().perform([this](float const &) { this->_update_timeline(); }).sync()->add_to(this->_pool);
 }
 
-proc::timeline_ptr sample::controller::make_sine_timeline(proc::sample_rate_t const sample_rate) {
+void sample::controller::_update_timeline() {
+    auto const timeline = this->make_sine_timeline(this->_sample_rate->raw(), this->frequency->raw());
+    this->coordinator->set_timeline(timeline);
+}
+
+proc::timeline_ptr sample::controller::make_sine_timeline(proc::sample_rate_t const sample_rate,
+                                                          float const frequency) {
+    auto const timeline = proc::timeline::make_shared();
+
+    if (sample_rate <= 0) {
+        return timeline;
+    }
+
     uint32_t const length = 3;
     proc::time::range const process_range{0, sample_rate * length};
-
-    auto const timeline = proc::timeline::make_shared();
     proc::track_index_t trk_idx = 0;
 
     if (auto second_track = proc::track::make_shared(); true) {
@@ -50,7 +69,7 @@ proc::timeline_ptr sample::controller::make_sine_timeline(proc::sample_rate_t co
 
     if (auto pi_track = proc::track::make_shared(); true) {
         timeline->insert_track(trk_idx++, pi_track);
-        auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * 1000.0f);
+        auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * frequency);
         pi_module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
         pi_track->push_back_module(std::move(pi_module), process_range);
     }

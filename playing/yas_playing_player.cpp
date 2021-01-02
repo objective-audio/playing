@@ -76,14 +76,15 @@ player::player(std::string const &root_path, std::string const &identifier, rend
 
     // setup chaining
 
-    this->_pool +=
-        this->_ch_mapping->chain()
-            .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
-            .sync();
+    this->_ch_mapping->chain()
+        .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
+        .sync()
+        ->add_to(this->_pool);
 
-    this->_pool += this->_is_playing->chain()
-                       .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
-                       .sync();
+    this->_is_playing->chain()
+        .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
+        .sync()
+        ->add_to(this->_pool);
 
     // setup renderable
 

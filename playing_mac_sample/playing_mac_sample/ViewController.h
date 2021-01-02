@@ -7,6 +7,4 @@
 
 @interface ViewController : NSViewController
 
-- (void)setController:(std::shared_ptr<yas::playing::sample::controller>)controller;
-
 @end

@@ -17,13 +17,19 @@ struct controller {
     std::string const identifier = "0";
     coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, this->identifier, this->device);
 
-    chaining::observer_pool pool;
+    chaining::value::holder_ptr<float> const frequency = chaining::value::holder<float>::make_shared(1000.0f);
 
     static std::shared_ptr<controller> make_shared(audio::io_device_ptr const &);
 
    private:
+    chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
+        chaining::value::holder<proc::sample_rate_t>::make_shared(0);
+
+    chaining::observer_pool _pool;
+
     controller(audio::io_device_ptr const &);
 
-    proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const);
+    void _update_timeline();
+    proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const, float const frequency);
 };
 }  // namespace yas::playing::sample
