@@ -31,25 +31,25 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
       _src_container(
           chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
       _resource(exporter_resource::make_shared(root_path)) {
-    this->_pool += this->_src_container->chain()
-                       .perform([observer = chaining::any_observer_ptr{nullptr},
-                                 this](timeline_container_ptr const &container) mutable {
-                           if (observer) {
-                               observer->invalidate();
-                               observer = nullptr;
-                           }
+    this->_src_container->chain()
+        .perform([observer = chaining::any_observer_ptr{nullptr},
+                  this](timeline_container_ptr const &container) mutable {
+            if (observer) {
+                observer->invalidate();
+                observer = nullptr;
+            }
 
-                           if (container->is_available()) {
-                               observer = container->timeline()
-                                              ->get()
-                                              ->chain()
-                                              .perform([this](proc::timeline::event_t const &event) {
-                                                  this->_receive_timeline_event(event);
-                                              })
-                                              .sync();
-                           }
-                       })
-                       .end();
+            if (container->is_available()) {
+                observer =
+                    container->timeline()
+                        ->get()
+                        ->chain()
+                        .perform([this](proc::timeline::event_t const &event) { this->_receive_timeline_event(event); })
+                        .sync();
+            }
+        })
+        .end()
+        ->add_to(this->_pool);
 }
 
 void exporter::set_timeline_container(timeline_container_ptr const &container) {
