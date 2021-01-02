@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -67,18 +67,28 @@
                                     </label>
                                 </subviews>
                             </stackView>
+                            <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="500" minValue="500" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="byH-dW-Egy">
+                                <rect key="frame" x="20" y="167" width="376" height="31"/>
+                                <connections>
+                                    <action selector="frequencyChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="PcF-5a-59u"/>
+                                </connections>
+                            </slider>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="byH-dW-Egy" secondAttribute="trailing" constant="20" id="B4o-Wm-C5e"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6XW-dw-ZSo" secondAttribute="trailing" constant="20" id="Bql-Uq-U7k"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="6XW-dw-ZSo" secondAttribute="bottom" id="Ndz-pU-r9s"/>
                             <constraint firstItem="6XW-dw-ZSo" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="20" id="hcz-Pe-3k3"/>
+                            <constraint firstItem="byH-dW-Egy" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="22" id="s8j-sG-6f1"/>
+                            <constraint firstItem="byH-dW-Egy" firstAttribute="top" secondItem="6XW-dw-ZSo" secondAttribute="bottom" constant="7.5" id="seG-au-vTK"/>
                             <constraint firstItem="6XW-dw-ZSo" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="vJ5-SC-uQ8"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="configurationLabel" destination="een-XW-XNf" id="Hqj-iM-npD"/>
+                        <outlet property="frequencySlider" destination="byH-dW-Egy" id="sUd-fl-l5r"/>
                         <outlet property="minusButton" destination="86l-Hm-fAR" id="did-Mx-qAv"/>
                         <outlet property="playButton" destination="U2G-pc-4Y5" id="0mq-dQ-mnu"/>
                         <outlet property="playFrameLabel" destination="qyN-6B-cmY" id="0Uu-F1-xCT"/>
@@ -88,7 +98,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="139" y="132"/>
+            <point key="canvasLocation" x="137.68115942028987" y="131.91964285714286"/>
         </scene>
     </scenes>
     <resources>
