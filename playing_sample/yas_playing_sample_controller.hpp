@@ -22,6 +22,7 @@ struct controller {
     static std::shared_ptr<controller> make_shared(audio::io_device_ptr const &);
 
    private:
+    proc::timeline_ptr _timeline = nullptr;
     chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
         chaining::value::holder<proc::sample_rate_t>::make_shared(0);
 
@@ -30,6 +31,7 @@ struct controller {
     controller(audio::io_device_ptr const &);
 
     void _update_timeline();
-    proc::timeline_ptr make_sine_timeline(proc::sample_rate_t const, float const frequency);
+    void _update_sine_track();
+    proc::timeline_ptr make_timeline();
 };
 }  // namespace yas::playing::sample
