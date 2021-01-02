@@ -763,26 +763,6 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Xzp-5p-nof">
-                                <rect key="frame" x="232" y="223" width="75" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="amT-of-Kwe">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                    <connections>
-                                        <action selector="setOne:" target="XfG-lQ-9wD" id="6A9-K2-yXu"/>
-                                    </connections>
-                                </buttonCell>
-                            </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="yHJ-K1-GDO">
-                                <rect key="frame" x="305" y="223" width="75" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="69p-wp-ei7">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="setTwo:" target="XfG-lQ-9wD" id="MmF-jk-LZ9"/>
-                                </connections>
-                            </button>
                             <slider verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="b5X-ax-UE4">
                                 <rect key="frame" x="18" y="124" width="444" height="28"/>
                                 <sliderCell key="cell" state="on" alignment="left" minValue="500" maxValue="2000" doubleValue="1000" tickMarkPosition="above" numberOfTickMarks="4" allowsTickMarkValuesOnly="YES" sliderType="linear" id="GRr-M5-aON"/>
@@ -793,7 +773,6 @@
                         </subviews>
                         <constraints>
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="leading" secondItem="rRd-cr-QaC" secondAttribute="trailing" constant="12" symbolic="YES" id="4K1-Fr-8CE"/>
-                            <constraint firstItem="Xzp-5p-nof" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="8pi-cf-U0F"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="hvj-rk-PWX" secondAttribute="trailing" constant="22" id="8pi-jk-qGk"/>
                             <constraint firstItem="JgA-Ha-QDJ" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="Hdg-2C-8m3"/>
                             <constraint firstItem="b5X-ax-UE4" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="KMI-QE-80M"/>
@@ -806,14 +785,11 @@
                             <constraint firstItem="hvj-rk-PWX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="bcP-Tu-qxa"/>
                             <constraint firstItem="PiI-Jf-bSN" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="c2M-Xd-f8P"/>
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="cm3-3r-3F3"/>
-                            <constraint firstItem="Xzp-5p-nof" firstAttribute="leading" secondItem="0W3-fu-CgP" secondAttribute="trailing" constant="12" symbolic="YES" id="e1L-NW-j33"/>
                             <constraint firstItem="rRd-cr-QaC" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="hVp-lR-54B"/>
-                            <constraint firstItem="yHJ-K1-GDO" firstAttribute="leading" secondItem="Xzp-5p-nof" secondAttribute="trailing" constant="12" symbolic="YES" id="kOK-Rx-Xa1"/>
                             <constraint firstItem="hvj-rk-PWX" firstAttribute="top" secondItem="PiI-Jf-bSN" secondAttribute="bottom" constant="8" symbolic="YES" id="lUH-RL-RI7"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JgA-Ha-QDJ" secondAttribute="trailing" constant="22" id="mOV-o9-42g"/>
                             <constraint firstItem="b5X-ax-UE4" firstAttribute="top" secondItem="JgA-Ha-QDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="sTE-mR-8rG"/>
                             <constraint firstItem="PiI-Jf-bSN" firstAttribute="top" secondItem="0ER-1E-Aje" secondAttribute="bottom" constant="8" symbolic="YES" id="vRX-tP-G1j"/>
-                            <constraint firstItem="yHJ-K1-GDO" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="xXy-AA-opj"/>
                         </constraints>
                     </view>
                     <connections>
