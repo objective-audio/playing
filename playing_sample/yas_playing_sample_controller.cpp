@@ -45,17 +45,17 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
         .sync()
         ->add_to(this->_pool);
 
-    this->frequency->chain().perform([this](float const &) { this->_update_sine_track(); }).end()->add_to(this->_pool);
+    this->frequency->chain().perform([this](float const &) { this->_update_pi_track(); }).end()->add_to(this->_pool);
 }
 
 void sample::controller::_update_timeline() {
     auto const timeline = this->make_timeline();
     this->_timeline = timeline;
     this->coordinator->set_timeline(timeline);
-    this->_update_sine_track();
+    this->_update_pi_track();
 }
 
-void sample::controller::_update_sine_track() {
+void sample::controller::_update_pi_track() {
     auto const sample_rate = this->_sample_rate->raw();
 
     if (sample_rate <= 0) {
@@ -65,14 +65,15 @@ void sample::controller::_update_sine_track() {
     proc::time::range const process_range{0, sample_rate * length};
 
     if (auto const &timeline = this->_timeline) {
-        timeline->erase_track(to_track_index(sample::track::sine));
+        auto const track_idx = to_track_index(sample::track::pi);
 
-        if (auto sine_track = proc::track::make_shared(); true) {
-            timeline->insert_track(to_track_index(sample::track::sine), sine_track);
-            auto sine_module = proc::make_signal_module<float>(proc::math1::kind::sin);
-            sine_module->connect_input(proc::to_connector_index(proc::math1::input::parameter), 0);
-            sine_module->connect_output(proc::to_connector_index(proc::math1::output::result), 0);
-            sine_track->push_back_module(std::move(sine_module), process_range);
+        timeline->erase_track(track_idx);
+
+        if (auto pi_track = proc::track::make_shared(); true) {
+            timeline->insert_track(track_idx, pi_track);
+            auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * this->frequency->raw());
+            pi_module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
+            pi_track->push_back_module(std::move(pi_module), process_range);
         }
     }
 }
@@ -111,13 +112,6 @@ proc::timeline_ptr sample::controller::make_timeline() {
         minus_track->push_back_module(std::move(minus_module), process_range);
     }
 
-    if (auto pi_track = proc::track::make_shared(); true) {
-        timeline->insert_track(to_track_index(sample::track::pi), pi_track);
-        auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * this->frequency->raw());
-        pi_module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
-        pi_track->push_back_module(std::move(pi_module), process_range);
-    }
-
     if (auto multiply_track = proc::track::make_shared(); true) {
         timeline->insert_track(to_track_index(sample::track::multiply), multiply_track);
         auto multiply_module = proc::make_signal_module<float>(proc::math2::kind::multiply);
@@ -125,6 +119,14 @@ proc::timeline_ptr sample::controller::make_timeline() {
         multiply_module->connect_input(proc::to_connector_index(proc::math2::input::right), 1);
         multiply_module->connect_output(proc::to_connector_index(proc::math2::output::result), 0);
         multiply_track->push_back_module(std::move(multiply_module), process_range);
+    }
+
+    if (auto sine_track = proc::track::make_shared(); true) {
+        timeline->insert_track(to_track_index(sample::track::sine), sine_track);
+        auto sine_module = proc::make_signal_module<float>(proc::math1::kind::sin);
+        sine_module->connect_input(proc::to_connector_index(proc::math1::input::parameter), 0);
+        sine_module->connect_output(proc::to_connector_index(proc::math1::output::result), 0);
+        sine_track->push_back_module(std::move(sine_module), process_range);
     }
 
     if (auto level_track = proc::track::make_shared(); true) {

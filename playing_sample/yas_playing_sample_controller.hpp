@@ -31,7 +31,7 @@ struct controller {
     controller(audio::io_device_ptr const &);
 
     void _update_timeline();
-    void _update_sine_track();
+    void _update_pi_track();
     proc::timeline_ptr make_timeline();
 };
 }  // namespace yas::playing::sample
