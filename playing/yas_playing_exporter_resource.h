@@ -6,6 +6,7 @@
 
 #include <playing/yas_playing_exporter_protocol.h>
 #include <playing/yas_playing_ptr.h>
+#include <playing/yas_playing_types.h>
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
@@ -16,6 +17,9 @@ struct exporter_resource {
     std::optional<proc::sync_source> sync_source;
 
     chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
+
+    void export_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier,
+                                 sample_rate_t const &sample_rate, yas::task const &task);
 
     void export_fragments_on_task(exporter_resource_ptr const &resource, proc::time::range const &frags_range,
                                   task const &task);

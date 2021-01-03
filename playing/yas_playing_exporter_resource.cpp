@@ -13,11 +13,48 @@
 #include "yas_playing_numbers_file.h"
 #include "yas_playing_path.h"
 #include "yas_playing_signal_file.h"
+#include "yas_playing_timeline_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
 
 exporter_resource::exporter_resource(std::string const &root_path) : root_path(root_path) {
+}
+
+void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
+                                                sample_rate_t const &sample_rate, yas::task const &task) {
+    this->identifier = identifier;
+    this->timeline = proc::timeline::make_shared(std::move(tracks));
+    this->sync_source.emplace(sample_rate, sample_rate);
+
+    if (task.is_canceled()) {
+        return;
+    }
+
+    if (auto const result = file_manager::remove_content(this->root_path); !result) {
+        std::runtime_error("remove timeline root directory failed.");
+    }
+
+    this->send_method_on_task(exporter_method::reset, std::nullopt);
+
+    if (task.is_canceled()) {
+        return;
+    }
+
+    proc::timeline_ptr const &timeline = this->timeline;
+
+    auto total_range = timeline->total_range();
+    if (!total_range.has_value()) {
+        return;
+    }
+
+    auto const &sync_source = this->sync_source.value();
+    auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
+
+    this->send_method_on_task(exporter_method::export_began, frags_range);
+
+#warning todo
+    //    this->export_fragments_on_task(resource, frags_range, task);
 }
 
 void exporter_resource::export_fragments_on_task(exporter_resource_ptr const &resource,
