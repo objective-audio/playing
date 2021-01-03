@@ -21,8 +21,7 @@ struct exporter_resource {
     void export_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier,
                                  sample_rate_t const &sample_rate, yas::task const &task);
 
-    void export_fragments_on_task(exporter_resource_ptr const &resource, proc::time::range const &frags_range,
-                                  task const &task);
+    void export_fragments_on_task(proc::time::range const &frags_range, task const &task);
     [[nodiscard]] std::optional<exporter_error> export_fragment_on_task(proc::time::range const &frag_range,
                                                                         proc::stream const &stream);
     [[nodiscard]] std::optional<exporter_error> remove_fragments_on_task(exporter_resource_ptr const &resource,

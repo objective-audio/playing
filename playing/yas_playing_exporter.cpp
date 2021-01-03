@@ -151,7 +151,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
             resource->send_method_on_task(method_t::export_began, frags_range);
 
-            resource->export_fragments_on_task(resource, frags_range, task);
+            resource->export_fragments_on_task(frags_range, task);
         },
         {.priority = this->_priority.timeline});
 
@@ -299,7 +299,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
                 resource->send_error_on_task(*error, range);
                 return;
             } else {
-                resource->export_fragments_on_task(resource, frags_range, task);
+                resource->export_fragments_on_task(frags_range, task);
             }
         },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});

@@ -53,12 +53,10 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
 
     this->send_method_on_task(exporter_method::export_began, frags_range);
 
-#warning todo
-    //    this->export_fragments_on_task(resource, frags_range, task);
+    this->export_fragments_on_task(frags_range, task);
 }
 
-void exporter_resource::export_fragments_on_task(exporter_resource_ptr const &resource,
-                                                 proc::time::range const &frags_range, task const &task) {
+void exporter_resource::export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
