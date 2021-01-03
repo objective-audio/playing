@@ -65,16 +65,16 @@ void exporter_resource::export_fragments_on_task(exporter_resource_ptr const &re
         return;
     }
 
-    this->timeline->process(frags_range, resource->sync_source.value(),
-                            [&resource, &task, this](proc::time::range const &range, proc::stream const &stream) {
+    this->timeline->process(frags_range, this->sync_source.value(),
+                            [&task, this](proc::time::range const &range, proc::stream const &stream) {
                                 if (task.is_canceled()) {
                                     return proc::continuation::abort;
                                 }
 
-                                if (auto error = this->export_fragment_on_task(resource, range, stream)) {
-                                    resource->send_error_on_task(*error, range);
+                                if (auto error = this->export_fragment_on_task(range, stream)) {
+                                    this->send_error_on_task(*error, range);
                                 } else {
-                                    resource->send_method_on_task(exporter_method::export_ended, range);
+                                    this->send_method_on_task(exporter_method::export_ended, range);
                                 }
 
                                 return proc::continuation::keep;
@@ -82,11 +82,11 @@ void exporter_resource::export_fragments_on_task(exporter_resource_ptr const &re
 }
 
 [[nodiscard]] std::optional<exporter_error> exporter_resource::export_fragment_on_task(
-    exporter_resource_ptr const &resource, proc::time::range const &frag_range, proc::stream const &stream) {
+    proc::time::range const &frag_range, proc::stream const &stream) {
     assert(!thread::is_main());
 
-    auto const &sync_source = resource->sync_source.value();
-    path::timeline const tl_path{this->root_path, resource->identifier, sync_source.sample_rate};
+    auto const &sync_source = this->sync_source.value();
+    path::timeline const tl_path{this->root_path, this->identifier, sync_source.sample_rate};
 
     auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
