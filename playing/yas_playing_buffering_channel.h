@@ -12,7 +12,7 @@ struct buffering_channel final : buffering_channel_protocol {
     void write_all_elements_on_task(path::channel const &, fragment_index_t const top_frag_idx) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
 
-    void advance_on_render(fragment_index_t const prev_frag_idx, fragment_index_t const new_frag_idx) override;
+    void advance_on_render(fragment_index_t const prev_frag_idx) override;
     void overwrite_element_on_render(fragment_index_t const) override;
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, frame_index_t const) override;
 

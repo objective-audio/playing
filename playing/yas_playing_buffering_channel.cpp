@@ -41,10 +41,10 @@ bool buffering_channel::write_elements_if_needed_on_task() {
     return is_written;
 }
 
-void buffering_channel::advance_on_render(fragment_index_t const prev_frag_idx, fragment_index_t const new_frag_idx) {
+void buffering_channel::advance_on_render(fragment_index_t const frag_idx) {
     for (auto const &element : this->_elements) {
-        if (element->fragment_index_on_render() == prev_frag_idx) {
-            element->advance_on_render(new_frag_idx);
+        if (element->fragment_index_on_render() == frag_idx) {
+            element->advance_on_render(frag_idx + this->_elements.size());
         }
     }
 }

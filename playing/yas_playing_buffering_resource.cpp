@@ -182,9 +182,8 @@ void buffering_resource::advance_on_render(fragment_index_t const frag_idx) {
         throw std::runtime_error("state is not advancing.");
     }
 
-    auto const prev_frag_idx = frag_idx - this->_element_count;
     for (auto const &channel : this->_channels) {
-        channel->advance_on_render(prev_frag_idx, frag_idx);
+        channel->advance_on_render(frag_idx);
     }
 }
 
