@@ -53,8 +53,7 @@ std::optional<fragment_index_t> player_utils::advancing_fragment_index(frame_ind
                                                                        uint32_t const proc_length,
                                                                        uint32_t const frag_length) {
     if (math::mod_int(frame + proc_length, frag_length) == 0) {
-#warning todo
-        return frame / frag_length;
+        return math::floor_int(frame, frag_length) / frag_length;
     } else {
         return std::nullopt;
     }
