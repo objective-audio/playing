@@ -10,7 +10,7 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::sample {
-static uint32_t const length = 3;
+static uint32_t const length = 6;
 
 enum class track : int64_t {
     second,
