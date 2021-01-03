@@ -39,6 +39,7 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet UILabel *playFrameLabel;
 @property (nonatomic, weak) IBOutlet UILabel *configurationLabel;
 @property (nonatomic, weak) IBOutlet UILabel *stateLabel;
+@property (nonatomic, weak) IBOutlet UILabel *frequencyLabel;
 
 @property (nonatomic) CADisplayLink *frameDisplayLink;
 @property (nonatomic) CADisplayLink *statusDisplayLink;
@@ -70,6 +71,14 @@ struct view_controller_cpp {
     controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync()->add_to(pool);
     controller->coordinator->configuration_chain().send_to(self->_cpp.config).sync()->add_to(pool);
 
+    controller->frequency->chain()
+        .perform([unowned_self](float const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateFrequencyLabel];
+        })
+        .sync()
+        ->add_to(pool);
+
     self->_cpp.is_playing->chain()
         .perform([unowned_self](bool const &is_playing) {
             NSString *title = is_playing ? @"Stop" : @"Play";
@@ -78,6 +87,7 @@ struct view_controller_cpp {
         })
         .sync()
         ->add_to(pool);
+
     self->_cpp.config->chain()
         .perform([unowned_self](auto const &) {
             ViewController *viewController = [unowned_self.object() object];
@@ -136,6 +146,10 @@ struct view_controller_cpp {
     std::string const play_frame_str =
         "play_frame : " + std::to_string(self->_cpp.controller->coordinator->current_frame());
     self.playFrameLabel.text = (__bridge NSString *)to_cf_object(play_frame_str);
+}
+
+- (void)_updateFrequencyLabel {
+    self.frequencyLabel.text = [NSString stringWithFormat:@"%.1fHz", self->_cpp.controller->frequency->raw()];
 }
 
 @end

@@ -73,10 +73,18 @@
                                     <action selector="frequencyChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="PcF-5a-59u"/>
                                 </connections>
                             </slider>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ONi-Dw-lKP">
+                                <rect key="frame" x="352.5" y="205" width="41.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
+                            <constraint firstItem="ONi-Dw-lKP" firstAttribute="top" secondItem="byH-dW-Egy" secondAttribute="bottom" constant="8" symbolic="YES" id="2rF-qj-3sv"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="ONi-Dw-lKP" secondAttribute="trailing" constant="20" id="4iC-Qj-p37"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="byH-dW-Egy" secondAttribute="trailing" constant="20" id="B4o-Wm-C5e"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="6XW-dw-ZSo" secondAttribute="trailing" constant="20" id="Bql-Uq-U7k"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="6XW-dw-ZSo" secondAttribute="bottom" id="Ndz-pU-r9s"/>
@@ -88,6 +96,7 @@
                     </view>
                     <connections>
                         <outlet property="configurationLabel" destination="een-XW-XNf" id="Hqj-iM-npD"/>
+                        <outlet property="frequencyLabel" destination="ONi-Dw-lKP" id="x7E-Ig-P1a"/>
                         <outlet property="frequencySlider" destination="byH-dW-Egy" id="sUd-fl-l5r"/>
                         <outlet property="minusButton" destination="86l-Hm-fAR" id="did-Mx-qAv"/>
                         <outlet property="playButton" destination="U2G-pc-4Y5" id="0mq-dQ-mnu"/>
