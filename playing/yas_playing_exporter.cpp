@@ -197,13 +197,9 @@ void exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::er
 
     for (auto &pair : modules) {
         auto const &range = pair.first;
-        auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range, module = std::move(pair.second)](auto const &) {
-                auto const &track = resource->timeline->track(trk_idx);
-                assert(track->modules().count(range) > 0);
-                track->erase_modules_for_range(range);
-            },
-            {.priority = this->_priority.timeline});
+        auto task = task::make_shared([resource = this->_resource, trk_idx, range = range](
+                                          auto const &) { resource->erase_modules_on_task(trk_idx, range); },
+                                      {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(task));
     }
