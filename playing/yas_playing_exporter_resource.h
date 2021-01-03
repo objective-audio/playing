@@ -20,6 +20,7 @@ struct exporter_resource {
 
     void export_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier,
                                  sample_rate_t const &sample_rate, yas::task const &task);
+    void insert_track_on_task(proc::track_index_t const trk_idx, proc::track_ptr &&track);
 
     void export_fragments_on_task(proc::time::range const &frags_range, task const &task);
     [[nodiscard]] std::optional<exporter_error> export_fragment_on_task(proc::time::range const &frag_range,

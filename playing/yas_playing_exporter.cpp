@@ -136,11 +136,10 @@ void exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
     std::optional<proc::time::range> total_range = proc::total_range(tracks);
 
     for (auto &pair : tracks) {
-        auto insert_task = task::make_shared(
-            [resource = this->_resource, trk_idx = pair.first, track = std::move(pair.second)](auto const &) mutable {
-                resource->timeline->insert_track(trk_idx, std::move(track));
-            },
-            {.priority = this->_priority.timeline});
+        auto insert_task =
+            task::make_shared([resource = this->_resource, trk_idx = pair.first, track = std::move(pair.second)](
+                                  auto const &) mutable { resource->insert_track_on_task(trk_idx, std::move(track)); },
+                              {.priority = this->_priority.timeline});
 
         this->_queue->push_back(insert_task);
     }
