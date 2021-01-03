@@ -102,7 +102,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
         auto const &buffering = resource->buffering();
 
         auto const &out_format = out_buffer->format();
-        auto const sample_rate = out_format.sample_rate();
+        auto const sample_rate = static_cast<sample_rate_t>(std::round(out_format.sample_rate()));
         auto const pcm_format = out_format.pcm_format();
         auto const out_length = out_buffer->frame_length();
         auto const out_ch_count = out_format.channel_count();

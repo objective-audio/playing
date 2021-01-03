@@ -6,6 +6,7 @@
 
 #include <audio/yas_audio_graph_io.h>
 #include <audio/yas_audio_io.h>
+#include <playing/yas_playing_types.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -115,11 +116,12 @@ void renderer::_update_connection() {
         this->_connection = std::nullopt;
     }
 
-    double const &sample_rate = this->_sample_rate->raw();
+    sample_rate_t const &sample_rate = this->_sample_rate->raw();
     std::size_t const ch_count = this->_channel_count->raw();
 
     if (sample_rate > 0.0 && ch_count > 0) {
-        audio::format format{{.sample_rate = sample_rate, .channel_count = static_cast<uint32_t>(ch_count)}};
+        audio::format format{
+            {.sample_rate = static_cast<double>(sample_rate), .channel_count = static_cast<uint32_t>(ch_count)}};
         this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
     }
 }

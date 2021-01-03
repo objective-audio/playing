@@ -15,8 +15,9 @@ struct buffering_resource final : buffering_resource_protocol {
     [[nodiscard]] std::size_t channel_count_on_render() const override;
     [[nodiscard]] sample_rate_t fragment_length_on_render() const override;
 
-    void set_creating_on_render(double const sample_rate, audio::pcm_format const &, uint32_t const ch_count) override;
-    [[nodiscard]] bool needs_create_on_render(double const sample_rate, audio::pcm_format const &,
+    void set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const &,
+                                uint32_t const ch_count) override;
+    [[nodiscard]] bool needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const &,
                                               uint32_t const ch_count) override;
     void create_buffer_on_task() override;
 
@@ -45,7 +46,7 @@ struct buffering_resource final : buffering_resource_protocol {
     make_channel_f const _make_channel_handler;
 
     std::atomic<setup_state_t> _setup_state{setup_state_t::initial};
-    double _sample_rate = 0.0;
+    sample_rate_t _sample_rate = 0;
     sample_rate_t _frag_length = 0;
     audio::pcm_format _pcm_format;
     std::optional<audio::format> _format = std::nullopt;

@@ -31,7 +31,7 @@ using namespace yas::playing;
     std::vector<std::tuple<double, audio::pcm_format, uint32_t>> called_set_creating;
 
     buffering->setup_state_handler = [] { return audio_buffering_setup_state::initial; };
-    buffering->set_creating_handler = [&called_set_creating](double sample_rate, audio::pcm_format pcm_format,
+    buffering->set_creating_handler = [&called_set_creating](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                              uint32_t ch_count) {
         called_set_creating.emplace_back(sample_rate, pcm_format, ch_count);
     };
@@ -54,7 +54,7 @@ using namespace yas::playing;
     std::vector<std::tuple<double, audio::pcm_format, uint32_t>> called_set_creating;
 
     buffering->setup_state_handler = [] { return audio_buffering_setup_state::creating; };
-    buffering->set_creating_handler = [&called_set_creating](double sample_rate, audio::pcm_format pcm_format,
+    buffering->set_creating_handler = [&called_set_creating](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                              uint32_t ch_count) {
         called_set_creating.emplace_back(sample_rate, pcm_format, ch_count);
     };
@@ -76,12 +76,12 @@ using namespace yas::playing;
     std::vector<std::tuple<double, audio::pcm_format, uint32_t>> called_needs_create;
 
     buffering->setup_state_handler = [] { return audio_buffering_setup_state::rendering; };
-    buffering->set_creating_handler = [&called_set_creating](double sample_rate, audio::pcm_format pcm_format,
+    buffering->set_creating_handler = [&called_set_creating](sample_rate_t sample_rate, audio::pcm_format pcm_format,
                                                              uint32_t ch_count) {
         called_set_creating.emplace_back(sample_rate, pcm_format, ch_count);
     };
     buffering->needs_create_handler = [&called_needs_create, &needs_create](
-                                          double sample_rate, audio::pcm_format pcm_format, uint32_t ch_count) {
+                                          sample_rate_t sample_rate, audio::pcm_format pcm_format, uint32_t ch_count) {
         called_needs_create.emplace_back(sample_rate, pcm_format, ch_count);
         return needs_create;
     };
