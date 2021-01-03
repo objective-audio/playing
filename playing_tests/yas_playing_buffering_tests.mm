@@ -35,7 +35,7 @@ struct channel : buffering_channel_protocol {
 
     std::function<bool()> write_elements_handler;
     std::function<void(path::channel const &, fragment_index_t const)> write_all_elements_handler;
-    std::function<void(fragment_index_t const, fragment_index_t const)> advance_handler;
+    std::function<void(fragment_index_t const)> advance_handler;
     std::function<void(fragment_index_t const)> overwrite_element_handler;
     std::function<bool(audio::pcm_buffer *, frame_index_t const)> read_into_buffer_handler;
 
@@ -47,8 +47,8 @@ struct channel : buffering_channel_protocol {
         this->write_all_elements_handler(ch_path, top_frag_idx);
     }
 
-    void advance_on_render(fragment_index_t const prev_frag_idx, fragment_index_t const new_frag_idx) {
-        this->advance_handler(prev_frag_idx, new_frag_idx);
+    void advance_on_render(fragment_index_t const frag_idx) {
+        this->advance_handler(frag_idx);
     }
 
     void overwrite_element_on_render(fragment_index_t const frag_idx) {
@@ -267,27 +267,23 @@ struct audio_buffering_cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
-    std::vector<std::pair<fragment_index_t, fragment_index_t>> called_advance_0;
-    std::vector<std::pair<fragment_index_t, fragment_index_t>> called_advance_1;
+    std::vector<fragment_index_t> called_advance_0;
+    std::vector<fragment_index_t> called_advance_1;
 
     auto &channels = self->_cpp.channels;
-    channels.at(0)->advance_handler = [&called_advance_0](fragment_index_t const prev_idx,
-                                                          fragment_index_t const new_idx) {
-        called_advance_0.emplace_back(prev_idx, new_idx);
+    channels.at(0)->advance_handler = [&called_advance_0](fragment_index_t const frag_idx) {
+        called_advance_0.emplace_back(frag_idx);
     };
-    channels.at(1)->advance_handler = [&called_advance_1](fragment_index_t const prev_idx,
-                                                          fragment_index_t const new_idx) {
-        called_advance_1.emplace_back(prev_idx, new_idx);
+    channels.at(1)->advance_handler = [&called_advance_1](fragment_index_t const frag_idx) {
+        called_advance_1.emplace_back(frag_idx);
     };
 
     buffering->advance_on_render(10);
 
     XCTAssertEqual(called_advance_0.size(), 1);
-    XCTAssertEqual(called_advance_0.at(0).first, 7, @"引数に渡したidxからelement_countを引いた値");
-    XCTAssertEqual(called_advance_0.at(0).second, 10, @"引数に渡したidxそのまま");
+    XCTAssertEqual(called_advance_0.at(0), 10);
     XCTAssertEqual(called_advance_1.size(), 1);
-    XCTAssertEqual(called_advance_1.at(0).first, 7, @"引数に渡したidxからelement_countを引いた値");
-    XCTAssertEqual(called_advance_1.at(0).second, 10, @"引数に渡したidxそのまま");
+    XCTAssertEqual(called_advance_1.at(0), 10);
 }
 
 - (void)test_write_elements_if_needed {

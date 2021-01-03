@@ -203,7 +203,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
     auto const channel = buffering_channel::make_shared({element0, element1});
 
-    channel->advance_on_render(0, 2);
+    channel->advance_on_render(0);
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called0.at(0), 2);

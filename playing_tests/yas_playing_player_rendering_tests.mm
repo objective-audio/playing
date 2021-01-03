@@ -259,8 +259,8 @@ using namespace yas::playing;
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_advance.size(), 2);
-    XCTAssertEqual(called_advance.at(0), 11);
-    XCTAssertEqual(called_advance.at(1), 12);
+    XCTAssertEqual(called_advance.at(0), 10);
+    XCTAssertEqual(called_advance.at(1), 11);
     XCTAssertEqual(called_set_current_frame.size(), 2);
     XCTAssertEqual(called_set_current_frame.at(0), 11);
     XCTAssertEqual(called_set_current_frame.at(1), 12);
@@ -376,7 +376,7 @@ using namespace yas::playing;
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_advance.size(), 1);
-    XCTAssertEqual(called_advance.at(0), 31);
+    XCTAssertEqual(called_advance.at(0), 30);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 31);
     XCTAssertEqual(called_read_into.size(), 4);
