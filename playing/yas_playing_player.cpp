@@ -242,9 +242,9 @@ player::player(std::string const &root_path, std::string const &identifier, rend
                 break;
             }
 
-            if (auto const next_frag_idx = player_utils::next_fragment_index(current_frame, proc_length, frag_length);
-                next_frag_idx.has_value()) {
-                buffering->advance_on_render(next_frag_idx.value());
+            if (auto const frag_idx = player_utils::advancing_fragment_index(current_frame, proc_length, frag_length);
+                frag_idx.has_value()) {
+                buffering->advance_on_render(frag_idx.value());
             }
 
             current_frame += proc_length;
