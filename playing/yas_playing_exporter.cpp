@@ -28,10 +28,9 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
                    task_priority_t const &priority)
     : _queue(queue),
       _priority(priority),
-      _src_container(
-          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
+      _container(chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
       _resource(exporter_resource::make_shared(root_path)) {
-    this->_src_container->chain()
+    this->_container->chain()
         .perform([observer = chaining::any_observer_ptr{nullptr},
                   this](timeline_container_ptr const &container) mutable {
             if (observer) {
@@ -55,7 +54,7 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
 void exporter::set_timeline_container(timeline_container_ptr const &container) {
     assert(thread::is_main());
 
-    this->_src_container->set_value(container);
+    this->_container->set_value(container);
 }
 
 chaining::chain_unsync_t<exporter::event_t> exporter::event_chain() const {
@@ -117,7 +116,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     this->_queue->cancel_all();
 
-    auto const &container = this->_src_container->raw();
+    auto const &container = this->_container->raw();
 
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
