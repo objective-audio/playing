@@ -64,6 +64,15 @@ void exporter_resource::erase_track_on_task(proc::track_index_t const trk_idx) {
     this->timeline->erase_track(trk_idx);
 }
 
+void exporter_resource::insert_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range,
+                                               std::vector<proc::module_ptr> &&modules) {
+    auto const &track = this->timeline->track(trk_idx);
+    assert(track->modules().count(range) == 0);
+    for (auto &module : modules) {
+        track->push_back_module(std::move(module), range);
+    }
+}
+
 void exporter_resource::export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 

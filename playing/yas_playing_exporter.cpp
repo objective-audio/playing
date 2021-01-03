@@ -172,18 +172,13 @@ void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
 void exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
     assert(thread::is_main());
 
-    auto modules = proc::copy_to_modules(event.elements);
+    proc::track::modules_map_t modules = proc::copy_to_modules(event.elements);
 
     for (auto &pair : modules) {
         auto const &range = pair.first;
         auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range, modules = std::move(pair.second)](auto const &) {
-                auto const &track = resource->timeline->track(trk_idx);
-                assert(track->modules().count(range) == 0);
-                for (auto &module : modules) {
-                    track->push_back_module(std::move(module), range);
-                }
-            },
+            [resource = this->_resource, trk_idx, range = range, modules = std::move(pair.second)](
+                auto const &) mutable { resource->insert_modules_on_task(trk_idx, range, std::move(modules)); },
             {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(task));
