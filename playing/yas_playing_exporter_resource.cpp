@@ -133,14 +133,13 @@ void exporter_resource::export_fragments_on_task(proc::time::range const &frags_
     return std::nullopt;
 }
 
-std::optional<exporter_error> exporter_resource::remove_fragments_on_task(exporter_resource_ptr const &resource,
-                                                                          proc::time::range const &frags_range,
+std::optional<exporter_error> exporter_resource::remove_fragments_on_task(proc::time::range const &frags_range,
                                                                           task const &task) {
     assert(!thread::is_main());
 
-    auto const &sync_source = resource->sync_source.value();
+    auto const &sync_source = this->sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{resource->root_path, resource->identifier, sample_rate};
+    path::timeline const tl_path{this->root_path, this->identifier, sample_rate};
 
     auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
     if (!ch_paths_result) {

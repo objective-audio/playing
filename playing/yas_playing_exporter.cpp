@@ -295,7 +295,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
 
             resource->send_method_on_task(method_t::export_began, frags_range);
 
-            if (auto const error = resource->remove_fragments_on_task(resource, frags_range, task)) {
+            if (auto const error = resource->remove_fragments_on_task(frags_range, task)) {
                 resource->send_error_on_task(*error, range);
                 return;
             } else {
