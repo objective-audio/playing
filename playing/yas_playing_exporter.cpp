@@ -121,37 +121,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
          sample_rate = container->sample_rate()](yas::task const &task) mutable {
-            resource->identifier = identifier;
-            resource->timeline = proc::timeline::make_shared(std::move(tracks));
-            resource->sync_source.emplace(sample_rate, sample_rate);
-
-            if (task.is_canceled()) {
-                return;
-            }
-
-            if (auto const result = file_manager::remove_content(resource->root_path); !result) {
-                std::runtime_error("remove timeline root directory failed.");
-            }
-
-            resource->send_method_on_task(method_t::reset, std::nullopt);
-
-            if (task.is_canceled()) {
-                return;
-            }
-
-            proc::timeline_ptr const &timeline = resource->timeline;
-
-            auto total_range = timeline->total_range();
-            if (!total_range.has_value()) {
-                return;
-            }
-
-            auto const &sync_source = resource->sync_source.value();
-            auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
-
-            resource->send_method_on_task(method_t::export_began, frags_range);
-
-            resource->export_fragments_on_task(frags_range, task);
+            resource->export_timeline_on_task(std::move(tracks), identifier, sample_rate, task);
         },
         {.priority = this->_priority.timeline});
 
