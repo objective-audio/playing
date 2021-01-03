@@ -158,7 +158,7 @@ void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
 
     for (auto &trk_idx : track_indices) {
         auto erase_task = task::make_shared(
-            [resource = this->_resource, trk_idx = trk_idx](auto const &) { resource->timeline->erase_track(trk_idx); },
+            [resource = this->_resource, trk_idx = trk_idx](auto const &) { resource->erase_track_on_task(trk_idx); },
             {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(erase_task));

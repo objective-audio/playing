@@ -60,6 +60,10 @@ void exporter_resource::insert_track_on_task(proc::track_index_t const trk_idx, 
     this->timeline->insert_track(trk_idx, std::move(track));
 }
 
+void exporter_resource::erase_track_on_task(proc::track_index_t const trk_idx) {
+    this->timeline->erase_track(trk_idx);
+}
+
 void exporter_resource::export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
