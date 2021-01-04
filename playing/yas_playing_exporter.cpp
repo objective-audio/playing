@@ -249,19 +249,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [resource = this->_resource, range](task const &task) {
-            auto const &sync_source = resource->sync_source.value();
-            auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
-
-            resource->send_method_on_task(method_t::export_began, frags_range);
-
-            if (auto const error = resource->remove_fragments_on_task(frags_range, task)) {
-                resource->send_error_on_task(*error, range);
-                return;
-            } else {
-                resource->export_fragments_on_task(frags_range, task);
-            }
-        },
+        [resource = this->_resource, range](task const &task) { resource->push_export_on_task(range, task); },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));

@@ -79,6 +79,19 @@ void exporter_resource::erase_modules_on_task(proc::track_index_t const trk_idx,
     track->erase_modules_for_range(range);
 }
 
+void exporter_resource::push_export_on_task(proc::time::range const &range, task const &task) {
+    auto const &sync_source = this->sync_source.value();
+    auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
+
+    this->send_method_on_task(exporter_method::export_began, frags_range);
+
+    if (auto const error = this->remove_fragments_on_task(frags_range, task)) {
+        this->send_error_on_task(*error, range);
+    } else {
+        this->export_fragments_on_task(frags_range, task);
+    }
+}
+
 void exporter_resource::export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 

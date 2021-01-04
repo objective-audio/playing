@@ -25,6 +25,7 @@ struct exporter_resource {
     void insert_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range,
                                 std::vector<proc::module_ptr> &&modules);
     void erase_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range);
+    void push_export_on_task(proc::time::range const &, task const &task);
 
     void export_fragments_on_task(proc::time::range const &frags_range, task const &task);
     [[nodiscard]] std::optional<exporter_error> export_fragment_on_task(proc::time::range const &frag_range,
