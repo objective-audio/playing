@@ -18,7 +18,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-exporter_resource::exporter_resource(std::string const &root_path) : root_path(root_path) {
+exporter_resource::exporter_resource(std::string const &root_path) : _root_path(root_path) {
 }
 
 void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
@@ -31,7 +31,7 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
         return;
     }
 
-    if (auto const result = file_manager::remove_content(this->root_path); !result) {
+    if (auto const result = file_manager::remove_content(this->_root_path); !result) {
         std::runtime_error("remove timeline root directory failed.");
     }
 
@@ -134,7 +134,7 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
     assert(!thread::is_main());
 
     auto const &sync_source = this->sync_source.value();
-    path::timeline const tl_path{this->root_path, this->identifier, sync_source.sample_rate};
+    path::timeline const tl_path{this->_root_path, this->identifier, sync_source.sample_rate};
 
     auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
@@ -189,7 +189,7 @@ std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc:
 
     auto const &sync_source = this->sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{this->root_path, this->identifier, sample_rate};
+    path::timeline const tl_path{this->_root_path, this->identifier, sample_rate};
 
     auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
     if (!ch_paths_result) {

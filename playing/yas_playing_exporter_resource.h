@@ -11,16 +11,11 @@
 
 namespace yas::playing {
 struct exporter_resource {
-    std::string const root_path;
-    std::string identifier;
-    proc::timeline_ptr timeline;
-    std::optional<proc::sync_source> sync_source;
-
     chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
 
     void export_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier, sample_rate_t const &,
                                  yas::task const &);
-    void insert_track_on_task(proc::track_index_t const, proc::track_ptr &&track);
+    void insert_track_on_task(proc::track_index_t const, proc::track_ptr &&);
     void erase_track_on_task(proc::track_index_t const);
     void insert_modules_on_task(proc::track_index_t const, proc::time::range const &, std::vector<proc::module_ptr> &&);
     void erase_modules_on_task(proc::track_index_t const, proc::time::range const &);
@@ -33,6 +28,11 @@ struct exporter_resource {
     [[nodiscard]] static exporter_resource_ptr make_shared(std::string const &root_path);
 
    private:
+    std::string const _root_path;
+    std::string identifier;
+    proc::timeline_ptr timeline;
+    std::optional<proc::sync_source> sync_source;
+
     exporter_resource(std::string const &root_path);
 
     void _send_method_on_task(exporter_method const type, std::optional<proc::time::range> const &range);
