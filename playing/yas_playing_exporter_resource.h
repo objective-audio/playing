@@ -29,9 +29,9 @@ struct exporter_resource {
 
    private:
     std::string const _root_path;
-    std::string identifier;
-    proc::timeline_ptr timeline;
-    std::optional<proc::sync_source> sync_source;
+    std::string _identifier;
+    proc::timeline_ptr _timeline;
+    std::optional<proc::sync_source> _sync_source;
 
     exporter_resource(std::string const &root_path);
 

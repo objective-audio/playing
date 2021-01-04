@@ -23,9 +23,9 @@ exporter_resource::exporter_resource(std::string const &root_path) : _root_path(
 
 void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
                                                 sample_rate_t const &sample_rate, yas::task const &task) {
-    this->identifier = identifier;
-    this->timeline = proc::timeline::make_shared(std::move(tracks));
-    this->sync_source.emplace(sample_rate, sample_rate);
+    this->_identifier = identifier;
+    this->_timeline = proc::timeline::make_shared(std::move(tracks));
+    this->_sync_source.emplace(sample_rate, sample_rate);
 
     if (task.is_canceled()) {
         return;
@@ -41,14 +41,14 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
         return;
     }
 
-    proc::timeline_ptr const &timeline = this->timeline;
+    proc::timeline_ptr const &timeline = this->_timeline;
 
     auto total_range = timeline->total_range();
     if (!total_range.has_value()) {
         return;
     }
 
-    auto const &sync_source = this->sync_source.value();
+    auto const &sync_source = this->_sync_source.value();
     auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
     this->_send_method_on_task(exporter_method::export_began, frags_range);
@@ -57,16 +57,16 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
 }
 
 void exporter_resource::insert_track_on_task(proc::track_index_t const trk_idx, proc::track_ptr &&track) {
-    this->timeline->insert_track(trk_idx, std::move(track));
+    this->_timeline->insert_track(trk_idx, std::move(track));
 }
 
 void exporter_resource::erase_track_on_task(proc::track_index_t const trk_idx) {
-    this->timeline->erase_track(trk_idx);
+    this->_timeline->erase_track(trk_idx);
 }
 
 void exporter_resource::insert_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range,
                                                std::vector<proc::module_ptr> &&modules) {
-    auto const &track = this->timeline->track(trk_idx);
+    auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) == 0);
     for (auto &module : modules) {
         track->push_back_module(std::move(module), range);
@@ -74,27 +74,27 @@ void exporter_resource::insert_modules_on_task(proc::track_index_t const trk_idx
 }
 
 void exporter_resource::erase_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range) {
-    auto const &track = this->timeline->track(trk_idx);
+    auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);
     track->erase_modules_for_range(range);
 }
 
 void exporter_resource::insert_module(proc::module_ptr const &module, std::size_t const module_idx,
                                       proc::track_index_t const trk_idx, proc::time::range const range) {
-    auto const &track = this->timeline->track(trk_idx);
+    auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);
     track->insert_module(std::move(module), module_idx, range);
 }
 
 void exporter_resource::erase_module(std::size_t const module_idx, proc::track_index_t const trk_idx,
                                      proc::time::range const range) {
-    auto const &track = this->timeline->track(trk_idx);
+    auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);
     track->erase_module_at(module_idx, range);
 }
 
 void exporter_resource::export_on_task(proc::time::range const &range, task const &task) {
-    auto const &sync_source = this->sync_source.value();
+    auto const &sync_source = this->_sync_source.value();
     auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
     this->_send_method_on_task(exporter_method::export_began, frags_range);
@@ -113,28 +113,28 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
         return;
     }
 
-    this->timeline->process(frags_range, this->sync_source.value(),
-                            [&task, this](proc::time::range const &range, proc::stream const &stream) {
-                                if (task.is_canceled()) {
-                                    return proc::continuation::abort;
-                                }
+    this->_timeline->process(frags_range, this->_sync_source.value(),
+                             [&task, this](proc::time::range const &range, proc::stream const &stream) {
+                                 if (task.is_canceled()) {
+                                     return proc::continuation::abort;
+                                 }
 
-                                if (auto error = this->_export_fragment_on_task(range, stream)) {
-                                    this->_send_error_on_task(*error, range);
-                                } else {
-                                    this->_send_method_on_task(exporter_method::export_ended, range);
-                                }
+                                 if (auto error = this->_export_fragment_on_task(range, stream)) {
+                                     this->_send_error_on_task(*error, range);
+                                 } else {
+                                     this->_send_method_on_task(exporter_method::export_ended, range);
+                                 }
 
-                                return proc::continuation::keep;
-                            });
+                                 return proc::continuation::keep;
+                             });
 }
 
 [[nodiscard]] std::optional<exporter_error> exporter_resource::_export_fragment_on_task(
     proc::time::range const &frag_range, proc::stream const &stream) {
     assert(!thread::is_main());
 
-    auto const &sync_source = this->sync_source.value();
-    path::timeline const tl_path{this->_root_path, this->identifier, sync_source.sample_rate};
+    auto const &sync_source = this->_sync_source.value();
+    path::timeline const tl_path{this->_root_path, this->_identifier, sync_source.sample_rate};
 
     auto const frag_idx = frag_range.frame / stream.sync_source().sample_rate;
 
@@ -187,9 +187,9 @@ std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc:
                                                                            task const &task) {
     assert(!thread::is_main());
 
-    auto const &sync_source = this->sync_source.value();
+    auto const &sync_source = this->_sync_source.value();
     auto const &sample_rate = sync_source.sample_rate;
-    path::timeline const tl_path{this->_root_path, this->identifier, sample_rate};
+    path::timeline const tl_path{this->_root_path, this->_identifier, sample_rate};
 
     auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
     if (!ch_paths_result) {
