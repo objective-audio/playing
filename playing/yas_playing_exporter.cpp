@@ -216,11 +216,7 @@ void exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::ran
 
     auto task = task::make_shared(
         [resource = this->_resource, trk_idx, range, module_idx = event.index,
-         module = event.element->copy()](auto const &) {
-            auto const &track = resource->timeline->track(trk_idx);
-            assert(track->modules().count(range) > 0);
-            track->insert_module(std::move(module), module_idx, range);
-        },
+         module = event.element->copy()](auto const &) { resource->insert_module(module, module_idx, trk_idx, range); },
         {.priority = this->_priority.timeline});
 
     this->_queue->push_back(std::move(task));
