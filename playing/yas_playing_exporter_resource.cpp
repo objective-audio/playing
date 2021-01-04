@@ -86,6 +86,13 @@ void exporter_resource::insert_module(proc::module_ptr const &module, std::size_
     track->insert_module(std::move(module), module_idx, range);
 }
 
+void exporter_resource::erase_module(std::size_t const module_idx, proc::track_index_t const trk_idx,
+                                     proc::time::range const range) {
+    auto const &track = this->timeline->track(trk_idx);
+    assert(track->modules().count(range) > 0);
+    track->erase_module_at(module_idx, range);
+}
+
 void exporter_resource::push_export_on_task(proc::time::range const &range, task const &task) {
     auto const &sync_source = this->sync_source.value();
     auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);

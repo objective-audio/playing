@@ -27,6 +27,7 @@ struct exporter_resource {
     void erase_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range);
     void insert_module(proc::module_ptr const &module, std::size_t const module_idx, proc::track_index_t const trk_idx,
                        proc::time::range const range);
+    void erase_module(std::size_t const module_idx, proc::track_index_t const trk_idx, proc::time::range const range);
     void push_export_on_task(proc::time::range const &, task const &task);
 
     void export_fragments_on_task(proc::time::range const &frags_range, task const &task);
