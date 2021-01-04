@@ -241,7 +241,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [resource = this->_resource, range](task const &task) { resource->push_export_on_task(range, task); },
+        [resource = this->_resource, range](task const &task) { resource->export_on_task(range, task); },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));

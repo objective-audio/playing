@@ -35,7 +35,7 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
         std::runtime_error("remove timeline root directory failed.");
     }
 
-    this->send_method_on_task(exporter_method::reset, std::nullopt);
+    this->_send_method_on_task(exporter_method::reset, std::nullopt);
 
     if (task.is_canceled()) {
         return;
@@ -51,9 +51,9 @@ void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tr
     auto const &sync_source = this->sync_source.value();
     auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
 
-    this->send_method_on_task(exporter_method::export_began, frags_range);
+    this->_send_method_on_task(exporter_method::export_began, frags_range);
 
-    this->export_fragments_on_task(frags_range, task);
+    this->_export_fragments_on_task(frags_range, task);
 }
 
 void exporter_resource::insert_track_on_task(proc::track_index_t const trk_idx, proc::track_ptr &&track) {
@@ -93,20 +93,20 @@ void exporter_resource::erase_module(std::size_t const module_idx, proc::track_i
     track->erase_module_at(module_idx, range);
 }
 
-void exporter_resource::push_export_on_task(proc::time::range const &range, task const &task) {
+void exporter_resource::export_on_task(proc::time::range const &range, task const &task) {
     auto const &sync_source = this->sync_source.value();
     auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
-    this->send_method_on_task(exporter_method::export_began, frags_range);
+    this->_send_method_on_task(exporter_method::export_began, frags_range);
 
-    if (auto const error = this->remove_fragments_on_task(frags_range, task)) {
-        this->send_error_on_task(*error, range);
+    if (auto const error = this->_remove_fragments_on_task(frags_range, task)) {
+        this->_send_error_on_task(*error, range);
     } else {
-        this->export_fragments_on_task(frags_range, task);
+        this->_export_fragments_on_task(frags_range, task);
     }
 }
 
-void exporter_resource::export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
+void exporter_resource::_export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
@@ -119,17 +119,17 @@ void exporter_resource::export_fragments_on_task(proc::time::range const &frags_
                                     return proc::continuation::abort;
                                 }
 
-                                if (auto error = this->export_fragment_on_task(range, stream)) {
-                                    this->send_error_on_task(*error, range);
+                                if (auto error = this->_export_fragment_on_task(range, stream)) {
+                                    this->_send_error_on_task(*error, range);
                                 } else {
-                                    this->send_method_on_task(exporter_method::export_ended, range);
+                                    this->_send_method_on_task(exporter_method::export_ended, range);
                                 }
 
                                 return proc::continuation::keep;
                             });
 }
 
-[[nodiscard]] std::optional<exporter_error> exporter_resource::export_fragment_on_task(
+[[nodiscard]] std::optional<exporter_error> exporter_resource::_export_fragment_on_task(
     proc::time::range const &frag_range, proc::stream const &stream) {
     assert(!thread::is_main());
 
@@ -183,8 +183,8 @@ void exporter_resource::export_fragments_on_task(proc::time::range const &frags_
     return std::nullopt;
 }
 
-std::optional<exporter_error> exporter_resource::remove_fragments_on_task(proc::time::range const &frags_range,
-                                                                          task const &task) {
+std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc::time::range const &frags_range,
+                                                                           task const &task) {
     assert(!thread::is_main());
 
     auto const &sync_source = this->sync_source.value();
@@ -228,13 +228,14 @@ std::optional<exporter_error> exporter_resource::remove_fragments_on_task(proc::
     return std::nullopt;
 }
 
-void exporter_resource::send_method_on_task(exporter_method const type, std::optional<proc::time::range> const &range) {
+void exporter_resource::_send_method_on_task(exporter_method const type,
+                                             std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
     this->_send_event_on_task(exporter_event{.result = exporter_result_t{type}, .range = range});
 }
 
-void exporter_resource::send_error_on_task(exporter_error const type, std::optional<proc::time::range> const &range) {
+void exporter_resource::_send_error_on_task(exporter_error const type, std::optional<proc::time::range> const &range) {
     assert(!thread::is_main());
 
     this->_send_event_on_task(exporter_event{.result = exporter_result_t{type}, .range = range});
