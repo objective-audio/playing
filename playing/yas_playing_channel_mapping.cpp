@@ -4,10 +4,40 @@
 
 #include "yas_playing_channel_mapping.h"
 
+#include <cpp_utils/yas_fast_each.h>
+
 using namespace yas;
 using namespace yas::playing;
 
 channel_mapping::channel_mapping(std::vector<channel_index_t> &&indices) : indices(indices) {
+}
+
+std::optional<channel_index_t> channel_mapping::mapped_index(channel_index_t const ch_idx,
+                                                             std::size_t const ch_count) const {
+    if (ch_idx < this->indices.size()) {
+        return this->indices.at(ch_idx);
+    } else if (ch_idx < ch_count) {
+        return ch_idx;
+    } else {
+        return std::nullopt;
+    }
+}
+
+std::optional<channel_index_t> channel_mapping::unmapped_index(channel_index_t const ch_idx,
+                                                               std::size_t const ch_count) const {
+    auto each = make_fast_each(this->indices.size());
+    while (yas_each_next(each)) {
+        auto const &idx = yas_each_index(each);
+        if (this->indices.at(idx) == ch_idx) {
+            return idx;
+        }
+    }
+
+    if (this->indices.size() <= ch_idx && ch_idx < ch_count) {
+        return ch_idx;
+    }
+
+    return std::nullopt;
 }
 
 channel_mapping_ptr channel_mapping::make_shared() {
