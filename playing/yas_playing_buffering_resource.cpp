@@ -210,7 +210,8 @@ void buffering_resource::overwrite_element_on_render(element_address const &inde
         throw std::runtime_error("state is not advancing.");
     }
 
-    if (auto const idx = this->_unmapped_ch_idx_on_task(index.channel_index); idx.has_value()) {
+    if (auto const idx = this->_ch_mapping->unmapped_index(index.channel_index, this->_channels.size());
+        idx.has_value()) {
         this->_channels.at(idx.value())->overwrite_element_on_render(index.fragment_index);
     }
 }
@@ -236,8 +237,4 @@ frame_index_t buffering_resource::all_writing_frame_for_test() const {
 
 channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
-}
-
-std::optional<channel_index_t> buffering_resource::_unmapped_ch_idx_on_task(channel_index_t const ch_idx) const {
-    return this->_ch_mapping->unmapped_index(ch_idx, this->_channels.size());
 }
