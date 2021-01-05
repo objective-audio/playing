@@ -160,9 +160,9 @@ void buffering_resource::write_all_elements_on_task() {
     }
 
     channel_index_t ch_idx = 0;
+    auto const ch_count = this->_channels.size();
     for (auto const &channel : this->_channels) {
-        path::channel const ch_path{*this->_tl_path, this->_mapped_ch_idx_on_task(ch_idx)};
-
+        path::channel const ch_path{*this->_tl_path, this->_ch_mapping->mapped_index(ch_idx, ch_count).value()};
         channel->write_all_elements_on_task(ch_path, top_frag_idx.value());
 
         ++ch_idx;
@@ -210,7 +210,8 @@ void buffering_resource::overwrite_element_on_render(element_address const &inde
         throw std::runtime_error("state is not advancing.");
     }
 
-    if (auto const idx = this->_unmapped_ch_idx_on_task(index.channel_index); idx.has_value()) {
+    if (auto const idx = this->_ch_mapping->unmapped_index(index.channel_index, this->_channels.size());
+        idx.has_value()) {
         this->_channels.at(idx.value())->overwrite_element_on_render(index.fragment_index);
     }
 }
@@ -236,28 +237,4 @@ frame_index_t buffering_resource::all_writing_frame_for_test() const {
 
 channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
-}
-
-channel_index_t buffering_resource::_mapped_ch_idx_on_task(channel_index_t const ch_idx) const {
-    if (ch_idx < this->_ch_mapping->indices.size()) {
-        return this->_ch_mapping->indices.at(ch_idx);
-    } else {
-        return ch_idx;
-    }
-}
-
-std::optional<channel_index_t> buffering_resource::_unmapped_ch_idx_on_task(channel_index_t const ch_idx) const {
-    auto each = make_fast_each(this->_ch_mapping->indices.size());
-    while (yas_each_next(each)) {
-        auto const &idx = yas_each_index(each);
-        if (this->_ch_mapping->indices.at(idx) == ch_idx) {
-            return idx;
-        }
-    }
-
-    if (this->_ch_mapping->indices.size() <= ch_idx && ch_idx < this->_channels.size()) {
-        return ch_idx;
-    }
-
-    return std::nullopt;
 }

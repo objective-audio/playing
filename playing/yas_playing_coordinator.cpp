@@ -72,12 +72,17 @@ void coordinator::seek(frame_index_t const frame) {
 
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
+
     auto const sample_rate = static_cast<proc::sample_rate_t>(this->sample_rate());
+
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
+
     auto const begin_frag_idx = frags_range.frame / sample_rate;
     auto const next_frag_idx = frags_range.next_frame() / sample_rate;
     auto frag_each = make_fast_each(begin_frag_idx, next_frag_idx);
+
     auto const ch_count = this->channel_count();
+
     while (yas_each_next(frag_each)) {
         auto ch_each = make_fast_each(ch_count);
         while (yas_each_next(ch_each)) {

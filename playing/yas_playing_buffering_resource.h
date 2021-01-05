@@ -61,8 +61,5 @@ struct buffering_resource final : buffering_resource_protocol {
 
     buffering_resource(std::size_t const element_count, std::string const &root_path, std::string const &identifier,
                        make_channel_f &&);
-
-    channel_index_t _mapped_ch_idx_on_task(channel_index_t const) const;
-    std::optional<channel_index_t> _unmapped_ch_idx_on_task(channel_index_t const) const;
 };
 }  // namespace yas::playing
