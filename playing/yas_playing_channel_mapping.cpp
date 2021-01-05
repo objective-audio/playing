@@ -14,10 +14,12 @@ channel_mapping::channel_mapping(std::vector<channel_index_t> &&indices) : indic
 
 std::optional<channel_index_t> channel_mapping::mapped_index(channel_index_t const ch_idx,
                                                              std::size_t const ch_count) const {
-    if (ch_idx < this->indices.size()) {
-        return this->indices.at(ch_idx);
-    } else if (ch_idx < ch_count) {
-        return ch_idx;
+    if (ch_idx < ch_count) {
+        if (ch_idx < this->indices.size()) {
+            return this->indices.at(ch_idx);
+        } else {
+            return ch_idx;
+        }
     } else {
         return std::nullopt;
     }
@@ -25,7 +27,8 @@ std::optional<channel_index_t> channel_mapping::mapped_index(channel_index_t con
 
 std::optional<channel_index_t> channel_mapping::unmapped_index(channel_index_t const ch_idx,
                                                                std::size_t const ch_count) const {
-    auto each = make_fast_each(this->indices.size());
+    auto const count = std::min(this->indices.size(), ch_count);
+    auto each = make_fast_each(count);
     while (yas_each_next(each)) {
         auto const &idx = yas_each_index(each);
         if (this->indices.at(idx) == ch_idx) {
@@ -33,7 +36,7 @@ std::optional<channel_index_t> channel_mapping::unmapped_index(channel_index_t c
         }
     }
 
-    if (this->indices.size() <= ch_idx && ch_idx < ch_count) {
+    if (count <= ch_idx && ch_idx < ch_count) {
         return ch_idx;
     }
 
