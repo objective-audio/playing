@@ -21,8 +21,8 @@ using namespace yas::playing;
 exporter_resource::exporter_resource(std::string const &root_path) : _root_path(root_path) {
 }
 
-void exporter_resource::export_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
-                                                sample_rate_t const &sample_rate, yas::task const &task) {
+void exporter_resource::replace_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
+                                                 sample_rate_t const &sample_rate, yas::task const &task) {
     this->_identifier = identifier;
     this->_timeline = proc::timeline::make_shared(std::move(tracks));
     this->_sync_source.emplace(sample_rate, sample_rate);

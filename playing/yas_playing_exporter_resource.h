@@ -13,8 +13,8 @@ namespace yas::playing {
 struct exporter_resource {
     chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
 
-    void export_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier, sample_rate_t const &,
-                                 yas::task const &);
+    void replace_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier, sample_rate_t const &,
+                                  yas::task const &);
     void insert_track_on_task(proc::track_index_t const, proc::track_ptr &&);
     void erase_track_on_task(proc::track_index_t const);
     void insert_modules_on_task(proc::track_index_t const, proc::time::range const &, std::vector<proc::module_ptr> &&);

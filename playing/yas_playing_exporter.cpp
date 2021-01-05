@@ -121,7 +121,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
          sample_rate = container->sample_rate()](yas::task const &task) mutable {
-            resource->export_timeline_on_task(std::move(tracks), identifier, sample_rate, task);
+            resource->replace_timeline_on_task(std::move(tracks), identifier, sample_rate, task);
         },
         {.priority = this->_priority.timeline});
 
