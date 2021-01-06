@@ -28,10 +28,9 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
                    task_priority_t const &priority)
     : _queue(queue),
       _priority(priority),
-      _src_container(
-          chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
+      _container(chaining::value::holder<timeline_container_ptr>::make_shared(timeline_container::make_shared_empty())),
       _resource(exporter_resource::make_shared(root_path)) {
-    this->_src_container->chain()
+    this->_container->chain()
         .perform([observer = chaining::any_observer_ptr{nullptr},
                   this](timeline_container_ptr const &container) mutable {
             if (observer) {
@@ -55,7 +54,7 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
 void exporter::set_timeline_container(timeline_container_ptr const &container) {
     assert(thread::is_main());
 
-    this->_src_container->set_value(container);
+    this->_container->set_value(container);
 }
 
 chaining::chain_unsync_t<exporter::event_t> exporter::event_chain() const {
@@ -117,42 +116,12 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     this->_queue->cancel_all();
 
-    auto const &container = this->_src_container->raw();
+    auto const &container = this->_container->raw();
 
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
          sample_rate = container->sample_rate()](yas::task const &task) mutable {
-            resource->identifier = identifier;
-            resource->timeline = proc::timeline::make_shared(std::move(tracks));
-            resource->sync_source.emplace(sample_rate, sample_rate);
-
-            if (task.is_canceled()) {
-                return;
-            }
-
-            if (auto const result = file_manager::remove_content(resource->root_path); !result) {
-                std::runtime_error("remove timeline root directory failed.");
-            }
-
-            resource->send_method_on_task(method_t::reset, std::nullopt);
-
-            if (task.is_canceled()) {
-                return;
-            }
-
-            proc::timeline_ptr const &timeline = resource->timeline;
-
-            auto total_range = timeline->total_range();
-            if (!total_range.has_value()) {
-                return;
-            }
-
-            auto const &sync_source = resource->sync_source.value();
-            auto const frags_range = timeline_utils::fragments_range(*total_range, sync_source.sample_rate);
-
-            resource->send_method_on_task(method_t::export_began, frags_range);
-
-            resource->export_fragments_on_task(resource, frags_range, task);
+            resource->replace_timeline_on_task(std::move(tracks), identifier, sample_rate, task);
         },
         {.priority = this->_priority.timeline});
 
@@ -167,11 +136,10 @@ void exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
     std::optional<proc::time::range> total_range = proc::total_range(tracks);
 
     for (auto &pair : tracks) {
-        auto insert_task = task::make_shared(
-            [resource = this->_resource, trk_idx = pair.first, track = std::move(pair.second)](auto const &) mutable {
-                resource->timeline->insert_track(trk_idx, std::move(track));
-            },
-            {.priority = this->_priority.timeline});
+        auto insert_task =
+            task::make_shared([resource = this->_resource, trk_idx = pair.first, track = std::move(pair.second)](
+                                  auto const &) mutable { resource->insert_track_on_task(trk_idx, std::move(track)); },
+                              {.priority = this->_priority.timeline});
 
         this->_queue->push_back(insert_task);
     }
@@ -190,7 +158,7 @@ void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
 
     for (auto &trk_idx : track_indices) {
         auto erase_task = task::make_shared(
-            [resource = this->_resource, trk_idx = trk_idx](auto const &) { resource->timeline->erase_track(trk_idx); },
+            [resource = this->_resource, trk_idx = trk_idx](auto const &) { resource->erase_track_on_task(trk_idx); },
             {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(erase_task));
@@ -204,18 +172,13 @@ void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
 void exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
     assert(thread::is_main());
 
-    auto modules = proc::copy_to_modules(event.elements);
+    proc::track::modules_map_t modules = proc::copy_to_modules(event.elements);
 
     for (auto &pair : modules) {
         auto const &range = pair.first;
         auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range, modules = std::move(pair.second)](auto const &) {
-                auto const &track = resource->timeline->track(trk_idx);
-                assert(track->modules().count(range) == 0);
-                for (auto &module : modules) {
-                    track->push_back_module(std::move(module), range);
-                }
-            },
+            [resource = this->_resource, trk_idx, range = range, modules = std::move(pair.second)](
+                auto const &) mutable { resource->insert_modules_on_task(trk_idx, range, std::move(modules)); },
             {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(task));
@@ -234,13 +197,9 @@ void exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::er
 
     for (auto &pair : modules) {
         auto const &range = pair.first;
-        auto task = task::make_shared(
-            [resource = this->_resource, trk_idx, range = range, module = std::move(pair.second)](auto const &) {
-                auto const &track = resource->timeline->track(trk_idx);
-                assert(track->modules().count(range) > 0);
-                track->erase_modules_for_range(range);
-            },
-            {.priority = this->_priority.timeline});
+        auto task = task::make_shared([resource = this->_resource, trk_idx, range = range](
+                                          auto const &) { resource->erase_modules_on_task(trk_idx, range); },
+                                      {.priority = this->_priority.timeline});
 
         this->_queue->push_back(std::move(task));
     }
@@ -257,11 +216,7 @@ void exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::ran
 
     auto task = task::make_shared(
         [resource = this->_resource, trk_idx, range, module_idx = event.index,
-         module = event.element->copy()](auto const &) {
-            auto const &track = resource->timeline->track(trk_idx);
-            assert(track->modules().count(range) > 0);
-            track->insert_module(std::move(module), module_idx, range);
-        },
+         module = event.element->copy()](auto const &) { resource->insert_module(module, module_idx, trk_idx, range); },
         {.priority = this->_priority.timeline});
 
     this->_queue->push_back(std::move(task));
@@ -273,13 +228,9 @@ void exporter::_erase_module(proc::track_index_t const trk_idx, proc::time::rang
                              proc::module_vector::erased_event_t const &event) {
     assert(thread::is_main());
 
-    auto task = task::make_shared(
-        [resource = this->_resource, trk_idx, range, module_idx = event.index](auto const &) {
-            auto const &track = resource->timeline->track(trk_idx);
-            assert(track->modules().count(range) > 0);
-            track->erase_module_at(module_idx, range);
-        },
-        {.priority = this->_priority.timeline});
+    auto task = task::make_shared([resource = this->_resource, trk_idx, range, module_idx = event.index](
+                                      auto const &) { resource->erase_module(module_idx, trk_idx, range); },
+                                  {.priority = this->_priority.timeline});
 
     this->_queue->push_back(std::move(task));
 
@@ -290,19 +241,7 @@ void exporter::_push_export_task(proc::time::range const &range) {
     this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
 
     auto export_task = task::make_shared(
-        [resource = this->_resource, range](task const &task) {
-            auto const &sync_source = resource->sync_source.value();
-            auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
-
-            resource->send_method_on_task(method_t::export_began, frags_range);
-
-            if (auto const error = resource->remove_fragments_on_task(resource, frags_range, task)) {
-                resource->send_error_on_task(*error, range);
-                return;
-            } else {
-                resource->export_fragments_on_task(resource, frags_range, task);
-            }
-        },
+        [resource = this->_resource, range](task const &task) { resource->export_on_task(range, task); },
         {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));

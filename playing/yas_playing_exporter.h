@@ -27,7 +27,7 @@ struct exporter final {
    private:
     std::shared_ptr<task_queue> const _queue;
     task_priority_t const _priority;
-    chaining::value::holder_ptr<timeline_container_ptr> const _src_container;
+    chaining::value::holder_ptr<timeline_container_ptr> const _container;
     exporter_resource_ptr const _resource;
 
     chaining::observer_pool _pool;
