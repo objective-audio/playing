@@ -218,6 +218,10 @@ void buffering_resource::overwrite_element_on_render(element_address const &inde
 
 bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
                                                     frame_index_t const frame) {
+    if (this->_rendering_state.load() != rendering_state_t::advancing) {
+        throw std::runtime_error("state is not advancing.");
+    }
+
     if (this->_channels.size() <= ch_idx) {
         return false;
     }
