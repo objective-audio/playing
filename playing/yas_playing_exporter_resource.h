@@ -19,9 +19,9 @@ struct exporter_resource {
     void erase_track_on_task(proc::track_index_t const);
     void insert_modules_on_task(proc::track_index_t const, proc::time::range const &, std::vector<proc::module_ptr> &&);
     void erase_modules_on_task(proc::track_index_t const, proc::time::range const &);
-    void insert_module(proc::module_ptr const &, std::size_t const module_idx, proc::track_index_t const,
+    void insert_module(proc::module_ptr const &, module_index_t const, proc::track_index_t const,
                        proc::time::range const);
-    void erase_module(std::size_t const module_idx, proc::track_index_t const, proc::time::range const);
+    void erase_module(module_index_t const, proc::track_index_t const, proc::time::range const);
 
     void export_on_task(proc::time::range const &, task const &);
 
