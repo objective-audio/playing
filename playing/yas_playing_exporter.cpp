@@ -97,8 +97,7 @@ void exporter::_receive_relayed_timeline_event(proc::timeline::relayed_event_t c
     }
 }
 
-void exporter::_receive_relayed_track_event(proc::track::relayed_event_t const &event,
-                                            proc::track_index_t const trk_idx) {
+void exporter::_receive_relayed_track_event(proc::track::relayed_event_t const &event, track_index_t const trk_idx) {
     switch (event.relayed.type()) {
         case proc::module_vector::event_type_t::inserted:
             this->_insert_module(trk_idx, event.key, event.relayed.get<proc::module_vector::inserted_event_t>());
@@ -152,7 +151,7 @@ void exporter::_insert_tracks(proc::timeline::inserted_event_t const &event) {
 void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
     assert(thread::is_main());
 
-    auto track_indices = to_vector<proc::track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
+    auto track_indices = to_vector<track_index_t>(event.elements, [](auto const &pair) { return pair.first; });
 
     std::optional<proc::time::range> total_range = proc::total_range(event.elements);
 
@@ -169,7 +168,7 @@ void exporter::_erase_tracks(proc::timeline::erased_event_t const &event) {
     }
 }
 
-void exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
+void exporter::_insert_modules(track_index_t const trk_idx, proc::track::inserted_event_t const &event) {
     assert(thread::is_main());
 
     proc::track::modules_map_t modules = proc::copy_to_modules(event.elements);
@@ -190,7 +189,7 @@ void exporter::_insert_modules(proc::track_index_t const trk_idx, proc::track::i
     }
 }
 
-void exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event) {
+void exporter::_erase_modules(track_index_t const trk_idx, proc::track::erased_event_t const &event) {
     assert(thread::is_main());
 
     auto modules = proc::copy_to_modules(event.elements);
@@ -210,7 +209,7 @@ void exporter::_erase_modules(proc::track_index_t const trk_idx, proc::track::er
     }
 }
 
-void exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
+void exporter::_insert_module(track_index_t const trk_idx, proc::time::range const range,
                               proc::module_vector::inserted_event_t const &event) {
     assert(thread::is_main());
 
@@ -224,7 +223,7 @@ void exporter::_insert_module(proc::track_index_t const trk_idx, proc::time::ran
     this->_push_export_task(range);
 }
 
-void exporter::_erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
+void exporter::_erase_module(track_index_t const trk_idx, proc::time::range const range,
                              proc::module_vector::erased_event_t const &event) {
     assert(thread::is_main());
 

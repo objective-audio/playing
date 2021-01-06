@@ -26,7 +26,7 @@ enum class track : int64_t {
 }  // namespace yas::playing::sample
 
 namespace yas {
-proc::track_index_t to_track_index(sample::track const track) {
+track_index_t to_track_index(sample::track const track) {
     return static_cast<int64_t>(track);
 }
 }  // namespace yas
