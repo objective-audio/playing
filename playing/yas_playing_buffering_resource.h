@@ -57,7 +57,6 @@ struct buffering_resource final : buffering_resource_protocol {
     frame_index_t _all_writing_frame = 0;
     channel_mapping_ptr _ch_mapping;
 
-#warning channelsとch_mappingへのアクセスを検証
     std::vector<buffering_channel_protocol_ptr> _channels;
 
     buffering_resource(std::size_t const element_count, std::string const &root_path, std::string const &identifier,
