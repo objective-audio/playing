@@ -138,7 +138,7 @@ struct view_controller_cpp {
 }
 
 - (IBAction)frequencyChanged:(UISlider *)sender {
-    self->_cpp.controller->frequency->set_value(sender.value);
+    self->_cpp.controller->frequency->set_value(std::round(sender.value));
 }
 
 - (IBAction)chMappingChanged:(UIStepper *)sender {
