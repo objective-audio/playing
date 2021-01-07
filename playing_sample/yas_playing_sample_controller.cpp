@@ -149,7 +149,7 @@ proc::timeline_ptr sample::controller::make_timeline() {
         timeline->insert_track(to_track_index(sample::track::routing), routing_track);
         auto routing_module = proc::make_signal_module<float>(proc::routing::kind::copy);
         routing_module->connect_input(proc::to_connector_index(proc::routing::input::value), 0);
-        routing_module->connect_output(proc::to_connector_index(proc::routing::output::value), 1);
+        routing_module->connect_output(proc::to_connector_index(proc::routing::output::value), 3);
         routing_track->push_back_module(routing_module, process_range);
     }
 

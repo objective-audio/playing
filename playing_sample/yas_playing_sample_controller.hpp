@@ -18,6 +18,8 @@ struct controller {
     coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, this->identifier, this->device);
 
     chaining::value::holder_ptr<float> const frequency = chaining::value::holder<float>::make_shared(1000.0f);
+    chaining::value::holder_ptr<channel_index_t> const ch_mapping_idx =
+        chaining::value::holder<channel_index_t>::make_shared(0);
 
     static std::shared_ptr<controller> make_shared(audio::io_device_ptr const &);
 

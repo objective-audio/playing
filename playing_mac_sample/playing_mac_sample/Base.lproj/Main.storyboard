@@ -778,16 +778,34 @@
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gZf-YZ-vkR">
+                                <rect key="frame" x="232" y="226" width="19" height="28"/>
+                                <stepperCell key="cell" continuous="YES" alignment="left" maxValue="4" id="idp-ET-6fN"/>
+                                <connections>
+                                    <action selector="chMappingChanged:" target="XfG-lQ-9wD" id="u3o-Z3-ai7"/>
+                                </connections>
+                            </stepper>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="frU-c3-u3m">
+                                <rect key="frame" x="256" y="232" width="37" height="16"/>
+                                <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="zkP-ua-muc">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="leading" secondItem="rRd-cr-QaC" secondAttribute="trailing" constant="12" symbolic="YES" id="4K1-Fr-8CE"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="hvj-rk-PWX" secondAttribute="trailing" constant="22" id="8pi-jk-qGk"/>
+                            <constraint firstItem="gZf-YZ-vkR" firstAttribute="leading" secondItem="0W3-fu-CgP" secondAttribute="trailing" constant="8" symbolic="YES" id="Ddh-c8-uct"/>
                             <constraint firstItem="JgA-Ha-QDJ" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="Hdg-2C-8m3"/>
                             <constraint firstItem="b5X-ax-UE4" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="KMI-QE-80M"/>
+                            <constraint firstItem="frU-c3-u3m" firstAttribute="centerY" secondItem="gZf-YZ-vkR" secondAttribute="centerY" id="Ley-1B-3LW"/>
                             <constraint firstAttribute="trailing" secondItem="b5X-ax-UE4" secondAttribute="trailing" constant="20" symbolic="YES" id="MbI-se-iop"/>
                             <constraint firstItem="JgA-Ha-QDJ" firstAttribute="top" secondItem="hvj-rk-PWX" secondAttribute="bottom" constant="8" symbolic="YES" id="NiX-xd-KRG"/>
                             <constraint firstItem="0ER-1E-Aje" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="Pc3-nU-V9P"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="PiI-Jf-bSN" secondAttribute="trailing" constant="22" id="QwA-RQ-KNP"/>
+                            <constraint firstItem="frU-c3-u3m" firstAttribute="leading" secondItem="gZf-YZ-vkR" secondAttribute="trailing" constant="10" id="RNh-Ve-K4y"/>
                             <constraint firstItem="yQZ-5H-MlH" firstAttribute="top" secondItem="b5X-ax-UE4" secondAttribute="bottom" constant="8" symbolic="YES" id="Ukb-PQ-qn2"/>
                             <constraint firstItem="rRd-cr-QaC" firstAttribute="leading" secondItem="0ER-1E-Aje" secondAttribute="trailing" constant="12" symbolic="YES" id="V2Y-Bu-bRs"/>
                             <constraint firstItem="0ER-1E-Aje" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="Z2Z-5p-d35"/>
@@ -796,6 +814,7 @@
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="cm3-3r-3F3"/>
                             <constraint firstItem="rRd-cr-QaC" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="hVp-lR-54B"/>
                             <constraint firstItem="hvj-rk-PWX" firstAttribute="top" secondItem="PiI-Jf-bSN" secondAttribute="bottom" constant="8" symbolic="YES" id="lUH-RL-RI7"/>
+                            <constraint firstItem="gZf-YZ-vkR" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="lec-m1-R3R"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="JgA-Ha-QDJ" secondAttribute="trailing" constant="22" id="mOV-o9-42g"/>
                             <constraint firstAttribute="trailing" secondItem="yQZ-5H-MlH" secondAttribute="trailing" constant="20" symbolic="YES" id="nUj-lV-MKY"/>
                             <constraint firstItem="b5X-ax-UE4" firstAttribute="top" secondItem="JgA-Ha-QDJ" secondAttribute="bottom" constant="8" symbolic="YES" id="sTE-mR-8rG"/>
@@ -803,6 +822,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="chMappingLabel" destination="frU-c3-u3m" id="UVW-Qg-cL3"/>
+                        <outlet property="chMappingStepper" destination="gZf-YZ-vkR" id="Ldv-Hj-DIq"/>
                         <outlet property="configurationLabel" destination="hvj-rk-PWX" id="HAb-Qr-HbJ"/>
                         <outlet property="frequencyLabel" destination="yQZ-5H-MlH" id="DLd-hI-MQK"/>
                         <outlet property="frequencySlider" destination="b5X-ax-UE4" id="s5B-V7-rct"/>

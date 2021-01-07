@@ -27,6 +27,8 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet NSButton *playButton;
 @property (nonatomic, weak) IBOutlet NSButton *minusButton;
 @property (nonatomic, weak) IBOutlet NSButton *plusButton;
+@property (nonatomic, weak) IBOutlet NSStepper *chMappingStepper;
+@property (nonatomic, weak) IBOutlet NSTextField *chMappingLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *frequencySlider;
 @property (nonatomic, weak) IBOutlet NSTextField *playFrameLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *configurationLabel;
@@ -66,6 +68,13 @@ struct view_controller_cpp {
         .perform([unowned_self](float const &frequency) {
             ViewController *viewController = [unowned_self.object() object];
             [viewController _updateFrequencyLabel];
+        })
+        .sync()
+        ->add_to(pool);
+    controller->ch_mapping_idx->chain()
+        .perform([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateChMappingLabel];
         })
         .sync()
         ->add_to(pool);
@@ -125,6 +134,10 @@ struct view_controller_cpp {
     self->_cpp.controller->frequency->set_value(sender.floatValue);
 }
 
+- (IBAction)chMappingChanged:(NSStepper *)sender {
+    self->_cpp.controller->ch_mapping_idx->set_value(sender.integerValue);
+}
+
 - (void)_updateConfigurationLabel {
     std::vector<std::string> texts;
 
@@ -151,6 +164,11 @@ struct view_controller_cpp {
 
 - (void)_updateFrequencyLabel {
     self.frequencyLabel.stringValue = [NSString stringWithFormat:@"%.1fHz", self->_cpp.controller->frequency->raw()];
+}
+
+- (void)_updateChMappingLabel {
+    self.chMappingLabel.stringValue =
+        [NSString stringWithFormat:@"%@", @(self->_cpp.controller->ch_mapping_idx->raw())];
 }
 
 @end
