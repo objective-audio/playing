@@ -46,6 +46,13 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
         ->add_to(this->_pool);
 
     this->frequency->chain().perform([this](float const &) { this->_update_pi_track(); }).end()->add_to(this->_pool);
+
+    this->ch_mapping_idx->chain()
+        .perform([this](channel_index_t const &idx) {
+            this->coordinator->set_channel_mapping(channel_mapping::make_shared({idx, idx + 1}));
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 void sample::controller::_update_timeline() {
@@ -149,7 +156,7 @@ proc::timeline_ptr sample::controller::make_timeline() {
         timeline->insert_track(to_track_index(sample::track::routing), routing_track);
         auto routing_module = proc::make_signal_module<float>(proc::routing::kind::copy);
         routing_module->connect_input(proc::to_connector_index(proc::routing::input::value), 0);
-        routing_module->connect_output(proc::to_connector_index(proc::routing::output::value), 3);
+        routing_module->connect_output(proc::to_connector_index(proc::routing::output::value), 1);
         routing_track->push_back_module(routing_module, process_range);
     }
 
