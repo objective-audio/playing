@@ -9,7 +9,9 @@
 namespace yas::playing {
 using channel_index_t = proc::channel_index_t;
 using fragment_index_t = int64_t;
+using track_index_t = proc::track_index_t;
 using frame_index_t = proc::frame_index_t;
+using module_index_t = proc::module_index_t;
 using length_t = proc::length_t;
 using sample_rate_t = proc::sample_rate_t;
 

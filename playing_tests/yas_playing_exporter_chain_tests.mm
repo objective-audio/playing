@@ -36,7 +36,7 @@ struct cpp {
 - (void)test_chain {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
-    proc::sample_rate_t const sample_rate = 2;
+    sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
 
     auto exporter = exporter::make_shared(root_path, queue, self->_cpp.priority);

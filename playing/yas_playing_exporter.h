@@ -36,15 +36,15 @@ struct exporter final {
 
     void _receive_timeline_event(proc::timeline::event_t const &event);
     void _receive_relayed_timeline_event(proc::timeline::relayed_event_t const &event);
-    void _receive_relayed_track_event(proc::track::relayed_event_t const &event, proc::track_index_t const trk_idx);
+    void _receive_relayed_track_event(proc::track::relayed_event_t const &event, track_index_t const trk_idx);
     void _update_timeline(proc::timeline::track_map_t &&tracks);
     void _insert_tracks(proc::timeline::inserted_event_t const &event);
     void _erase_tracks(proc::timeline::erased_event_t const &event);
-    void _insert_modules(proc::track_index_t const trk_idx, proc::track::inserted_event_t const &event);
-    void _erase_modules(proc::track_index_t const trk_idx, proc::track::erased_event_t const &event);
-    void _insert_module(proc::track_index_t const trk_idx, proc::time::range const range,
+    void _insert_modules(track_index_t const trk_idx, proc::track::inserted_event_t const &event);
+    void _erase_modules(track_index_t const trk_idx, proc::track::erased_event_t const &event);
+    void _insert_module(track_index_t const trk_idx, proc::time::range const range,
                         proc::module_vector::inserted_event_t const &event);
-    void _erase_module(proc::track_index_t const trk_idx, proc::time::range const range,
+    void _erase_module(track_index_t const trk_idx, proc::time::range const range,
                        proc::module_vector::erased_event_t const &event);
     void _push_export_task(proc::time::range const &range);
 };

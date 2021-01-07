@@ -11,11 +11,11 @@
 using namespace yas;
 using namespace yas::playing;
 
-proc::sample_rate_t player_utils::fragment_length(audio::format const &format) {
-    return static_cast<proc::sample_rate_t>(format.sample_rate());
+sample_rate_t player_utils::fragment_length(audio::format const &format) {
+    return static_cast<sample_rate_t>(format.sample_rate());
 }
 
-std::optional<fragment_index_t> player_utils::top_fragment_idx(proc::sample_rate_t const frag_length,
+std::optional<fragment_index_t> player_utils::top_fragment_idx(sample_rate_t const frag_length,
                                                                frame_index_t const frame) {
     if (frag_length > 0) {
         return math::floor_int(frame, frag_length) / frag_length;

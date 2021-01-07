@@ -4,6 +4,7 @@
 
 #include "yas_playing_test_utils.h"
 #include <cpp_utils/cpp_utils.h>
+#include <playing/yas_playing_umbrella.h>
 
 using namespace yas;
 using namespace yas::playing;
@@ -19,7 +20,7 @@ std::string test_utils::identifier() {
 
 proc::timeline_ptr test_utils::test_timeline(int64_t const offset, uint32_t const ch_count) {
     proc::timeline_ptr timeline = proc::timeline::make_shared();
-    proc::track_index_t trk_idx = 0;
+    track_index_t trk_idx = 0;
     proc::time::range const module_range{-3, 18};
 
     if (auto track = proc::track::make_shared()) {

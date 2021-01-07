@@ -54,7 +54,7 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
-    proc::sample_rate_t const sample_rate = 2;
+    sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 
@@ -155,8 +155,8 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
-    proc::sample_rate_t const pre_sample_rate = 2;
-    proc::sample_rate_t const post_sample_rate = 3;
+    sample_rate_t const pre_sample_rate = 2;
+    sample_rate_t const post_sample_rate = 3;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, post_sample_rate};
 
@@ -254,7 +254,7 @@ struct cpp {
     std::string const &root_path = self->_cpp.root_path;
     std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
-    proc::sample_rate_t const sample_rate = 2;
+    sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
     path::timeline const tl_path{root_path, identifier, sample_rate};
 

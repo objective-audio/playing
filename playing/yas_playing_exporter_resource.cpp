@@ -56,15 +56,15 @@ void exporter_resource::replace_timeline_on_task(proc::timeline::track_map_t &&t
     this->_export_fragments_on_task(frags_range, task);
 }
 
-void exporter_resource::insert_track_on_task(proc::track_index_t const trk_idx, proc::track_ptr &&track) {
+void exporter_resource::insert_track_on_task(track_index_t const trk_idx, proc::track_ptr &&track) {
     this->_timeline->insert_track(trk_idx, std::move(track));
 }
 
-void exporter_resource::erase_track_on_task(proc::track_index_t const trk_idx) {
+void exporter_resource::erase_track_on_task(track_index_t const trk_idx) {
     this->_timeline->erase_track(trk_idx);
 }
 
-void exporter_resource::insert_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range,
+void exporter_resource::insert_modules_on_task(track_index_t const trk_idx, proc::time::range const &range,
                                                std::vector<proc::module_ptr> &&modules) {
     auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) == 0);
@@ -73,20 +73,20 @@ void exporter_resource::insert_modules_on_task(proc::track_index_t const trk_idx
     }
 }
 
-void exporter_resource::erase_modules_on_task(proc::track_index_t const trk_idx, proc::time::range const &range) {
+void exporter_resource::erase_modules_on_task(track_index_t const trk_idx, proc::time::range const &range) {
     auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);
     track->erase_modules_for_range(range);
 }
 
-void exporter_resource::insert_module(proc::module_ptr const &module, std::size_t const module_idx,
-                                      proc::track_index_t const trk_idx, proc::time::range const range) {
+void exporter_resource::insert_module(proc::module_ptr const &module, module_index_t const module_idx,
+                                      track_index_t const trk_idx, proc::time::range const range) {
     auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);
     track->insert_module(std::move(module), module_idx, range);
 }
 
-void exporter_resource::erase_module(std::size_t const module_idx, proc::track_index_t const trk_idx,
+void exporter_resource::erase_module(module_index_t const module_idx, track_index_t const trk_idx,
                                      proc::time::range const range) {
     auto const &track = this->_timeline->track(trk_idx);
     assert(track->modules().count(range) > 0);

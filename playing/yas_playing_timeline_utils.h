@@ -13,7 +13,7 @@
 #include <processing/yas_processing_time.h>
 
 namespace yas::playing::timeline_utils {
-[[nodiscard]] proc::time::range fragments_range(proc::time::range const &, proc::sample_rate_t const);
+[[nodiscard]] proc::time::range fragments_range(proc::time::range const &, sample_rate_t const);
 
 [[nodiscard]] char const *char_data(proc::signal_event const &);
 [[nodiscard]] char const *char_data(proc::time::frame::type const &);
