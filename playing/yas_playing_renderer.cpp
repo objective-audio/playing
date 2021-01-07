@@ -48,7 +48,7 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
         ->add_to(this->_pool);
 }
 
-proc::sample_rate_t renderer::sample_rate() const {
+sample_rate_t renderer::sample_rate() const {
     return this->_sample_rate->raw();
 }
 
@@ -82,7 +82,7 @@ void renderer::set_rendering_handler(renderable::rendering_f &&handler) {
     });
 }
 
-chaining::chain_sync_t<proc::sample_rate_t> renderer::chain_sample_rate() {
+chaining::chain_sync_t<sample_rate_t> renderer::chain_sample_rate() {
     return this->_sample_rate->chain();
 }
 

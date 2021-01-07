@@ -23,8 +23,8 @@ struct controller {
 
    private:
     proc::timeline_ptr _timeline = nullptr;
-    chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
-        chaining::value::holder<proc::sample_rate_t>::make_shared(0);
+    chaining::value::holder_ptr<sample_rate_t> const _sample_rate =
+        chaining::value::holder<sample_rate_t>::make_shared(0);
 
     chaining::observer_pool _pool;
 

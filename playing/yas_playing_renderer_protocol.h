@@ -24,7 +24,7 @@ struct renderable {
 };
 
 struct coordinator_renderable : renderable {
-    [[nodiscard]] virtual proc::sample_rate_t sample_rate() const = 0;
+    [[nodiscard]] virtual sample_rate_t sample_rate() const = 0;
     [[nodiscard]] virtual audio::pcm_format pcm_format() const = 0;
     [[nodiscard]] virtual std::size_t channel_count() const = 0;
 

@@ -17,11 +17,11 @@ struct renderer final : coordinator_renderable {
     void set_rendering_handler(renderable::rendering_f &&) override;
     void set_is_rendering(bool const) override;
 
-    [[nodiscard]] proc::sample_rate_t sample_rate() const override;
+    [[nodiscard]] sample_rate_t sample_rate() const override;
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<proc::sample_rate_t> chain_sample_rate();
+    [[nodiscard]] chaining::chain_sync_t<sample_rate_t> chain_sample_rate();
     [[nodiscard]] chaining::chain_sync_t<audio::pcm_format> chain_pcm_format();
     [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_channel_count();
 
@@ -32,8 +32,8 @@ struct renderer final : coordinator_renderable {
    private:
     audio::io_device_ptr const _device;
 
-    chaining::value::holder_ptr<proc::sample_rate_t> const _sample_rate =
-        chaining::value::holder<proc::sample_rate_t>::make_shared(proc::sample_rate_t{0});
+    chaining::value::holder_ptr<sample_rate_t> const _sample_rate =
+        chaining::value::holder<sample_rate_t>::make_shared(sample_rate_t{0});
     chaining::value::holder_ptr<audio::pcm_format> const _pcm_format =
         chaining::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
     chaining::value::holder_ptr<std::size_t> const _channel_count =

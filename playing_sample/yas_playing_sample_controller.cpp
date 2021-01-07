@@ -41,7 +41,7 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
         ->add_to(this->_pool);
 
     this->_sample_rate->chain()
-        .perform([this](proc::sample_rate_t const &) { this->_update_timeline(); })
+        .perform([this](sample_rate_t const &) { this->_update_timeline(); })
         .sync()
         ->add_to(this->_pool);
 

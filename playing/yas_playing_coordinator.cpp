@@ -73,7 +73,7 @@ void coordinator::seek(frame_index_t const frame) {
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
 
-    auto const sample_rate = static_cast<proc::sample_rate_t>(this->sample_rate());
+    auto const sample_rate = this->sample_rate();
 
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
 
