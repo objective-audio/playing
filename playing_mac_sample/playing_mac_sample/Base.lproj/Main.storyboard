@@ -780,7 +780,7 @@
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gZf-YZ-vkR">
                                 <rect key="frame" x="232" y="226" width="19" height="28"/>
-                                <stepperCell key="cell" continuous="YES" alignment="left" maxValue="4" id="idp-ET-6fN"/>
+                                <stepperCell key="cell" continuous="YES" alignment="left" minValue="-2" maxValue="2" id="idp-ET-6fN"/>
                                 <connections>
                                     <action selector="chMappingChanged:" target="XfG-lQ-9wD" id="u3o-Z3-ai7"/>
                                 </connections>
