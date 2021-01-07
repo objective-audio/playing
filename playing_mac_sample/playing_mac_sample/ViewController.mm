@@ -25,6 +25,7 @@ struct view_controller_cpp {
 @interface ViewController ()
 
 @property (nonatomic, weak) IBOutlet NSButton *playButton;
+@property (nonatomic, weak) IBOutlet NSButton *resetButton;
 @property (nonatomic, weak) IBOutlet NSButton *minusButton;
 @property (nonatomic, weak) IBOutlet NSButton *plusButton;
 @property (nonatomic, weak) IBOutlet NSStepper *chMappingStepper;
@@ -54,6 +55,7 @@ struct view_controller_cpp {
 
     [self.minusButton setTitle:@"minus1s"];
     [self.plusButton setTitle:@"plus1s"];
+    [self.resetButton setTitle:@"reset"];
 
     auto unowned_self = objc_ptr_with_move_object([[YASUnownedObject<ViewController *> alloc] initWithObject:self]);
 
@@ -118,6 +120,11 @@ struct view_controller_cpp {
 - (IBAction)playButtonTapped:(NSButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
     coordinator->set_playing(!coordinator->is_playing());
+}
+
+- (IBAction)resetButtonTapped:(NSButton *)sender {
+    auto &coordinator = self->_cpp.controller->coordinator;
+    coordinator->seek(0);
 }
 
 - (IBAction)minusButtonTapped:(NSButton *)sender {

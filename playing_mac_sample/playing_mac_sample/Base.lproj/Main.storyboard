@@ -719,18 +719,8 @@
                                     <action selector="playButtonTapped:" target="XfG-lQ-9wD" id="YXV-o3-OfL"/>
                                 </connections>
                             </button>
-                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rRd-cr-QaC">
-                                <rect key="frame" x="86" y="223" width="75" height="32"/>
-                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TGA-Uu-UlV">
-                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                                    <font key="font" metaFont="system"/>
-                                </buttonCell>
-                                <connections>
-                                    <action selector="minusButtonTapped:" target="XfG-lQ-9wD" id="dVG-Ki-PR2"/>
-                                </connections>
-                            </button>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0W3-fu-CgP">
-                                <rect key="frame" x="159" y="223" width="75" height="32"/>
+                                <rect key="frame" x="232" y="223" width="75" height="32"/>
                                 <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="l53-hy-fpL">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -779,23 +769,44 @@
                                 </textFieldCell>
                             </textField>
                             <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="gZf-YZ-vkR">
-                                <rect key="frame" x="232" y="226" width="19" height="28"/>
+                                <rect key="frame" x="305" y="226" width="19" height="28"/>
                                 <stepperCell key="cell" continuous="YES" alignment="left" minValue="-2" maxValue="2" id="idp-ET-6fN"/>
                                 <connections>
                                     <action selector="chMappingChanged:" target="XfG-lQ-9wD" id="u3o-Z3-ai7"/>
                                 </connections>
                             </stepper>
                             <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="frU-c3-u3m">
-                                <rect key="frame" x="256" y="232" width="37" height="16"/>
+                                <rect key="frame" x="329" y="232" width="37" height="16"/>
                                 <textFieldCell key="cell" lineBreakMode="clipping" title="Label" id="zkP-ua-muc">
                                     <font key="font" metaFont="system"/>
                                     <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
                                     <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="TMg-jG-sZB">
+                                <rect key="frame" x="86" y="223" width="75" height="32"/>
+                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="QWg-ZO-qWd">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="resetButtonTapped:" target="XfG-lQ-9wD" id="ESc-y8-RHa"/>
+                                </connections>
+                            </button>
+                            <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rRd-cr-QaC">
+                                <rect key="frame" x="159" y="223" width="75" height="32"/>
+                                <buttonCell key="cell" type="push" title="Button" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="TGA-Uu-UlV">
+                                    <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                    <font key="font" metaFont="system"/>
+                                </buttonCell>
+                                <connections>
+                                    <action selector="minusButtonTapped:" target="XfG-lQ-9wD" id="dVG-Ki-PR2"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <constraints>
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="leading" secondItem="rRd-cr-QaC" secondAttribute="trailing" constant="12" symbolic="YES" id="4K1-Fr-8CE"/>
+                            <constraint firstItem="rRd-cr-QaC" firstAttribute="leading" secondItem="TMg-jG-sZB" secondAttribute="trailing" constant="12" symbolic="YES" id="84u-ve-SMX"/>
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="hvj-rk-PWX" secondAttribute="trailing" constant="22" id="8pi-jk-qGk"/>
                             <constraint firstItem="gZf-YZ-vkR" firstAttribute="leading" secondItem="0W3-fu-CgP" secondAttribute="trailing" constant="8" symbolic="YES" id="Ddh-c8-uct"/>
                             <constraint firstItem="JgA-Ha-QDJ" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="Hdg-2C-8m3"/>
@@ -807,11 +818,12 @@
                             <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="PiI-Jf-bSN" secondAttribute="trailing" constant="22" id="QwA-RQ-KNP"/>
                             <constraint firstItem="frU-c3-u3m" firstAttribute="leading" secondItem="gZf-YZ-vkR" secondAttribute="trailing" constant="10" id="RNh-Ve-K4y"/>
                             <constraint firstItem="yQZ-5H-MlH" firstAttribute="top" secondItem="b5X-ax-UE4" secondAttribute="bottom" constant="8" symbolic="YES" id="Ukb-PQ-qn2"/>
-                            <constraint firstItem="rRd-cr-QaC" firstAttribute="leading" secondItem="0ER-1E-Aje" secondAttribute="trailing" constant="12" symbolic="YES" id="V2Y-Bu-bRs"/>
                             <constraint firstItem="0ER-1E-Aje" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="20" symbolic="YES" id="Z2Z-5p-d35"/>
                             <constraint firstItem="hvj-rk-PWX" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="bcP-Tu-qxa"/>
                             <constraint firstItem="PiI-Jf-bSN" firstAttribute="leading" secondItem="m2S-Jp-Qdl" secondAttribute="leading" constant="22" id="c2M-Xd-f8P"/>
                             <constraint firstItem="0W3-fu-CgP" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="cm3-3r-3F3"/>
+                            <constraint firstItem="TMg-jG-sZB" firstAttribute="leading" secondItem="0ER-1E-Aje" secondAttribute="trailing" constant="12" symbolic="YES" id="gLX-4C-ZLq"/>
+                            <constraint firstItem="TMg-jG-sZB" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="gQI-BN-Jx4"/>
                             <constraint firstItem="rRd-cr-QaC" firstAttribute="centerY" secondItem="0ER-1E-Aje" secondAttribute="centerY" id="hVp-lR-54B"/>
                             <constraint firstItem="hvj-rk-PWX" firstAttribute="top" secondItem="PiI-Jf-bSN" secondAttribute="bottom" constant="8" symbolic="YES" id="lUH-RL-RI7"/>
                             <constraint firstItem="gZf-YZ-vkR" firstAttribute="top" secondItem="m2S-Jp-Qdl" secondAttribute="top" constant="20" symbolic="YES" id="lec-m1-R3R"/>
@@ -831,6 +843,7 @@
                         <outlet property="playButton" destination="0ER-1E-Aje" id="tXx-Cx-exb"/>
                         <outlet property="playFrameLabel" destination="PiI-Jf-bSN" id="h6j-fP-sPt"/>
                         <outlet property="plusButton" destination="0W3-fu-CgP" id="UQn-Xo-oJc"/>
+                        <outlet property="resetButton" destination="TMg-jG-sZB" id="vHW-jy-kt2"/>
                         <outlet property="stateLabel" destination="JgA-Ha-QDJ" id="cE3-b7-z4b"/>
                     </connections>
                 </viewController>
