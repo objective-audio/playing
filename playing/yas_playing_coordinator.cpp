@@ -72,7 +72,7 @@ void coordinator::seek(frame_index_t const frame) {
 
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
-
+    auto const &ch_mapping = player->channel_mapping();
     auto const sample_rate = this->sample_rate();
 
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
@@ -86,8 +86,10 @@ void coordinator::overwrite(proc::time::range const &range) {
     while (yas_each_next(frag_each)) {
         auto ch_each = make_fast_each(ch_count);
         while (yas_each_next(ch_each)) {
-#warning todo chを変換する
-            player->overwrite(yas_each_index(ch_each), yas_each_index(frag_each));
+            if (auto const mapped_idx = ch_mapping->mapped_index(yas_each_index(ch_each), ch_count);
+                mapped_idx.has_value()) {
+                player->overwrite(mapped_idx.value(), yas_each_index(frag_each));
+            }
         }
     }
 }
