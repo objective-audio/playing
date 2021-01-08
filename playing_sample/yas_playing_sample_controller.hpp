@@ -21,6 +21,10 @@ struct controller {
     chaining::value::holder_ptr<channel_index_t> const ch_mapping_idx =
         chaining::value::holder<channel_index_t>::make_shared(0);
 
+    void seek_zero();
+    void seek_plus_one_sec();
+    void seek_minus_one_sec();
+
     static std::shared_ptr<controller> make_shared(audio::io_device_ptr const &);
 
    private:
