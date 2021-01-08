@@ -123,18 +123,15 @@ struct view_controller_cpp {
 }
 
 - (IBAction)resetButtonTapped:(NSButton *)sender {
-    auto &coordinator = self->_cpp.controller->coordinator;
-    coordinator->seek(0);
+    self->_cpp.controller->seek_zero();
 }
 
 - (IBAction)minusButtonTapped:(NSButton *)sender {
-    auto &coordinator = self->_cpp.controller->coordinator;
-    coordinator->seek(coordinator->current_frame() - coordinator->sample_rate());
+    self->_cpp.controller->seek_minus_one_sec();
 }
 
 - (IBAction)plusButtonTapped:(NSButton *)sender {
-    auto &coordinator = self->_cpp.controller->coordinator;
-    coordinator->seek(coordinator->current_frame() + coordinator->sample_rate());
+    self->_cpp.controller->seek_plus_one_sec();
 }
 
 - (IBAction)freqencySliderChanged:(NSSlider *)sender {

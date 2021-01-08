@@ -55,6 +55,18 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
         ->add_to(this->_pool);
 }
 
+void sample::controller::seek_zero() {
+    this->coordinator->seek(0);
+}
+
+void sample::controller::seek_plus_one_sec() {
+    this->coordinator->seek(this->coordinator->current_frame() + this->coordinator->sample_rate());
+}
+
+void sample::controller::seek_minus_one_sec() {
+    this->coordinator->seek(this->coordinator->current_frame() - this->coordinator->sample_rate());
+}
+
 void sample::controller::_update_timeline() {
     auto const timeline = this->make_timeline();
     this->_timeline = timeline;
