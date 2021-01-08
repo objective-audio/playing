@@ -25,8 +25,11 @@ struct view_controller_cpp {
 @interface ViewController ()
 
 @property (nonatomic, weak) IBOutlet NSButton *playButton;
+@property (nonatomic, weak) IBOutlet NSButton *resetButton;
 @property (nonatomic, weak) IBOutlet NSButton *minusButton;
 @property (nonatomic, weak) IBOutlet NSButton *plusButton;
+@property (nonatomic, weak) IBOutlet NSStepper *chMappingStepper;
+@property (nonatomic, weak) IBOutlet NSTextField *chMappingLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *frequencySlider;
 @property (nonatomic, weak) IBOutlet NSTextField *playFrameLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *configurationLabel;
@@ -52,6 +55,7 @@ struct view_controller_cpp {
 
     [self.minusButton setTitle:@"minus1s"];
     [self.plusButton setTitle:@"plus1s"];
+    [self.resetButton setTitle:@"reset"];
 
     auto unowned_self = objc_ptr_with_move_object([[YASUnownedObject<ViewController *> alloc] initWithObject:self]);
 
@@ -66,6 +70,13 @@ struct view_controller_cpp {
         .perform([unowned_self](float const &frequency) {
             ViewController *viewController = [unowned_self.object() object];
             [viewController _updateFrequencyLabel];
+        })
+        .sync()
+        ->add_to(pool);
+    controller->ch_mapping_idx->chain()
+        .perform([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateChMappingLabel];
         })
         .sync()
         ->add_to(pool);
@@ -111,6 +122,11 @@ struct view_controller_cpp {
     coordinator->set_playing(!coordinator->is_playing());
 }
 
+- (IBAction)resetButtonTapped:(NSButton *)sender {
+    auto &coordinator = self->_cpp.controller->coordinator;
+    coordinator->seek(0);
+}
+
 - (IBAction)minusButtonTapped:(NSButton *)sender {
     auto &coordinator = self->_cpp.controller->coordinator;
     coordinator->seek(coordinator->current_frame() - coordinator->sample_rate());
@@ -123,6 +139,10 @@ struct view_controller_cpp {
 
 - (IBAction)freqencySliderChanged:(NSSlider *)sender {
     self->_cpp.controller->frequency->set_value(sender.floatValue);
+}
+
+- (IBAction)chMappingChanged:(NSStepper *)sender {
+    self->_cpp.controller->ch_mapping_idx->set_value(sender.integerValue);
 }
 
 - (void)_updateConfigurationLabel {
@@ -151,6 +171,11 @@ struct view_controller_cpp {
 
 - (void)_updateFrequencyLabel {
     self.frequencyLabel.stringValue = [NSString stringWithFormat:@"%.1fHz", self->_cpp.controller->frequency->raw()];
+}
+
+- (void)_updateChMappingLabel {
+    self.chMappingLabel.stringValue =
+        [NSString stringWithFormat:@"%@", @(self->_cpp.controller->ch_mapping_idx->raw())];
 }
 
 @end

@@ -46,6 +46,13 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
         ->add_to(this->_pool);
 
     this->frequency->chain().perform([this](float const &) { this->_update_pi_track(); }).end()->add_to(this->_pool);
+
+    this->ch_mapping_idx->chain()
+        .perform([this](channel_index_t const &idx) {
+            this->coordinator->set_channel_mapping(channel_mapping::make_shared({idx, idx + 1}));
+        })
+        .sync()
+        ->add_to(this->_pool);
 }
 
 void sample::controller::_update_timeline() {
