@@ -15,7 +15,8 @@ struct controller {
     std::string const root_path =
         file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("sample").string();
     std::string const identifier = "0";
-    coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, this->identifier, this->device);
+    coordinator_ptr const coordinator =
+        coordinator::make_shared(this->root_path, this->identifier, renderer::make_shared(this->device));
 
     chaining::value::holder_ptr<float> const frequency = chaining::value::holder<float>::make_shared(1000.0f);
     chaining::value::holder_ptr<channel_index_t> const ch_mapping_idx =

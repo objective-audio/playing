@@ -33,7 +33,7 @@ struct coordinator final {
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::string const &identifier,
-                                                     audio::io_device_ptr const &);
+                                                     coordinator_renderable_ptr const &);
 
    private:
     std::string const _identifier;

@@ -114,10 +114,8 @@ void coordinator::_update_exporter() {
 }
 
 coordinator_ptr coordinator::make_shared(std::string const &root_path, std::string const &identifier,
-                                         audio::io_device_ptr const &device) {
+                                         coordinator_renderable_ptr const &renderer) {
     auto const worker = worker::make_shared();
-
-    auto const renderer = renderer::make_shared(device);
 
     auto const player = player::make_shared(
         root_path, identifier, renderer, worker, {},
