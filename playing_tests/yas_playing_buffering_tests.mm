@@ -412,20 +412,20 @@ struct audio_buffering_cpp {
         called1.emplace_back(frag_idx);
     };
 
-    buffering->overwrite_element_on_render({.channel_index = 0, .fragment_index = 0});
+    buffering->overwrite_element_on_render({.file_channel_index = 0, .fragment_index = 0});
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called0.at(0), 0);
     XCTAssertEqual(called1.size(), 0);
 
-    buffering->overwrite_element_on_render({.channel_index = 1, .fragment_index = 1});
+    buffering->overwrite_element_on_render({.file_channel_index = 1, .fragment_index = 1});
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
     XCTAssertEqual(called1.at(0), 1);
 
-    buffering->overwrite_element_on_render({.channel_index = 2, .fragment_index = 2});
-    buffering->overwrite_element_on_render({.channel_index = -1, .fragment_index = -1});
+    buffering->overwrite_element_on_render({.file_channel_index = 2, .fragment_index = 2});
+    buffering->overwrite_element_on_render({.file_channel_index = -1, .fragment_index = -1});
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
@@ -436,23 +436,31 @@ struct audio_buffering_cpp {
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
 
-    buffering->overwrite_element_on_render({.channel_index = 3, .fragment_index = 3});
+    buffering->overwrite_element_on_render({.file_channel_index = 3, .fragment_index = 3});
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 2);
     XCTAssertEqual(called1.at(1), 3);
 
-    buffering->overwrite_element_on_render({.channel_index = 2, .fragment_index = 4});
+    buffering->overwrite_element_on_render({.file_channel_index = 2, .fragment_index = 4});
 
     XCTAssertEqual(called0.size(), 2);
     XCTAssertEqual(called0.at(1), 4);
     XCTAssertEqual(called1.size(), 2);
 
-    buffering->overwrite_element_on_render({.channel_index = 0, .fragment_index = 5});
-    buffering->overwrite_element_on_render({.channel_index = 1, .fragment_index = 6});
+    buffering->overwrite_element_on_render({.file_channel_index = 0, .fragment_index = 5});
+    buffering->overwrite_element_on_render({.file_channel_index = 1, .fragment_index = 6});
 
     XCTAssertEqual(called0.size(), 2);
     XCTAssertEqual(called1.size(), 2);
+
+    // file_channel_indexがnulloptなら全ch上書き
+    buffering->overwrite_element_on_render({.file_channel_index = std::nullopt, .fragment_index = 7});
+
+    XCTAssertEqual(called0.size(), 3);
+    XCTAssertEqual(called0.at(2), 7);
+    XCTAssertEqual(called1.size(), 3);
+    XCTAssertEqual(called1.at(2), 7);
 }
 
 - (void)test_read_into_buffer {

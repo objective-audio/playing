@@ -10,7 +10,7 @@
 #include <processing/yas_processing_time.h>
 
 namespace yas::playing::path {
-struct [[nodiscard]] timeline {
+struct [[nodiscard]] timeline final {
     std::string root_path;
     std::string identifier;
     sample_rate_t sample_rate;
@@ -21,7 +21,7 @@ struct [[nodiscard]] timeline {
     bool operator!=(timeline const &rhs) const;
 };
 
-struct [[nodiscard]] channel {
+struct [[nodiscard]] channel final {
     timeline timeline_path;
     channel_index_t channel_index;
 
@@ -31,7 +31,7 @@ struct [[nodiscard]] channel {
     bool operator!=(channel const &rhs) const;
 };
 
-struct [[nodiscard]] fragment {
+struct [[nodiscard]] fragment final {
     channel channel_path;
     fragment_index_t fragment_index;
 
@@ -41,7 +41,7 @@ struct [[nodiscard]] fragment {
     bool operator!=(fragment const &rhs) const;
 };
 
-struct [[nodiscard]] signal_event {
+struct [[nodiscard]] signal_event final {
     fragment fragment_path;
     proc::time::range range;
     std::type_info const &sample_type;
@@ -52,7 +52,7 @@ struct [[nodiscard]] signal_event {
     bool operator!=(signal_event const &rhs) const;
 };
 
-struct [[nodiscard]] number_events {
+struct [[nodiscard]] number_events final {
     fragment fragment_path;
 
     [[nodiscard]] std::string string() const;

@@ -31,6 +31,7 @@ class buffering_channel_protocol;
 class buffering_resource_protocol;
 class reading_resource_protocol;
 class player_resource_protocol;
+class exportable;
 
 using exporter_ptr = std::shared_ptr<exporter>;
 using exporter_resource_ptr = std::shared_ptr<exporter_resource>;
@@ -57,4 +58,5 @@ using buffering_channel_protocol_ptr = std::shared_ptr<buffering_channel_protoco
 using buffering_protocol_ptr = std::shared_ptr<buffering_resource_protocol>;
 using reading_protocol_ptr = std::shared_ptr<reading_resource_protocol>;
 using player_resource_protocol_ptr = std::shared_ptr<player_resource_protocol>;
+using exportable_ptr = std::shared_ptr<exportable>;
 }  // namespace yas::playing

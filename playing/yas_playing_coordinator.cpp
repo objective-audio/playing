@@ -72,7 +72,6 @@ void coordinator::seek(frame_index_t const frame) {
 
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
-    auto const &ch_mapping = player->channel_mapping();
     auto const sample_rate = this->sample_rate();
 
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
@@ -81,16 +80,8 @@ void coordinator::overwrite(proc::time::range const &range) {
     auto const next_frag_idx = frags_range.next_frame() / sample_rate;
     auto frag_each = make_fast_each(begin_frag_idx, next_frag_idx);
 
-    auto const ch_count = this->channel_count();
-
     while (yas_each_next(frag_each)) {
-        auto ch_each = make_fast_each(ch_count);
-        while (yas_each_next(ch_each)) {
-            if (auto const mapped_idx = ch_mapping->mapped_index(yas_each_index(ch_each), ch_count);
-                mapped_idx.has_value()) {
-                player->overwrite(mapped_idx.value(), yas_each_index(frag_each));
-            }
-        }
+        player->overwrite(std::nullopt, yas_each_index(frag_each));
     }
 }
 
