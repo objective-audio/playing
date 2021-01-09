@@ -37,16 +37,16 @@ struct coordinator final {
 
    private:
     std::string const _identifier;
-    audio::io_device_ptr const _device;
     workable_ptr const _worker = worker::make_shared();
-    coordinator_renderable_ptr const _renderer = renderer::make_shared(this->_device);
+    coordinator_renderable_ptr const _renderer;
     playable_ptr const _player;
     exportable_ptr const _exporter;
     std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
     chaining::observer_pool _pool;
 
-    coordinator(std::string const &root_path, std::string const &identifier, audio::io_device_ptr const &);
+    coordinator(std::string const &identifier, workable_ptr const &, coordinator_renderable_ptr const &,
+                playable_ptr const &, exportable_ptr const &);
 
     void _update_exporter();
 };
