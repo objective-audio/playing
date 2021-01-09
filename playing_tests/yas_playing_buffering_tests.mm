@@ -453,6 +453,14 @@ struct audio_buffering_cpp {
 
     XCTAssertEqual(called0.size(), 2);
     XCTAssertEqual(called1.size(), 2);
+
+    // file_channel_indexがnulloptなら全ch上書き
+    buffering->overwrite_element_on_render({.file_channel_index = std::nullopt, .fragment_index = 7});
+
+    XCTAssertEqual(called0.size(), 3);
+    XCTAssertEqual(called0.at(2), 7);
+    XCTAssertEqual(called1.size(), 3);
+    XCTAssertEqual(called1.at(2), 7);
 }
 
 - (void)test_read_into_buffer {
