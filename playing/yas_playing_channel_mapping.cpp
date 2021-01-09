@@ -12,21 +12,21 @@ using namespace yas::playing;
 channel_mapping::channel_mapping(std::vector<channel_index_t> &&indices) : indices(indices) {
 }
 
-std::optional<channel_index_t> channel_mapping::mapped_index(channel_index_t const ch_idx,
-                                                             std::size_t const ch_count) const {
-    if (ch_idx < ch_count) {
-        if (ch_idx < this->indices.size()) {
-            return this->indices.at(ch_idx);
+std::optional<channel_index_t> channel_mapping::file_index(channel_index_t const out_idx,
+                                                           std::size_t const ch_count) const {
+    if (out_idx < ch_count) {
+        if (out_idx < this->indices.size()) {
+            return this->indices.at(out_idx);
         } else {
-            return ch_idx;
+            return out_idx;
         }
     } else {
         return std::nullopt;
     }
 }
 
-std::optional<channel_index_t> channel_mapping::unmapped_index(channel_index_t const ch_idx,
-                                                               std::size_t const ch_count) const {
+std::optional<channel_index_t> channel_mapping::out_index(channel_index_t const ch_idx,
+                                                          std::size_t const ch_count) const {
     auto const count = std::min(this->indices.size(), ch_count);
     auto each = make_fast_each(count);
     while (yas_each_next(each)) {

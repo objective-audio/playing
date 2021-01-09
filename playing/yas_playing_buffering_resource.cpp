@@ -162,7 +162,7 @@ void buffering_resource::write_all_elements_on_task() {
     channel_index_t ch_idx = 0;
     auto const ch_count = this->_channels.size();
     for (auto const &channel : this->_channels) {
-        path::channel const ch_path{*this->_tl_path, this->_ch_mapping->mapped_index(ch_idx, ch_count).value()};
+        path::channel const ch_path{*this->_tl_path, this->_ch_mapping->file_index(ch_idx, ch_count).value()};
         channel->write_all_elements_on_task(ch_path, top_frag_idx.value());
 
         ++ch_idx;
@@ -210,9 +210,9 @@ void buffering_resource::overwrite_element_on_render(element_address const &inde
         throw std::runtime_error("state is not advancing.");
     }
 
-    if (auto const idx = this->_ch_mapping->unmapped_index(index.channel_index, this->_channels.size());
-        idx.has_value()) {
-        this->_channels.at(idx.value())->overwrite_element_on_render(index.fragment_index);
+    if (auto const out_ch_idx = this->_ch_mapping->out_index(index.file_channel_index, this->_channels.size());
+        out_ch_idx.has_value()) {
+        this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(index.fragment_index);
     }
 }
 

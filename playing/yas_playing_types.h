@@ -16,7 +16,7 @@ using length_t = proc::length_t;
 using sample_rate_t = proc::sample_rate_t;
 
 struct element_address {
-    channel_index_t channel_index;
+    channel_index_t file_channel_index;
     fragment_index_t fragment_index;
 };
 

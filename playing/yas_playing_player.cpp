@@ -268,8 +268,8 @@ void player::seek(frame_index_t const frame) {
     this->_resource->seek_on_main(frame);
 }
 
-void player::overwrite(channel_index_t const ch_idx, fragment_index_t const frag_idx) {
-    this->_resource->add_overwrite_request_on_main({.channel_index = ch_idx, .fragment_index = frag_idx});
+void player::overwrite(channel_index_t const file_ch_idx, fragment_index_t const frag_idx) {
+    this->_resource->add_overwrite_request_on_main({.file_channel_index = file_ch_idx, .fragment_index = frag_idx});
 }
 
 channel_mapping_ptr const &player::channel_mapping() const {

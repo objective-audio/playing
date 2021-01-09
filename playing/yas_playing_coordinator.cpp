@@ -86,9 +86,9 @@ void coordinator::overwrite(proc::time::range const &range) {
     while (yas_each_next(frag_each)) {
         auto ch_each = make_fast_each(ch_count);
         while (yas_each_next(ch_each)) {
-            if (auto const mapped_idx = ch_mapping->mapped_index(yas_each_index(ch_each), ch_count);
-                mapped_idx.has_value()) {
-                player->overwrite(mapped_idx.value(), yas_each_index(frag_each));
+            if (auto const file_ch_idx = ch_mapping->file_index(yas_each_index(ch_each), ch_count);
+                file_ch_idx.has_value()) {
+                player->overwrite(file_ch_idx.value(), yas_each_index(frag_each));
             }
         }
     }

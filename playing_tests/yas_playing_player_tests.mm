@@ -164,7 +164,7 @@ using namespace yas::playing;
     player->overwrite(3, 4);
 
     XCTAssertEqual(called_add_overwrite.size(), 1);
-    XCTAssertEqual(called_add_overwrite.at(0).channel_index, 3);
+    XCTAssertEqual(called_add_overwrite.at(0).file_channel_index, 3);
     XCTAssertEqual(called_add_overwrite.at(0).fragment_index, 4);
 }
 
