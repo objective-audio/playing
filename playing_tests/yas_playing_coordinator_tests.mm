@@ -9,6 +9,8 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::test {
+std::string const identifier = "0";
+
 struct worker : workable {
     std::function<void(uint32_t, task_f &&)> add_task_handler;
     std::function<void(void)> start_handler;
@@ -115,13 +117,47 @@ struct exporter : exportable {
         return this->event_chain_handler();
     }
 };
+
+struct coordinator_cpp {
+    std::shared_ptr<test::worker> worker = nullptr;
+    std::shared_ptr<test::renderer> renderer = nullptr;
+    std::shared_ptr<test::player> player = nullptr;
+    std::shared_ptr<test::exporter> exporter = nullptr;
+
+    coordinator_ptr coordinator = nullptr;
+
+    void setup() {
+        this->worker = std::make_shared<test::worker>();
+        this->renderer = std::make_shared<test::renderer>();
+        this->player = std::make_shared<test::player>();
+        this->exporter = std::make_shared<test::exporter>();
+        this->coordinator =
+            coordinator::make_shared(test::identifier, this->worker, this->renderer, this->player, this->exporter);
+    }
+
+    void reset() {
+        this->worker = nullptr;
+        this->renderer = nullptr;
+        this->player = nullptr;
+        this->exporter = nullptr;
+        this->coordinator = nullptr;
+    }
+};
 }
 
 @interface yas_playing_coordinator_tests : XCTestCase
 
 @end
 
-@implementation yas_playing_coordinator_tests
+@implementation yas_playing_coordinator_tests {
+    test::coordinator_cpp _cpp;
+}
+
+- (void)tearDown {
+    self->_cpp.reset();
+
+    [super tearDown];
+}
 
 - (void)test_set_timeline {
 #warning todo
