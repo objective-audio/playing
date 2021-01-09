@@ -123,4 +123,64 @@ struct exporter : exportable {
 
 @implementation yas_playing_coordinator_tests
 
+- (void)test_set_timeline {
+#warning todo
+}
+
+- (void)test_set_channel_mapping {
+#warning todo
+}
+
+- (void)test_set_playing {
+#warning todo
+}
+
+- (void)test_seek {
+#warning todo
+}
+
+- (void)test_overwrite {
+#warning todo
+}
+
+- (void)test_identifier {
+#warning todo
+}
+
+- (void)test_timeline {
+#warning todo
+}
+
+- (void)test_channel_mapping {
+#warning todo
+}
+
+- (void)test_is_playing {
+#warning todo
+}
+
+- (void)test_current_frame {
+#warning todo
+}
+
+- (void)test_sample_rate {
+#warning todo
+}
+
+- (void)test_pcm_format {
+#warning todo
+}
+
+- (void)test_channel_count {
+#warning todo
+}
+
+- (void)test_configuration_chain {
+#warning todo
+}
+
+- (void)test_is_playing_chain {
+#warning todo
+}
+
 @end
