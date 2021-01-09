@@ -6,20 +6,19 @@
 
 #include <chaining/yas_chaining_umbrella.h>
 #include <playing/yas_playing_exporter_resource.h>
-#include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_timeline_container.h>
 
 namespace yas::playing {
-struct exporter final {
+struct exporter final : exportable {
     using method_t = exporter_method;
     using error_t = exporter_error;
     using result_t = exporter_result_t;
     using event_t = exporter_event;
     using task_priority_t = exporter_task_priority;
 
-    void set_timeline_container(timeline_container_ptr const &);
+    void set_timeline_container(timeline_container_ptr const &) override;
 
-    chaining::chain_unsync_t<event_t> event_chain() const;
+    chaining::chain_unsync_t<event_t> event_chain() const override;
 
     static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
                                     task_priority_t const &);
