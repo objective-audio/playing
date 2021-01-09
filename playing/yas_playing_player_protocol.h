@@ -21,7 +21,7 @@ struct player_protocol {
     virtual void set_channel_mapping(channel_mapping_ptr const &) = 0;
     virtual void set_playing(bool const) = 0;
     virtual void seek(frame_index_t const) = 0;
-    virtual void overwrite(channel_index_t const, fragment_index_t const) = 0;
+    virtual void overwrite(std::optional<channel_index_t> const, fragment_index_t const) = 0;
 
     [[nodiscard]] virtual channel_mapping_ptr const &channel_mapping() const = 0;
     [[nodiscard]] virtual bool is_playing() const = 0;
