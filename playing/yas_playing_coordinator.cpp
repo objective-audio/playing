@@ -125,5 +125,11 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::stri
     auto const exporter =
         exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1});
 
+    return make_shared(identifier, worker, renderer, player, exporter);
+}
+
+coordinator_ptr coordinator::make_shared(std::string const &identifier, workable_ptr const &worker,
+                                         coordinator_renderable_ptr const &renderer, playable_ptr const &player,
+                                         exportable_ptr const &exporter) {
     return coordinator_ptr(new coordinator{identifier, worker, renderer, player, exporter});
 }

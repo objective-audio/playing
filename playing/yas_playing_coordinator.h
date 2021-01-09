@@ -34,6 +34,9 @@ struct coordinator final {
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::string const &identifier,
                                                      coordinator_renderable_ptr const &);
+    [[nodiscard]] static coordinator_ptr make_shared(std::string const &identifier, workable_ptr const &,
+                                                     coordinator_renderable_ptr const &, playable_ptr const &,
+                                                     exportable_ptr const &);
 
    private:
     std::string const _identifier;
