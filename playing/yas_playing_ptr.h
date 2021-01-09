@@ -50,7 +50,7 @@ using reading_ptr = std::shared_ptr<reading_resource>;
 using player_resource_ptr = std::shared_ptr<player_resource>;
 using channel_mapping_ptr = std::shared_ptr<channel_mapping>;
 
-using playable_ptr = std::shared_ptr<player_protocol>;
+using player_protocol_ptr = std::shared_ptr<player_protocol>;
 using renderable_ptr = std::shared_ptr<renderable>;
 using coordinator_renderable_ptr = std::shared_ptr<coordinator_renderable>;
 using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_protocol>;
