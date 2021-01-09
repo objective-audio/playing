@@ -108,9 +108,8 @@ chaining::chain_sync_t<bool> coordinator::is_playing_chain() const {
 }
 
 void coordinator::_update_exporter() {
-    auto const container =
-        timeline_container::make_shared(this->_identifier, this->_renderer->sample_rate(), this->_timeline);
-    this->_exporter->set_timeline_container(container);
+    this->_exporter->set_timeline_container(
+        timeline_container::make_shared(this->_identifier, this->_renderer->sample_rate(), this->_timeline));
 }
 
 coordinator_ptr coordinator::make_shared(std::string const &root_path, std::string const &identifier,
