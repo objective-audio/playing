@@ -210,9 +210,16 @@ void buffering_resource::overwrite_element_on_render(element_address const &inde
         throw std::runtime_error("state is not advancing.");
     }
 
-    if (auto const out_ch_idx = this->_ch_mapping->out_index(index.file_channel_index, this->_channels.size());
-        out_ch_idx.has_value()) {
-        this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(index.fragment_index);
+    if (index.file_channel_index.has_value()) {
+        if (auto const out_ch_idx =
+                this->_ch_mapping->out_index(index.file_channel_index.value(), this->_channels.size());
+            out_ch_idx.has_value()) {
+            this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(index.fragment_index);
+        }
+    } else {
+        for (auto const &channel : this->_channels) {
+            channel->overwrite_element_on_render(index.fragment_index);
+        }
     }
 }
 
