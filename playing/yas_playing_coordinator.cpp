@@ -23,7 +23,7 @@ using namespace yas;
 using namespace yas::playing;
 
 coordinator::coordinator(std::string const &identifier, workable_ptr const &worker,
-                         coordinator_renderable_ptr const &renderer, player_protocol_ptr const &player,
+                         coordinator_renderable_ptr const &renderer, playable_ptr const &player,
                          exportable_ptr const &exporter)
     : _identifier(identifier), _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
     this->_exporter->event_chain()
@@ -141,7 +141,7 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::stri
 }
 
 coordinator_ptr coordinator::make_shared(std::string const &identifier, workable_ptr const &worker,
-                                         coordinator_renderable_ptr const &renderer, player_protocol_ptr const &player,
+                                         coordinator_renderable_ptr const &renderer, playable_ptr const &player,
                                          exportable_ptr const &exporter) {
     return coordinator_ptr(new coordinator{identifier, worker, renderer, player, exporter});
 }

@@ -38,21 +38,21 @@ struct coordinator final {
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::string const &identifier,
                                                      coordinator_renderable_ptr const &);
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &identifier, workable_ptr const &,
-                                                     coordinator_renderable_ptr const &, player_protocol_ptr const &,
+                                                     coordinator_renderable_ptr const &, playable_ptr const &,
                                                      exportable_ptr const &);
 
    private:
     std::string const _identifier;
     workable_ptr const _worker = worker::make_shared();
     coordinator_renderable_ptr const _renderer;
-    player_protocol_ptr const _player;
+    playable_ptr const _player;
     exportable_ptr const _exporter;
     std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
     chaining::observer_pool _pool;
 
     coordinator(std::string const &identifier, workable_ptr const &, coordinator_renderable_ptr const &,
-                player_protocol_ptr const &, exportable_ptr const &);
+                playable_ptr const &, exportable_ptr const &);
 
     void _update_exporter();
 };

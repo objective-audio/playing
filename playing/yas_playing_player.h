@@ -10,7 +10,7 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-struct player final : player_protocol {
+struct player final : playable {
     void set_channel_mapping(channel_mapping_ptr const &) override;
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
