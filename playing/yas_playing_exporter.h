@@ -18,10 +18,10 @@ struct exporter final : exportable {
 
     void set_timeline_container(timeline_container_ptr const &) override;
 
-    chaining::chain_unsync_t<event_t> event_chain() const override;
+    [[nodiscard]] chaining::chain_unsync_t<event_t> event_chain() const override;
 
-    static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
-                                    task_priority_t const &);
+    [[nodiscard]] static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
+                                                  task_priority_t const &);
 
    private:
     std::shared_ptr<task_queue> const _queue;
