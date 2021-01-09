@@ -47,14 +47,6 @@ coordinator::coordinator(std::string const &identifier, workable_ptr const &work
     this->_worker->start();
 }
 
-std::string const &coordinator::identifier() const {
-    return this->_identifier;
-}
-
-std::optional<proc::timeline_ptr> const &coordinator::timeline() const {
-    return this->_timeline;
-}
-
 void coordinator::set_timeline(proc::timeline_ptr const &timeline) {
     this->_timeline = timeline;
     this->_update_exporter();
@@ -85,6 +77,18 @@ void coordinator::overwrite(proc::time::range const &range) {
     while (yas_each_next(frag_each)) {
         player->overwrite(std::nullopt, yas_each_index(frag_each));
     }
+}
+
+std::string const &coordinator::identifier() const {
+    return this->_identifier;
+}
+
+std::optional<proc::timeline_ptr> const &coordinator::timeline() const {
+    return this->_timeline;
+}
+
+channel_mapping_ptr const &coordinator::channel_mapping() const {
+    return this->_player->channel_mapping();
 }
 
 bool coordinator::is_playing() const {

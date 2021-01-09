@@ -16,15 +16,15 @@
 
 namespace yas::playing {
 struct coordinator final {
-    std::string const &identifier() const;
-    std::optional<proc::timeline_ptr> const &timeline() const;
-
     void set_timeline(proc::timeline_ptr const &);
     void set_channel_mapping(channel_mapping_ptr const &);
     void set_playing(bool const);
     void seek(frame_index_t const);
     void overwrite(proc::time::range const &);
 
+    [[nodiscard]] std::string const &identifier() const;
+    [[nodiscard]] std::optional<proc::timeline_ptr> const &timeline() const;
+    [[nodiscard]] channel_mapping_ptr const &channel_mapping() const;
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t current_frame() const;
 
