@@ -10,7 +10,7 @@
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
-struct exporter_resource {
+struct exporter_resource final {
     chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
 
     void replace_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier, sample_rate_t const &,

@@ -8,7 +8,7 @@
 #include <processing/yas_processing_types.h>
 
 namespace yas::playing {
-struct configuration {
+struct configuration final {
     sample_rate_t sample_rate;
     audio::pcm_format pcm_format = audio::pcm_format::float32;
     std::size_t channel_count;

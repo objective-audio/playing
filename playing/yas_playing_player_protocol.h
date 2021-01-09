@@ -8,7 +8,7 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-struct player_task_priority {
+struct player_task_priority final {
     uint32_t setup = 0;
     uint32_t rendering = 1;
 };

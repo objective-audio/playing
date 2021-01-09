@@ -9,7 +9,7 @@
 #include <processing/yas_processing_umbrella.h>
 
 namespace yas::playing {
-struct timeline_cancel_matcher : task_cancel_id {
+struct timeline_cancel_matcher final : task_cancel_id {
     std::optional<proc::time::range> const range;
 
     static timeline_cancel_matcher_ptr make_shared();
@@ -30,7 +30,7 @@ struct timeline_cancel_request {
 };
 
 // requestの範囲に完全に含まれていたらキャンセルさせる
-struct timeline_range_cancel_request : timeline_cancel_request, task_cancel_id {
+struct timeline_range_cancel_request final : timeline_cancel_request, task_cancel_id {
     proc::time::range const range;
 
     static timeline_range_cancel_request_ptr make_shared(proc::time::range const &);

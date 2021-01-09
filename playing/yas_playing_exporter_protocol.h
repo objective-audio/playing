@@ -26,12 +26,12 @@ enum class exporter_error {
 
 using exporter_result_t = result<exporter_method, exporter_error>;
 
-struct exporter_event {
+struct exporter_event final {
     exporter_result_t const result;
     std::optional<proc::time::range> const range;
 };
 
-struct exporter_task_priority {
+struct exporter_task_priority final {
     task_priority_t const timeline;
     task_priority_t const fragment;
 };
