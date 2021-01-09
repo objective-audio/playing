@@ -47,6 +47,14 @@ coordinator::coordinator(std::string const &identifier, workable_ptr const &work
     this->_worker->start();
 }
 
+std::string const &coordinator::identifier() const {
+    return this->_identifier;
+}
+
+std::optional<proc::timeline_ptr> const &coordinator::timeline() const {
+    return this->_timeline;
+}
+
 void coordinator::set_timeline(proc::timeline_ptr const &timeline) {
     this->_timeline = timeline;
     this->_update_exporter();
