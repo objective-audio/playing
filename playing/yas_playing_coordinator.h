@@ -22,6 +22,9 @@ struct coordinator final {
     void seek(frame_index_t const);
     void overwrite(proc::time::range const &);
 
+    [[nodiscard]] std::string const &identifier() const;
+    [[nodiscard]] std::optional<proc::timeline_ptr> const &timeline() const;
+    [[nodiscard]] channel_mapping_ptr const &channel_mapping() const;
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t current_frame() const;
 
@@ -33,20 +36,23 @@ struct coordinator final {
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::string const &identifier,
-                                                     audio::io_device_ptr const &);
+                                                     coordinator_renderable_ptr const &);
+    [[nodiscard]] static coordinator_ptr make_shared(std::string const &identifier, workable_ptr const &,
+                                                     coordinator_renderable_ptr const &, playable_ptr const &,
+                                                     exportable_ptr const &);
 
    private:
     std::string const _identifier;
-    audio::io_device_ptr const _device;
     workable_ptr const _worker = worker::make_shared();
-    coordinator_renderable_ptr const _renderer = renderer::make_shared(this->_device);
+    coordinator_renderable_ptr const _renderer;
     playable_ptr const _player;
     exportable_ptr const _exporter;
     std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
     chaining::observer_pool _pool;
 
-    coordinator(std::string const &root_path, std::string const &identifier, audio::io_device_ptr const &);
+    coordinator(std::string const &identifier, workable_ptr const &, coordinator_renderable_ptr const &,
+                playable_ptr const &, exportable_ptr const &);
 
     void _update_exporter();
 };

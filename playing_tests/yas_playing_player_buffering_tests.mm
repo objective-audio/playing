@@ -14,7 +14,7 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_player_buffering_tests {
-    test::audio_player_cpp _cpp;
+    player_test::audio_player_cpp _cpp;
 }
 
 - (void)tearDown {
@@ -22,7 +22,7 @@ using namespace yas::playing;
 }
 
 - (void)test_setup_state_initial {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_reading();
 
@@ -45,7 +45,7 @@ using namespace yas::playing;
 }
 
 - (void)test_setup_state_creating {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_reading();
 
@@ -65,7 +65,7 @@ using namespace yas::playing;
 }
 
 - (void)test_setup_state_rendering {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_reading();
 
@@ -99,7 +99,7 @@ using namespace yas::playing;
 }
 
 - (void)test_rendering_state_waiting {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_buffering_setup();
 
@@ -163,7 +163,7 @@ using namespace yas::playing;
 }
 
 - (void)test_rendering_state_all_writing {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_buffering_setup();
 
@@ -184,7 +184,7 @@ using namespace yas::playing;
 }
 
 - (void)test_rendering_state_advancing {
-    audio::pcm_buffer buffer = test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
 
     self->_cpp.skip_buffering_setup();
 

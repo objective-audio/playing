@@ -1,5 +1,5 @@
 //
-//  yas_playing_circular_buffer_tests.mm
+//  yas_playing_buffering_tests.mm
 //
 
 #import <XCTest/XCTest.h>
@@ -10,7 +10,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::test {
+namespace yas::playing::buffering_test {
 static uint32_t const ch_count = 2;
 static uint32_t const element_count = 3;
 static sample_rate_t const sample_rate = 4;
@@ -21,7 +21,7 @@ static path::timeline tl_path{
     .root_path = test_utils::root_path(), .identifier = "0", .sample_rate = static_cast<sample_rate_t>(sample_rate)};
 
 static path::channel channel_path(channel_index_t const ch_idx) {
-    return path::channel{test::tl_path, ch_idx};
+    return path::channel{buffering_test::tl_path, ch_idx};
 }
 
 struct channel : buffering_channel_protocol {
@@ -62,21 +62,22 @@ struct channel : buffering_channel_protocol {
 
 struct audio_buffering_cpp {
     std::shared_ptr<buffering_resource> buffering = nullptr;
-    std::vector<std::shared_ptr<test::channel>> channels;
+    std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     void setup_rendering() {
-        std::vector<std::shared_ptr<test::channel>> channels;
+        std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            test::element_count, test_utils::root_path(), test_utils::identifier(),
+            buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
-                auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
+                auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
                 return channel;
             });
 
         std::thread{[&buffering] {
-            buffering->set_creating_on_render(test::sample_rate, test::pcm_format, test::ch_count);
+            buffering->set_creating_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                              buffering_test::ch_count);
         }}.join();
 
         std::thread{[&buffering] { buffering->create_buffer_on_task(); }}.join();
@@ -88,23 +89,24 @@ struct audio_buffering_cpp {
     }
 
     void setup_advancing() {
-        std::vector<std::shared_ptr<test::channel>> channels;
+        std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            test::element_count, test_utils::root_path(), test_utils::identifier(),
+            buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
-                auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
+                auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
                 return channel;
             });
 
         std::thread{[&buffering] {
-            buffering->set_creating_on_render(test::sample_rate, test::pcm_format, test::ch_count);
+            buffering->set_creating_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                              buffering_test::ch_count);
         }}.join();
 
         std::thread{[&buffering] { buffering->create_buffer_on_task(); }}.join();
 
-        auto each = make_fast_each(test::ch_count);
+        auto each = make_fast_each(buffering_test::ch_count);
         while (yas_each_next(each)) {
             channels.at(yas_each_index(each))->write_all_elements_handler = [](path::channel const &,
                                                                                fragment_index_t const) {};
@@ -127,28 +129,29 @@ struct audio_buffering_cpp {
 @end
 
 @implementation yas_playing_buffering_tests {
-    test::audio_buffering_cpp _cpp;
+    buffering_test::audio_buffering_cpp _cpp;
 }
 
 - (void)tearDown {
-    self->_cpp = test::audio_buffering_cpp{};
+    self->_cpp = buffering_test::audio_buffering_cpp{};
     [super tearDown];
 }
 
 - (void)test_setup_state {
-    std::vector<std::shared_ptr<test::channel>> channels;
+    std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        test::element_count, test_utils::root_path(), test_utils::identifier(),
+        buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
-            auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
+            auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
             return channel;
         });
 
     XCTAssertEqual(buffering->setup_state(), audio_buffering_setup_state::initial);
 
-    buffering->set_creating_on_render(test::sample_rate, test::pcm_format, test::ch_count);
+    buffering->set_creating_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                      buffering_test::ch_count);
 
     XCTAssertEqual(buffering->setup_state(), audio_buffering_setup_state::creating);
     XCTAssertEqual(channels.size(), 0);
@@ -159,33 +162,35 @@ struct audio_buffering_cpp {
     XCTAssertEqual(channels.size(), 2);
 
     XCTAssertEqual(channels.at(0)->element_count, 3);
-    XCTAssertEqual(channels.at(0)->format, test::format);
-    XCTAssertEqual(channels.at(0)->frag_length, test::sample_rate);
+    XCTAssertEqual(channels.at(0)->format, buffering_test::format);
+    XCTAssertEqual(channels.at(0)->frag_length, buffering_test::sample_rate);
     XCTAssertEqual(channels.at(1)->element_count, 3);
-    XCTAssertEqual(channels.at(1)->format, test::format);
-    XCTAssertEqual(channels.at(1)->frag_length, test::sample_rate);
+    XCTAssertEqual(channels.at(1)->format, buffering_test::format);
+    XCTAssertEqual(channels.at(1)->frag_length, buffering_test::sample_rate);
 
     channels.clear();
 
-    buffering->set_creating_on_render(test::sample_rate, test::pcm_format, test::ch_count);
+    buffering->set_creating_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                      buffering_test::ch_count);
 
     XCTAssertEqual(buffering->setup_state(), audio_buffering_setup_state::creating);
     XCTAssertEqual(channels.size(), 0);
 }
 
 - (void)test_rendering_state {
-    std::vector<std::shared_ptr<test::channel>> channels;
+    std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        test::element_count, test_utils::root_path(), test_utils::identifier(),
+        buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
-            auto channel = std::make_shared<test::channel>(element_count, format, frag_length);
+            auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
             return channel;
         });
 
     std::thread{[&buffering] {
-        buffering->set_creating_on_render(test::sample_rate, test::pcm_format, test::ch_count);
+        buffering->set_creating_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                          buffering_test::ch_count);
     }}.join();
 
     std::thread{[&buffering] { buffering->create_buffer_on_task(); }}.join();
@@ -216,8 +221,8 @@ struct audio_buffering_cpp {
 
     auto const buffering = self->_cpp.buffering;
 
-    XCTAssertEqual(buffering->channel_count_on_render(), test::ch_count);
-    XCTAssertEqual(buffering->fragment_length_on_render(), test::sample_rate);
+    XCTAssertEqual(buffering->channel_count_on_render(), buffering_test::ch_count);
+    XCTAssertEqual(buffering->fragment_length_on_render(), buffering_test::sample_rate);
 }
 
 - (void)test_needs_create {
@@ -225,11 +230,13 @@ struct audio_buffering_cpp {
 
     auto const buffering = self->_cpp.buffering;
 
-    XCTAssertFalse(buffering->needs_create_on_render(test::sample_rate, test::pcm_format, test::ch_count));
+    XCTAssertFalse(buffering->needs_create_on_render(buffering_test::sample_rate, buffering_test::pcm_format,
+                                                     buffering_test::ch_count));
 
-    XCTAssertTrue(buffering->needs_create_on_render(5, test::pcm_format, test::ch_count));
-    XCTAssertTrue(buffering->needs_create_on_render(test::sample_rate, audio::pcm_format::other, test::ch_count));
-    XCTAssertTrue(buffering->needs_create_on_render(test::sample_rate, test::pcm_format, 3));
+    XCTAssertTrue(buffering->needs_create_on_render(5, buffering_test::pcm_format, buffering_test::ch_count));
+    XCTAssertTrue(buffering->needs_create_on_render(buffering_test::sample_rate, audio::pcm_format::other,
+                                                    buffering_test::ch_count));
+    XCTAssertTrue(buffering->needs_create_on_render(buffering_test::sample_rate, buffering_test::pcm_format, 3));
 }
 
 - (void)test_set_all_writing_from_waiting {
@@ -367,10 +374,10 @@ struct audio_buffering_cpp {
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
     XCTAssertEqual(called_channel_0.size(), 1);
-    XCTAssertEqual(called_channel_0.at(0).first, test::channel_path(0));
+    XCTAssertEqual(called_channel_0.at(0).first, buffering_test::channel_path(0));
     XCTAssertEqual(called_channel_0.at(0).second, 0);
     XCTAssertEqual(called_channel_1.size(), 1);
-    XCTAssertEqual(called_channel_1.at(0).first, test::channel_path(1));
+    XCTAssertEqual(called_channel_1.at(0).first, buffering_test::channel_path(1));
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
     std::thread{[&buffering] {
@@ -379,20 +386,21 @@ struct audio_buffering_cpp {
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 2);
-    XCTAssertEqual(called_channel_0.at(1).first, test::channel_path(1));
+    XCTAssertEqual(called_channel_0.at(1).first, buffering_test::channel_path(1));
     XCTAssertEqual(called_channel_0.at(1).second, 2, @"10(frame) / 4(frag_length) = 2");
     XCTAssertEqual(called_channel_1.size(), 2);
-    XCTAssertEqual(called_channel_1.at(1).first, test::channel_path(0));
+    XCTAssertEqual(called_channel_1.at(1).first, buffering_test::channel_path(0));
     XCTAssertEqual(called_channel_1.at(1).second, 2);
 
     std::thread{[&buffering] { buffering->set_all_writing_on_render(20, std::nullopt); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 3);
-    XCTAssertEqual(called_channel_0.at(2).first, test::channel_path(1), @"nulloptの場合は最後のch_pathが使われる");
+    XCTAssertEqual(called_channel_0.at(2).first, buffering_test::channel_path(1),
+                   @"nulloptの場合は最後のch_pathが使われる");
     XCTAssertEqual(called_channel_0.at(2).second, 5, @"20(frame) / 4(frag_length) = 5");
     XCTAssertEqual(called_channel_1.size(), 3);
-    XCTAssertEqual(called_channel_1.at(2).first, test::channel_path(0));
+    XCTAssertEqual(called_channel_1.at(2).first, buffering_test::channel_path(0));
     XCTAssertEqual(called_channel_1.at(2).second, 5);
 }
 
@@ -486,7 +494,7 @@ struct audio_buffering_cpp {
         return result1;
     };
 
-    audio::pcm_buffer buffer{test::format, test::sample_rate};
+    audio::pcm_buffer buffer{buffering_test::format, buffering_test::sample_rate};
 
     result0 = false;
     result1 = false;

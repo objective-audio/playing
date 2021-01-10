@@ -41,6 +41,6 @@ struct exportable {
 
     virtual void set_timeline_container(timeline_container_ptr const &) = 0;
 
-    virtual chaining::chain_unsync_t<exporter_event> event_chain() const = 0;
+    [[nodiscard]] virtual chaining::chain_unsync_t<exporter_event> event_chain() const = 0;
 };
 }  // namespace yas::playing

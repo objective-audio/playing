@@ -13,10 +13,10 @@ struct player_task_priority final {
     uint32_t rendering = 1;
 };
 
-struct player_protocol {
+struct playable {
     using task_priority_t = player_task_priority;
 
-    virtual ~player_protocol() = default;
+    virtual ~playable() = default;
 
     virtual void set_channel_mapping(channel_mapping_ptr const &) = 0;
     virtual void set_playing(bool const) = 0;
