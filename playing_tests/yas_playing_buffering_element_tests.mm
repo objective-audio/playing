@@ -13,11 +13,12 @@
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::test {
+namespace yas::playing::buffering_element_test {
 static audio::pcm_format const pcm_format = audio::pcm_format::float32;
 static sample_rate_t const sample_rate = 2;
-static audio::format const format{
-    {.sample_rate = test::sample_rate, .pcm_format = test::pcm_format, .channel_count = 1}};
+static audio::format const format{{.sample_rate = buffering_element_test::sample_rate,
+                                   .pcm_format = buffering_element_test::pcm_format,
+                                   .channel_count = 1}};
 
 static path::channel channel_path(sample_rate_t const sample_rate) {
     auto const root_path = test_utils::root_path();
@@ -30,12 +31,12 @@ static path::channel channel_path() {
 }
 
 static buffering_element_ptr make_element() {
-    return buffering_element::make_shared(test::format, sample_rate);
+    return buffering_element::make_shared(buffering_element_test::format, sample_rate);
 }
 
 static bool write_signal_to_file(proc::signal_event_ptr const &write_event, fragment_index_t const frag_idx) {
-    auto const frame = frag_idx * test::sample_rate;
-    path::fragment const frag_path{.channel_path = test::channel_path(), .fragment_index = frag_idx};
+    auto const frame = frag_idx * buffering_element_test::sample_rate;
+    path::fragment const frag_path{.channel_path = buffering_element_test::channel_path(), .fragment_index = frag_idx};
     path::signal_event const signal_path{.fragment_path = frag_path,
                                          .range = proc::time::range{frame, write_event->size()},
                                          .sample_type = write_event->sample_type()};
@@ -78,8 +79,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_state {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
     XCTAssertEqual(element->state(), buffering_element::state_t::initial);
 
@@ -106,8 +107,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_begin_frame {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
     element->force_write_on_task(ch_path, 0);
 
@@ -119,8 +120,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_contains_frame {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
     XCTAssertFalse(element->contains_frame_on_render(0));
     XCTAssertFalse(element->contains_frame_on_render(200));
@@ -144,9 +145,9 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_read_into_buffer {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
-    audio::format const format{{.sample_rate = test::sample_rate, .channel_count = 1}};
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
+    audio::format const format{{.sample_rate = buffering_element_test::sample_rate, .channel_count = 1}};
 
     path::fragment const frag_path{.channel_path = ch_path, .fragment_index = 1000};
     auto const create_result = file_manager::create_directory_if_not_exists(frag_path.string());
@@ -211,8 +212,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_advance {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
     element->force_write_on_task(ch_path, 0);
 
@@ -228,8 +229,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_overwrite {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
     element->force_write_on_task(ch_path, 0);
 
@@ -241,15 +242,15 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_write_if_needed {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
-    if (auto const signal = proc::signal_event::make_shared<float>(test::sample_rate)) {
+    if (auto const signal = proc::signal_event::make_shared<float>(buffering_element_test::sample_rate)) {
         float *data = signal->data<float>();
         data[0] = 2.0f;
         data[1] = 4.0f;
 
-        XCTAssertTrue(test::write_signal_to_file(signal, 3));
+        XCTAssertTrue(buffering_element_test::write_signal_to_file(signal, 3));
     }
 
     XCTAssertEqual(element->state(), buffering_element::state_t::initial);
@@ -281,8 +282,8 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
     std::thread{[&element] {
         // バッファに書き込まれたデータを確認
-        audio::pcm_buffer buffer{test::format, test::sample_rate};
-        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 3 * test::sample_rate));
+        audio::pcm_buffer buffer{buffering_element_test::format, buffering_element_test::sample_rate};
+        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 3 * buffering_element_test::sample_rate));
 
         float const *const data = buffer.data_ptr_at_index<float>(0);
         XCTAssertEqual(data[0], 2.0f);
@@ -296,29 +297,29 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 }
 
 - (void)test_write {
-    auto const ch_path = test::channel_path();
-    auto const element = test::make_element();
+    auto const ch_path = buffering_element_test::channel_path();
+    auto const element = buffering_element_test::make_element();
 
-    if (auto const signal = proc::signal_event::make_shared<float>(test::sample_rate)) {
+    if (auto const signal = proc::signal_event::make_shared<float>(buffering_element_test::sample_rate)) {
         float *data = signal->data<float>();
 
         data[0] = 8.0f;
         data[1] = 16.0f;
 
-        XCTAssertTrue(test::write_signal_to_file(signal, 0));
+        XCTAssertTrue(buffering_element_test::write_signal_to_file(signal, 0));
 
         data[0] = 32.0f;
         data[1] = 64.0f;
 
-        XCTAssertTrue(test::write_signal_to_file(signal, 1));
+        XCTAssertTrue(buffering_element_test::write_signal_to_file(signal, 1));
 
         data[0] = 128.0f;
         data[1] = 256.0f;
 
-        XCTAssertTrue(test::write_signal_to_file(signal, 5));
+        XCTAssertTrue(buffering_element_test::write_signal_to_file(signal, 5));
     }
 
-    audio::pcm_buffer buffer{test::format, test::sample_rate};
+    audio::pcm_buffer buffer{buffering_element_test::format, buffering_element_test::sample_rate};
 
     XCTAssertEqual(element->state(), buffering_element::state_t::initial);
 
@@ -332,7 +333,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
         buffer.clear();
 
-        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 0 * test::sample_rate));
+        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 0 * buffering_element_test::sample_rate));
 
         float const *const data = buffer.data_ptr_at_index<float>(0);
         XCTAssertEqual(data[0], 8.0f);
@@ -351,7 +352,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
         buffer.clear();
 
-        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 1 * test::sample_rate));
+        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 1 * buffering_element_test::sample_rate));
 
         float const *const data = buffer.data_ptr_at_index<float>(0);
         XCTAssertEqual(data[0], 32.0f);
@@ -376,7 +377,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
 
         buffer.clear();
 
-        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 5 * test::sample_rate));
+        XCTAssertTrue(element->read_into_buffer_on_render(&buffer, 5 * buffering_element_test::sample_rate));
 
         float const *const data = buffer.data_ptr_at_index<float>(0);
         XCTAssertEqual(data[0], 128.0f);

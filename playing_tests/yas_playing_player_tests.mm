@@ -14,7 +14,7 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_player_tests {
-    playing::test::audio_player_cpp _cpp;
+    player_test::audio_player_cpp _cpp;
 }
 
 - (void)tearDown {
@@ -24,10 +24,10 @@ using namespace yas::playing;
 - (void)test_constructor {
     player_task_priority const priority{.setup = 100, .rendering = 101};
     auto const worker = worker::make_shared();
-    auto const renderer = std::make_shared<test::renderer>();
-    auto const reading = std::make_shared<test::reading>();
-    auto const buffering = std::make_shared<test::buffering>();
-    auto const rendering = std::make_shared<test::resource>(reading, buffering);
+    auto const renderer = std::make_shared<player_test::renderer>();
+    auto const reading = std::make_shared<player_test::reading>();
+    auto const buffering = std::make_shared<player_test::buffering>();
+    auto const rendering = std::make_shared<player_test::resource>(reading, buffering);
 
     std::vector<channel_mapping_ptr> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;

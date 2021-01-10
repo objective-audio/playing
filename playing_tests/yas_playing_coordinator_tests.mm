@@ -3,12 +3,13 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <chaining/chaining.h>
 #import <playing/playing.h>
 
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::test {
+namespace yas::playing::coordinator_test {
 std::string const identifier = "0";
 
 struct worker : workable {
@@ -58,6 +59,10 @@ struct renderer : coordinator_renderable {
     }
 
     chaining::chain_sync_t<configuration> configuration_chain() const override {
+        return this->configuration_chain_handler();
+    }
+
+    chaining::chain_sync_t<configuration> configuration_chain2() const {
         return this->configuration_chain_handler();
     }
 };
@@ -119,20 +124,36 @@ struct exporter : exportable {
 };
 
 struct coordinator_cpp {
-    std::shared_ptr<test::worker> worker = nullptr;
-    std::shared_ptr<test::renderer> renderer = nullptr;
-    std::shared_ptr<test::player> player = nullptr;
-    std::shared_ptr<test::exporter> exporter = nullptr;
+    std::shared_ptr<coordinator_test::worker> worker = nullptr;
+    std::shared_ptr<coordinator_test::renderer> renderer = nullptr;
+    std::shared_ptr<coordinator_test::player> player = nullptr;
+    std::shared_ptr<coordinator_test::exporter> exporter = nullptr;
 
+    chaining::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
+    chaining::value::holder_ptr<configuration> configulation_notifier = nullptr;
     coordinator_ptr coordinator = nullptr;
 
-    void setup() {
-        this->worker = std::make_shared<test::worker>();
-        this->renderer = std::make_shared<test::renderer>();
-        this->player = std::make_shared<test::player>();
-        this->exporter = std::make_shared<test::exporter>();
-        this->coordinator =
-            coordinator::make_shared(test::identifier, this->worker, this->renderer, this->player, this->exporter);
+    coordinator_ptr setup_coordinator() {
+        this->worker = std::make_shared<coordinator_test::worker>();
+        this->renderer = std::make_shared<coordinator_test::renderer>();
+        this->player = std::make_shared<coordinator_test::player>();
+        this->exporter = std::make_shared<coordinator_test::exporter>();
+
+        this->exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
+        this->exporter->event_chain_handler = [notifier = this->exporter_event_notifier] { return notifier->chain(); };
+
+        this->configulation_notifier = chaining::value::holder<configuration>::make_shared(configuration{});
+        this->renderer->configuration_chain_handler = [notifier = this->configulation_notifier] {
+            return notifier->chain();
+        };
+        this->renderer->pcm_format_handler = [] { return audio::pcm_format::float32; };
+
+        this->worker->start_handler = [] {};
+
+        this->coordinator = coordinator::make_shared(coordinator_test::identifier, this->worker, this->renderer,
+                                                     this->player, this->exporter);
+
+        return this->coordinator;
     }
 
     void reset() {
@@ -150,7 +171,7 @@ struct coordinator_cpp {
 @end
 
 @implementation yas_playing_coordinator_tests {
-    test::coordinator_cpp _cpp;
+    coordinator_test::coordinator_cpp _cpp;
 }
 
 - (void)tearDown {
@@ -160,7 +181,17 @@ struct coordinator_cpp {
 }
 
 - (void)test_set_timeline {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    auto chain = self->_cpp.renderer->configuration_chain();
+
+    XCTAssertFalse(coordinator->timeline().has_value());
+
+    auto const timeline = proc::timeline::make_shared();
+
+    coordinator->set_timeline(timeline);
+
+    XCTAssertEqual(coordinator->timeline(), timeline);
 }
 
 - (void)test_set_channel_mapping {

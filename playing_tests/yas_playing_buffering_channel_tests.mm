@@ -10,7 +10,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-namespace yas::playing::test {
+namespace yas::playing::buffering_channel_test {
 static sample_rate_t const sample_rate = 2;
 static audio::format const format{
     {.sample_rate = sample_rate, .pcm_format = audio::pcm_format::int16, .channel_count = 1, .interleaved = false}};
@@ -89,34 +89,34 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 @implementation yas_playing_buffering_channel_tests
 
 - (void)test_initial_elements {
-    auto const element0 = test::element::make_shared();
-    auto const element1 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     auto const channel = buffering_channel::make_shared({element0, element1});
 
     auto const &elements = channel->elements_for_test();
     XCTAssertEqual(elements.size(), 2);
 
-    auto const casted_element0 = test::cast_to_test_element(elements.at(0));
+    auto const casted_element0 = buffering_channel_test::cast_to_test_element(elements.at(0));
     XCTAssertEqual(casted_element0, element0);
-    auto const casted_element1 = test::cast_to_test_element(elements.at(1));
+    auto const casted_element1 = buffering_channel_test::cast_to_test_element(elements.at(1));
     XCTAssertEqual(casted_element1, element1);
 }
 
 - (void)test_write_all_elements {
     std::vector<std::pair<path::channel, fragment_index_t>> called0;
-    auto const element0 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
     element0->force_write_handler = [&called0](path::channel const &ch_path, fragment_index_t const frag_idx) {
         called0.emplace_back(ch_path, frag_idx);
     };
 
     std::vector<std::pair<path::channel, fragment_index_t>> called1;
-    auto const element1 = test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     element1->force_write_handler = [&called1](path::channel const &ch_path, fragment_index_t const frag_idx) {
         called1.emplace_back(ch_path, frag_idx);
     };
 
     auto const channel = buffering_channel::make_shared({element0, element1});
-    auto const ch_path = test::channel_path();
+    auto const ch_path = buffering_channel_test::channel_path();
 
     channel->write_all_elements_on_task(ch_path, 0);
 
@@ -131,7 +131,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 - (void)test_write_elements_if_needed {
     std::vector<path::channel> called0;
     bool result0 = false;
-    auto const element0 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
     element0->force_write_handler = [](path::channel const &, fragment_index_t const) {};
     element0->write_if_needed_handler = [&called0, &result0](path::channel const &ch_path) {
         called0.emplace_back(ch_path);
@@ -140,7 +140,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
     std::vector<path::channel> called1;
     bool result1 = false;
-    auto const element1 = test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     element1->force_write_handler = [](path::channel const &, fragment_index_t const) {};
     element1->write_if_needed_handler = [&called1, &result1](path::channel const &ch_path) {
         called1.emplace_back(ch_path);
@@ -148,7 +148,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
     };
 
     auto const channel = buffering_channel::make_shared({element0, element1});
-    auto const ch_path = test::channel_path();
+    auto const ch_path = buffering_channel_test::channel_path();
 
     channel->write_all_elements_on_task(ch_path, 0);
 
@@ -192,12 +192,12 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
 - (void)test_advance {
     std::vector<fragment_index_t> called0;
-    auto const element0 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
     element0->fragment_index_handler = [] { return 0; };
     element0->advance_handler = [&called0](fragment_index_t const frag_idx) { called0.emplace_back(frag_idx); };
 
     std::vector<fragment_index_t> called1;
-    auto const element1 = test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     element1->fragment_index_handler = [] { return 1; };
     element1->advance_handler = [&called1](fragment_index_t const frag_idx) { called1.emplace_back(frag_idx); };
 
@@ -213,12 +213,12 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
 - (void)test_overwrite_element {
     std::size_t called0 = 0;
-    auto const element0 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
     element0->fragment_index_handler = [] { return 0; };
     element0->overwrite_handler = [&called0]() { ++called0; };
 
     std::size_t called1 = 0;
-    auto const element1 = test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     element1->fragment_index_handler = [] { return 1; };
     element1->overwrite_handler = [&called1]() { ++called1; };
 
@@ -233,7 +233,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 - (void)test_read_into_buffer {
     std::vector<frame_index_t> called_contains0;
     std::vector<frame_index_t> called_read0;
-    auto const element0 = test::element::make_shared();
+    auto const element0 = buffering_channel_test::element::make_shared();
     element0->contains_frame_handler = [&called_contains0](frame_index_t const frame) {
         called_contains0.emplace_back(frame);
         return false;
@@ -247,7 +247,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
     std::vector<frame_index_t> called_read1;
     bool contains1 = false;
     bool is_read1 = false;
-    auto const element1 = test::element::make_shared();
+    auto const element1 = buffering_channel_test::element::make_shared();
     element1->contains_frame_handler = [&called_contains1, &contains1](frame_index_t const frame) {
         called_contains1.emplace_back(frame);
         return contains1;
@@ -268,7 +268,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
     std::vector<frame_index_t> called_contains2;
     std::vector<frame_index_t> called_read2;
-    auto const element2 = test::element::make_shared();
+    auto const element2 = buffering_channel_test::element::make_shared();
     element2->contains_frame_handler = [&called_contains2](frame_index_t const frame) {
         called_contains2.emplace_back(frame);
         return false;
@@ -280,7 +280,7 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
     auto const channel = buffering_channel::make_shared({element0, element1, element2});
 
-    audio::pcm_buffer buffer{test::format, test::sample_rate};
+    audio::pcm_buffer buffer{buffering_channel_test::format, buffering_channel_test::sample_rate};
     int16_t const *const data = buffer.data_ptr_at_index<int16_t>(0);
 
     XCTAssertFalse(channel->read_into_buffer_on_render(&buffer, 100));
@@ -341,17 +341,17 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
     auto const &elements = channel->elements_for_test();
     XCTAssertEqual(elements.size(), 3);
 
-    auto const casted_element0 = test::cast_to_buffering_element(elements.at(0));
+    auto const casted_element0 = buffering_channel_test::cast_to_buffering_element(elements.at(0));
     auto const &buffer0 = casted_element0->buffer_for_test();
     XCTAssertEqual(buffer0.frame_length(), 5);
     XCTAssertEqual(buffer0.format(), format);
 
-    auto const casted_element1 = test::cast_to_buffering_element(elements.at(1));
+    auto const casted_element1 = buffering_channel_test::cast_to_buffering_element(elements.at(1));
     auto const &buffer1 = casted_element1->buffer_for_test();
     XCTAssertEqual(buffer1.frame_length(), 5);
     XCTAssertEqual(buffer1.format(), format);
 
-    auto const casted_element2 = test::cast_to_buffering_element(elements.at(2));
+    auto const casted_element2 = buffering_channel_test::cast_to_buffering_element(elements.at(2));
     auto const &buffer2 = casted_element2->buffer_for_test();
     XCTAssertEqual(buffer2.frame_length(), 5);
     XCTAssertEqual(buffer2.format(), format);

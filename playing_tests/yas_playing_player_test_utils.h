@@ -9,7 +9,7 @@
 
 #include "yas_playing_test_utils.h"
 
-namespace yas::playing::test {
+namespace yas::playing::player_test {
 struct renderer : renderable {
     std::function<void(rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
@@ -210,10 +210,10 @@ struct audio_player_cpp {
     static std::size_t constexpr length = 2;
 
     worker_stub_ptr const worker = worker_stub::make_shared();
-    std::shared_ptr<test::renderer> const renderer = std::make_shared<test::renderer>();
-    std::shared_ptr<test::reading> const reading = std::make_shared<test::reading>();
-    std::shared_ptr<test::buffering> const buffering = std::make_shared<test::buffering>();
-    std::shared_ptr<test::resource> const resource = std::make_shared<test::resource>(reading, buffering);
+    std::shared_ptr<player_test::renderer> const renderer = std::make_shared<player_test::renderer>();
+    std::shared_ptr<player_test::reading> const reading = std::make_shared<player_test::reading>();
+    std::shared_ptr<player_test::buffering> const buffering = std::make_shared<player_test::buffering>();
+    std::shared_ptr<player_test::resource> const resource = std::make_shared<player_test::resource>(reading, buffering);
 
     player_ptr player = nullptr;
     renderable::rendering_f rendering_handler = nullptr;
@@ -289,7 +289,7 @@ struct audio_player_cpp {
 
         this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), audio_player_cpp::length);
 
-        this->resource->perform_overwrite_requests_handler = [](test::resource::overwrite_requests_f const &) {};
+        this->resource->perform_overwrite_requests_handler = [](player_test::resource::overwrite_requests_f const &) {};
         this->resource->is_playing_handler = [] { return true; };
         this->reading->buffer_handler = [this] { return this->reading_buffer.get(); };
     }
@@ -300,4 +300,4 @@ struct audio_player_cpp {
         this->reading_buffer = nullptr;
     }
 };
-}  // namespace yas::playing::test
+}  // namespace yas::playing::player_test
