@@ -183,6 +183,13 @@ struct coordinator_cpp {
 - (void)test_set_timeline {
     auto const coordinator = self->_cpp.setup_coordinator();
 
+    std::vector<timeline_container_ptr> called;
+
+    self->_cpp.exporter->set_timeline_container_handler = [&called](auto const &container) {
+        called.emplace_back(container);
+    };
+    self->_cpp.renderer->sample_rate_handler = [] { return 44100; };
+
     auto chain = self->_cpp.renderer->configuration_chain();
 
     XCTAssertFalse(coordinator->timeline().has_value());
@@ -192,62 +199,238 @@ struct coordinator_cpp {
     coordinator->set_timeline(timeline);
 
     XCTAssertEqual(coordinator->timeline(), timeline);
+    XCTAssertEqual(called.size(), 1);
+
+    auto const &container = called.at(0);
+    XCTAssertEqual(container->identifier(), coordinator_test::identifier);
+    XCTAssertEqual(container->timeline(), timeline);
+    XCTAssertEqual(container->sample_rate(), 44100);
 }
 
 - (void)test_set_channel_mapping {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::vector<channel_mapping_ptr> called;
+
+    self->_cpp.player->set_ch_mapping_handler = [&called](channel_mapping_ptr const &ch_mapping) {
+        called.emplace_back(ch_mapping);
+    };
+
+    auto const ch_mapping = channel_mapping::make_shared({3, 2, 1});
+
+    coordinator->set_channel_mapping(ch_mapping);
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0), ch_mapping);
 }
 
 - (void)test_set_playing {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::vector<bool> called;
+
+    self->_cpp.player->set_playing_handler = [&called](bool is_playing) { called.emplace_back(is_playing); };
+
+    coordinator->set_playing(true);
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertTrue(called.at(0));
+
+    coordinator->set_playing(false);
+
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertFalse(called.at(1));
 }
 
 - (void)test_seek {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::vector<frame_index_t> called;
+
+    self->_cpp.player->seek_handler = [&called](frame_index_t frame) { called.emplace_back(frame); };
+
+    coordinator->seek(123);
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0), 123);
 }
 
 - (void)test_overwrite {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::vector<std::pair<std::optional<channel_index_t>, fragment_index_t>> called;
+
+    self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> file_ch_idx,
+                                                     fragment_index_t frag_idx) {
+        called.emplace_back(file_ch_idx, frag_idx);
+    };
+
+    self->_cpp.renderer->sample_rate_handler = [] { return 4; };
+
+    coordinator->overwrite(proc::time::range{0, 4});
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0).first, std::nullopt);
+    XCTAssertEqual(called.at(0).second, 0);
+
+    called.clear();
+
+    coordinator->overwrite(proc::time::range{0, 5});
+
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.at(0).first, std::nullopt);
+    XCTAssertEqual(called.at(0).second, 0);
+    XCTAssertEqual(called.at(1).first, std::nullopt);
+    XCTAssertEqual(called.at(1).second, 1);
+
+    called.clear();
+
+    coordinator->overwrite(proc::time::range{-1, 6});
+
+    XCTAssertEqual(called.size(), 3);
+    XCTAssertEqual(called.at(0).first, std::nullopt);
+    XCTAssertEqual(called.at(0).second, -1);
+    XCTAssertEqual(called.at(1).first, std::nullopt);
+    XCTAssertEqual(called.at(1).second, 0);
+    XCTAssertEqual(called.at(2).first, std::nullopt);
+    XCTAssertEqual(called.at(2).second, 1);
 }
 
 - (void)test_identifier {
-#warning todo
-}
+    auto const coordinator = self->_cpp.setup_coordinator();
 
-- (void)test_timeline {
-#warning todo
+    XCTAssertEqual(coordinator->identifier(), coordinator_test::identifier);
 }
 
 - (void)test_channel_mapping {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    auto const ch_mapping = channel_mapping::make_shared({2, 3});
+
+    self->_cpp.player->ch_mapping_handler = [&ch_mapping] { return ch_mapping; };
+
+    XCTAssertEqual(coordinator->channel_mapping(), ch_mapping);
 }
 
 - (void)test_is_playing {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    bool is_playing = false;
+
+    self->_cpp.player->is_playing_handler = [&is_playing] { return is_playing; };
+
+    XCTAssertFalse(coordinator->is_playing());
+
+    is_playing = true;
+
+    XCTAssertTrue(coordinator->is_playing());
 }
 
 - (void)test_current_frame {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    frame_index_t frame = 1;
+
+    self->_cpp.player->current_frame_handler = [&frame] { return frame; };
+
+    XCTAssertEqual(coordinator->current_frame(), 1);
+
+    frame = 2;
+
+    XCTAssertEqual(coordinator->current_frame(), 2);
 }
 
 - (void)test_sample_rate {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    sample_rate_t sample_rate = 1000;
+
+    self->_cpp.renderer->sample_rate_handler = [&sample_rate] { return sample_rate; };
+
+    XCTAssertEqual(coordinator->sample_rate(), 1000);
+
+    sample_rate = 2000;
+
+    XCTAssertEqual(coordinator->sample_rate(), 2000);
 }
 
 - (void)test_pcm_format {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    auto pcm_format = audio::pcm_format::int16;
+
+    self->_cpp.renderer->pcm_format_handler = [&pcm_format] { return pcm_format; };
+
+    XCTAssertEqual(coordinator->pcm_format(), audio::pcm_format::int16);
+
+    pcm_format = audio::pcm_format::float32;
+
+    XCTAssertEqual(coordinator->pcm_format(), audio::pcm_format::float32);
 }
 
 - (void)test_channel_count {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::size_t ch_count = 1;
+
+    self->_cpp.renderer->channel_count_handler = [&ch_count] { return ch_count; };
+
+    XCTAssertEqual(coordinator->channel_count(), 1);
+
+    ch_count = 2;
+
+    XCTAssertEqual(coordinator->channel_count(), 2);
 }
 
 - (void)test_configuration_chain {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+    chaining::observer_pool pool;
+
+    auto const config = chaining::value::holder<configuration>::make_shared(
+        {.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3});
+
+    self->_cpp.renderer->configuration_chain_handler = [&config] { return config->chain(); };
+
+    std::vector<configuration> called;
+
+    coordinator->configuration_chain()
+        .perform([&called](auto const &config) { called.emplace_back(config); })
+        .sync()
+        ->add_to(pool);
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0),
+                   (configuration{.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3}));
+
+    config->set_value({.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
+
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.at(1),
+                   (configuration{.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1}));
 }
 
 - (void)test_is_playing_chain {
-#warning todo
+    auto const coordinator = self->_cpp.setup_coordinator();
+    chaining::observer_pool pool;
+
+    auto const is_playing = chaining::value::holder<bool>::make_shared(false);
+
+    self->_cpp.player->is_playing_chain_handler = [&is_playing] { return is_playing->chain(); };
+
+    std::vector<bool> called;
+
+    coordinator->is_playing_chain()
+        .perform([&called](bool const &is_playing) { called.emplace_back(is_playing); })
+        .sync()
+        ->add_to(pool);
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertFalse(called.at(0));
+
+    is_playing->set_value(true);
+
+    XCTAssertEqual(called.size(), 2);
+    XCTAssertTrue(called.at(1));
 }
 
 @end
