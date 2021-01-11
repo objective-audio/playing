@@ -82,18 +82,6 @@ void renderer::set_rendering_handler(renderable::rendering_f &&handler) {
     });
 }
 
-chaining::chain_sync_t<sample_rate_t> renderer::chain_sample_rate() {
-    return this->_sample_rate->chain();
-}
-
-chaining::chain_sync_t<audio::pcm_format> renderer::chain_pcm_format() {
-    return this->_pcm_format->chain();
-}
-
-chaining::chain_sync_t<std::size_t> renderer::chain_channel_count() {
-    return this->_channel_count->chain();
-}
-
 void renderer::set_is_rendering(bool const is_rendering) {
     this->_is_rendering->set_value(is_rendering);
 }
@@ -120,7 +108,7 @@ void renderer::_update_connection() {
     std::size_t const ch_count = this->_channel_count->raw();
 
     if (sample_rate > 0.0 && ch_count > 0) {
-        audio::format format{
+        audio::format const format{
             {.sample_rate = static_cast<double>(sample_rate), .channel_count = static_cast<uint32_t>(ch_count)}};
         this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
     }
