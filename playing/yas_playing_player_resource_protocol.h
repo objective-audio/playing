@@ -13,7 +13,7 @@
 namespace yas::playing {
 struct player_resource_protocol {
     using overwrite_requests_t = std::vector<element_address>;
-    using overwrite_requests_f = std::function<void(const overwrite_requests_t &)>;
+    using overwrite_requests_f = std::function<void(overwrite_requests_t const &)>;
 
     virtual ~player_resource_protocol() = default;
 
