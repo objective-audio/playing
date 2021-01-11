@@ -17,7 +17,7 @@ using sample_rate_t = proc::sample_rate_t;
 
 struct fragment_range {
     fragment_index_t index;
-    length_t length = 1;
+    length_t length;
 };
 
 struct element_address {
