@@ -30,7 +30,8 @@ struct player_resource final : player_resource_protocol {
     void perform_overwrite_requests_on_render(overwrite_requests_f const &) override;
     void reset_overwrite_requests_on_render() override;
 
-    static player_resource_ptr make_shared(reading_resource_ptr const &, buffering_resource_ptr const &);
+    static player_resource_ptr make_shared(reading_resource_protocol_ptr const &,
+                                           buffering_resource_protocol_ptr const &);
 
    private:
     reading_resource_protocol_ptr const _reading;
@@ -50,6 +51,6 @@ struct player_resource final : player_resource_protocol {
     overwrite_requests_t _overwrite_requests;
     bool _is_overwritten = false;
 
-    player_resource(reading_resource_ptr const &, buffering_resource_ptr const &);
+    player_resource(reading_resource_protocol_ptr const &, buffering_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing
