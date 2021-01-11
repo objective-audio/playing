@@ -67,7 +67,7 @@ std::optional<channel_mapping_ptr> player_resource::pull_channel_mapping_on_rend
 }
 
 void player_resource::set_current_frame_on_render(frame_index_t const frame) {
-    this->_current_frame = frame;
+    this->_current_frame.store(frame);
 }
 
 frame_index_t player_resource::current_frame() const {
