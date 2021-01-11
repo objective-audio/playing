@@ -12,15 +12,16 @@
 using namespace yas;
 using namespace yas::playing;
 
-player_resource::player_resource(reading_ptr const &reading, buffering_ptr const &buffering)
+player_resource::player_resource(reading_resource_protocol_ptr const &reading,
+                                 buffering_resource_protocol_ptr const &buffering)
     : _reading(reading), _buffering(buffering) {
 }
 
-reading_protocol_ptr const &player_resource::reading() const {
+reading_resource_protocol_ptr const &player_resource::reading() const {
     return this->_reading;
 }
 
-buffering_protocol_ptr const &player_resource::buffering() const {
+buffering_resource_protocol_ptr const &player_resource::buffering() const {
     return this->_buffering;
 }
 
@@ -66,7 +67,7 @@ std::optional<channel_mapping_ptr> player_resource::pull_channel_mapping_on_rend
 }
 
 void player_resource::set_current_frame_on_render(frame_index_t const frame) {
-    this->_current_frame = frame;
+    this->_current_frame.store(frame);
 }
 
 frame_index_t player_resource::current_frame() const {
@@ -99,6 +100,7 @@ void player_resource::reset_overwrite_requests_on_render() {
     }
 }
 
-player_resource_ptr player_resource::make_shared(reading_ptr const &reading, buffering_ptr const &buffering) {
+player_resource_ptr player_resource::make_shared(reading_resource_protocol_ptr const &reading,
+                                                 buffering_resource_protocol_ptr const &buffering) {
     return player_resource_ptr{new player_resource{reading, buffering}};
 }

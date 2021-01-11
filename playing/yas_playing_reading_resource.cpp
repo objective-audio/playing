@@ -81,6 +81,6 @@ void reading_resource::create_buffer_on_task() {
     std::this_thread::yield();
 }
 
-reading_ptr reading_resource::make_shared() {
-    return reading_ptr(new reading_resource{});
+reading_resource_ptr reading_resource::make_shared() {
+    return reading_resource_ptr(new reading_resource{});
 }

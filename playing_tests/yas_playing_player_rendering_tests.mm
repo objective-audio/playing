@@ -14,11 +14,11 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_player_rendering_tests {
-    player_test::audio_player_cpp _cpp;
+    player_test::cpp _cpp;
 }
 
 - (void)test_pull_seek_frame {
-    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
     self->_cpp.skip_buffering_rendering();
 
@@ -64,7 +64,7 @@ using namespace yas::playing;
 }
 
 - (void)test_pull_ch_mapping {
-    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
     self->_cpp.skip_buffering_rendering();
 
@@ -112,7 +112,7 @@ using namespace yas::playing;
 }
 
 - (void)test_perform_overwrite_requests {
-    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
     self->_cpp.skip_ch_mapping();
 
@@ -138,7 +138,7 @@ using namespace yas::playing;
 }
 
 - (void)test_is_playing {
-    audio::pcm_buffer buffer = player_test::audio_player_cpp::make_out_buffer();
+    audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
     self->_cpp.skip_ch_mapping();
 
@@ -192,7 +192,7 @@ using namespace yas::playing;
     buffering->channel_count_handler = [] { return 3; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
                                                               frame_index_t frame_idx) {
-        player_test::audio_player_cpp::fill_buffer(buffer, ch_idx, frame_idx);
+        player_test::cpp::fill_buffer(buffer, ch_idx, frame_idx);
         called_read_into.emplace_back(ch_idx, frame_idx);
         return true;
     };
@@ -245,7 +245,7 @@ using namespace yas::playing;
     buffering->channel_count_handler = [] { return 3; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
                                                               frame_index_t frame_idx) {
-        player_test::audio_player_cpp::fill_buffer(buffer, ch_idx, frame_idx);
+        player_test::cpp::fill_buffer(buffer, ch_idx, frame_idx);
         called_read_into.emplace_back(ch_idx, frame_idx);
         return true;
     };
@@ -308,7 +308,7 @@ using namespace yas::playing;
     buffering->channel_count_handler = [] { return 1; };
     buffering->read_into_buffer_handler = [&called_read_into](audio::pcm_buffer *buffer, channel_index_t ch_idx,
                                                               frame_index_t frame_idx) {
-        player_test::audio_player_cpp::fill_buffer(buffer, ch_idx, frame_idx);
+        player_test::cpp::fill_buffer(buffer, ch_idx, frame_idx);
         called_read_into.emplace_back(ch_idx, frame_idx);
         return true;
     };
@@ -363,7 +363,7 @@ using namespace yas::playing;
             return false;
         }
 
-        player_test::audio_player_cpp::fill_buffer(buffer, ch_idx, frame_idx);
+        player_test::cpp::fill_buffer(buffer, ch_idx, frame_idx);
         return true;
     };
     buffering->advance_handler = [&called_advance](fragment_index_t frag_idx) {

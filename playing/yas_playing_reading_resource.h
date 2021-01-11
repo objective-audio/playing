@@ -20,7 +20,7 @@ struct reading_resource final : reading_resource_protocol {
                                 uint32_t const length) override;
     void create_buffer_on_task() override;
 
-    static reading_ptr make_shared();
+    static reading_resource_ptr make_shared();
 
    private:
     reading_resource();

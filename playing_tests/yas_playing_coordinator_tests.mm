@@ -13,7 +13,7 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_coordinator_tests {
-    coordinator_test::coordinator_cpp _cpp;
+    coordinator_test::cpp _cpp;
 }
 
 - (void)tearDown {

@@ -36,18 +36,18 @@ struct resource : player_resource_protocol {
     std::function<void(overwrite_requests_f const &)> perform_overwrite_requests_handler;
     std::function<void(void)> reset_overwrite_requests_handler;
 
-    reading_protocol_ptr const _reading;
-    buffering_protocol_ptr const _buffering;
+    reading_resource_protocol_ptr const _reading;
+    buffering_resource_protocol_ptr const _buffering;
 
-    resource(reading_protocol_ptr const &reading, buffering_protocol_ptr const &buffering)
+    resource(reading_resource_protocol_ptr const &reading, buffering_resource_protocol_ptr const &buffering)
         : _reading(reading), _buffering(buffering) {
     }
 
-    reading_protocol_ptr const &reading() const override {
+    reading_resource_protocol_ptr const &reading() const override {
         return this->_reading;
     }
 
-    buffering_protocol_ptr const &buffering() const override {
+    buffering_resource_protocol_ptr const &buffering() const override {
         return this->_buffering;
     }
 
@@ -203,7 +203,7 @@ struct buffering : buffering_resource_protocol {
     }
 };
 
-struct audio_player_cpp {
+struct cpp {
     static sample_rate_t constexpr sample_rate = 4;
     static audio::pcm_format constexpr pcm_format = audio::pcm_format::int16;
     static uint32_t constexpr ch_count = 3;
@@ -287,7 +287,7 @@ struct audio_player_cpp {
     void skip_playing() {
         this->skip_ch_mapping();
 
-        this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), audio_player_cpp::length);
+        this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), cpp::length);
 
         this->resource->perform_overwrite_requests_handler = [](player_test::resource::overwrite_requests_f const &) {};
         this->resource->is_playing_handler = [] { return true; };

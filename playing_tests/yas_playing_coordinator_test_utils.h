@@ -120,7 +120,7 @@ struct exporter : exportable {
     }
 };
 
-struct coordinator_cpp {
+struct cpp {
     std::shared_ptr<coordinator_test::worker> worker = nullptr;
     std::shared_ptr<coordinator_test::renderer> renderer = nullptr;
     std::shared_ptr<coordinator_test::player> player = nullptr;
