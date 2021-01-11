@@ -15,6 +15,11 @@ using module_index_t = proc::module_index_t;
 using length_t = proc::length_t;
 using sample_rate_t = proc::sample_rate_t;
 
+struct fragment_range {
+    fragment_index_t index;
+    length_t length = 1;
+};
+
 struct element_address {
     std::optional<channel_index_t> file_channel_index;  // nulloptは全ch
     fragment_index_t fragment_index;
