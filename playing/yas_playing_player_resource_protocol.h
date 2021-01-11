@@ -17,8 +17,8 @@ struct player_resource_protocol {
 
     virtual ~player_resource_protocol() = default;
 
-    virtual reading_protocol_ptr const &reading() const = 0;
-    virtual buffering_protocol_ptr const &buffering() const = 0;
+    virtual reading_resource_protocol_ptr const &reading() const = 0;
+    virtual buffering_resource_protocol_ptr const &buffering() const = 0;
 
     virtual void set_playing_on_main(bool const) = 0;
     [[nodiscard]] virtual bool is_playing_on_render() const = 0;

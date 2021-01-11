@@ -236,10 +236,12 @@ bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffe
     return this->_channels.at(ch_idx)->read_into_buffer_on_render(out_buffer, frame);
 }
 
-buffering_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
+buffering_resource_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
 
-                                              std::string const &identifier, make_channel_f &&make_channel_handler) {
-    return buffering_ptr{new buffering_resource{element_count, root_path, identifier, std::move(make_channel_handler)}};
+                                                       std::string const &identifier,
+                                                       make_channel_f &&make_channel_handler) {
+    return buffering_resource_ptr{
+        new buffering_resource{element_count, root_path, identifier, std::move(make_channel_handler)}};
 }
 
 frame_index_t buffering_resource::all_writing_frame_for_test() const {

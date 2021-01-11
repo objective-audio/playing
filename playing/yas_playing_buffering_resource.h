@@ -33,8 +33,8 @@ struct buffering_resource final : buffering_resource_protocol {
     using make_channel_f =
         std::function<buffering_channel_protocol_ptr(std::size_t const, audio::format const &, sample_rate_t const)>;
 
-    static buffering_ptr make_shared(std::size_t const element_count, std::string const &root_path,
-                                     std::string const &identifier, make_channel_f &&);
+    static buffering_resource_ptr make_shared(std::size_t const element_count, std::string const &root_path,
+                                              std::string const &identifier, make_channel_f &&);
 
     frame_index_t all_writing_frame_for_test() const;
     channel_mapping_ptr const &ch_mapping_for_test() const;

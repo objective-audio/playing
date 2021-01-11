@@ -36,18 +36,18 @@ struct resource : player_resource_protocol {
     std::function<void(overwrite_requests_f const &)> perform_overwrite_requests_handler;
     std::function<void(void)> reset_overwrite_requests_handler;
 
-    reading_protocol_ptr const _reading;
-    buffering_protocol_ptr const _buffering;
+    reading_resource_protocol_ptr const _reading;
+    buffering_resource_protocol_ptr const _buffering;
 
-    resource(reading_protocol_ptr const &reading, buffering_protocol_ptr const &buffering)
+    resource(reading_resource_protocol_ptr const &reading, buffering_resource_protocol_ptr const &buffering)
         : _reading(reading), _buffering(buffering) {
     }
 
-    reading_protocol_ptr const &reading() const override {
+    reading_resource_protocol_ptr const &reading() const override {
         return this->_reading;
     }
 
-    buffering_protocol_ptr const &buffering() const override {
+    buffering_resource_protocol_ptr const &buffering() const override {
         return this->_buffering;
     }
 
