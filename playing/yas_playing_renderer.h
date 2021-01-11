@@ -21,10 +21,6 @@ struct renderer final : coordinator_renderable {
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<sample_rate_t> chain_sample_rate();
-    [[nodiscard]] chaining::chain_sync_t<audio::pcm_format> chain_pcm_format();
-    [[nodiscard]] chaining::chain_sync_t<std::size_t> chain_channel_count();
-
     [[nodiscard]] chaining::chain_sync_t<configuration> configuration_chain() const override;
 
     static renderer_ptr make_shared(audio::io_device_ptr const &);
