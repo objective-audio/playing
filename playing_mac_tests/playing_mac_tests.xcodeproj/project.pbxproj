@@ -18,6 +18,7 @@
 		B6B30FA225596C680022D37A /* yas_playing_buffering_channel_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6B30FA025596C680022D37A /* yas_playing_buffering_channel_tests.mm */; };
 		B6F490CA25A49A7900E229FA /* yas_playing_channel_mapping_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F490C925A49A7900E229FA /* yas_playing_channel_mapping_tests.mm */; };
 		B6F490E725A9D8E300E229FA /* yas_playing_coordinator_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F490E625A9D8E300E229FA /* yas_playing_coordinator_tests.mm */; };
+		B6F7996625AC113A0065127D /* yas_playing_renderer_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F7996525AC113A0065127D /* yas_playing_renderer_tests.mm */; };
 		B6FB0129229B6B12000C22F5 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB0128229B6B12000C22F5 /* audio.framework */; };
 		B6FB012B229B6B12000C22F5 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB012A229B6B12000C22F5 /* chaining.framework */; };
 		B6FB012D229B6B12000C22F5 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB012C229B6B12000C22F5 /* cpp_utils.framework */; };
@@ -51,6 +52,7 @@
 		B6F490C925A49A7900E229FA /* yas_playing_channel_mapping_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_channel_mapping_tests.mm; sourceTree = "<group>"; };
 		B6F490E625A9D8E300E229FA /* yas_playing_coordinator_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_coordinator_tests.mm; sourceTree = "<group>"; };
 		B6F7995625AC04FD0065127D /* yas_playing_coordinator_test_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_coordinator_test_utils.h; sourceTree = "<group>"; };
+		B6F7996525AC113A0065127D /* yas_playing_renderer_tests.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_renderer_tests.mm; sourceTree = "<group>"; };
 		B6FB011E229B6ADE000C22F5 /* playing_mac_tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = playing_mac_tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6FB0123229B6ADE000C22F5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B6FB0128229B6B12000C22F5 /* audio.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = audio.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -157,6 +159,7 @@
 				B6FB0146229B6B2C000C22F5 /* yas_playing_test_utils.mm */,
 				B6FB013E229B6B2C000C22F5 /* yas_playing_timeline_canceling_tests.mm */,
 				B63910D5259D78BD004EFDB3 /* yas_playing_timeline_utils_tests.mm */,
+				B6F7996525AC113A0065127D /* yas_playing_renderer_tests.mm */,
 			);
 			name = playing_tests;
 			path = ../../playing_tests;
@@ -267,6 +270,7 @@
 				B6FB0162229B6ECF000C22F5 /* yas_playing_numbers_file_tests.mm in Sources */,
 				B6FB015C229B6D2C000C22F5 /* yas_playing_path_utils_tests.mm in Sources */,
 				B63910D6259D78BD004EFDB3 /* yas_playing_timeline_utils_tests.mm in Sources */,
+				B6F7996625AC113A0065127D /* yas_playing_renderer_tests.mm in Sources */,
 				B6FB015D229B6D36000C22F5 /* yas_playing_signal_file_info_tests.mm in Sources */,
 				B6FB0158229B6CCE000C22F5 /* yas_playing_test_utils_tests.mm in Sources */,
 				B6873B482595FDD2001AC4CA /* yas_playing_player_buffering_tests.mm in Sources */,
