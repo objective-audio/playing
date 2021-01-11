@@ -22,7 +22,7 @@ struct fragment_range {
 
 struct element_address {
     std::optional<channel_index_t> file_channel_index;  // nulloptは全ch
-    fragment_index_t fragment_index;
+    fragment_range fragment_range;
 };
 
 enum class sample_store_type : char {

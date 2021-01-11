@@ -165,13 +165,15 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_add_overwrite.size(), 1);
     XCTAssertEqual(called_add_overwrite.at(0).file_channel_index, 3);
-    XCTAssertEqual(called_add_overwrite.at(0).fragment_index, 4);
+    XCTAssertEqual(called_add_overwrite.at(0).fragment_range.index, 4);
+    XCTAssertEqual(called_add_overwrite.at(0).fragment_range.length, 1);
 
     player->overwrite(std::nullopt, 5);
 
     XCTAssertEqual(called_add_overwrite.size(), 2);
     XCTAssertFalse(called_add_overwrite.at(1).file_channel_index.has_value());
-    XCTAssertEqual(called_add_overwrite.at(1).fragment_index, 5);
+    XCTAssertEqual(called_add_overwrite.at(1).fragment_range.index, 5);
+    XCTAssertEqual(called_add_overwrite.at(1).fragment_range.length, 1);
 }
 
 - (void)test_current_frame {

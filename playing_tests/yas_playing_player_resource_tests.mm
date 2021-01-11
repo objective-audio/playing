@@ -178,14 +178,15 @@ struct cpp {
     [XCTContext runActivityNamed:@"リクエストを追加して実行される"
                            block:[&called, &resource, &requests](id<XCTActivity> activity) {
                                resource->add_overwrite_request_on_main(
-                                   {.file_channel_index = std::nullopt, .fragment_index = 0});
+                                   {.file_channel_index = std::nullopt, .fragment_range = {.index = 0, .length = 1}});
 
                                resource->perform_overwrite_requests_on_render(requests);
 
                                XCTAssertEqual(called.size(), 1);
                                XCTAssertEqual(called.at(0).size(), 1);
                                XCTAssertEqual(called.at(0).at(0).file_channel_index, std::nullopt);
-                               XCTAssertEqual(called.at(0).at(0).fragment_index, 0);
+                               XCTAssertEqual(called.at(0).at(0).fragment_range.index, 0);
+                               XCTAssertEqual(called.at(0).at(0).fragment_range.length, 1);
                            }];
 
     called.clear();
@@ -199,24 +200,29 @@ struct cpp {
 
     [XCTContext runActivityNamed:@"リクエストを複数追加して実行される"
                            block:[&called, &resource, &requests](id<XCTActivity> activity) {
-                               resource->add_overwrite_request_on_main({.file_channel_index = 1, .fragment_index = 2});
-                               resource->add_overwrite_request_on_main({.file_channel_index = 3, .fragment_index = 4});
+                               resource->add_overwrite_request_on_main(
+                                   {.file_channel_index = 1, .fragment_range = {.index = 2, .length = 1}});
+                               resource->add_overwrite_request_on_main(
+                                   {.file_channel_index = 3, .fragment_range = {.index = 4, .length = 1}});
 
                                resource->perform_overwrite_requests_on_render(requests);
 
                                XCTAssertEqual(called.size(), 1);
                                XCTAssertEqual(called.at(0).size(), 2);
                                XCTAssertEqual(called.at(0).at(0).file_channel_index, 1);
-                               XCTAssertEqual(called.at(0).at(0).fragment_index, 2);
+                               XCTAssertEqual(called.at(0).at(0).fragment_range.index, 2);
+                               XCTAssertEqual(called.at(0).at(0).fragment_range.length, 1);
                                XCTAssertEqual(called.at(0).at(1).file_channel_index, 3);
-                               XCTAssertEqual(called.at(0).at(1).fragment_index, 4);
+                               XCTAssertEqual(called.at(0).at(1).fragment_range.index, 4);
+                               XCTAssertEqual(called.at(0).at(1).fragment_range.length, 1);
                            }];
 
     called.clear();
 
     [XCTContext runActivityNamed:@"リクエストを追加してもリセットしたら実行されない"
                            block:[&called, &resource, &requests](id<XCTActivity> activity) {
-                               resource->add_overwrite_request_on_main({.file_channel_index = 5, .fragment_index = 6});
+                               resource->add_overwrite_request_on_main(
+                                   {.file_channel_index = 5, .fragment_range = {.index = 6, .length = 1}});
 
                                resource->reset_overwrite_requests_on_render();
 
