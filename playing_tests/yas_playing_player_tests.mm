@@ -14,7 +14,7 @@ using namespace yas::playing;
 @end
 
 @implementation yas_playing_player_tests {
-    player_test::audio_player_cpp _cpp;
+    player_test::cpp _cpp;
 }
 
 - (void)tearDown {

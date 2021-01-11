@@ -203,7 +203,7 @@ struct buffering : buffering_resource_protocol {
     }
 };
 
-struct audio_player_cpp {
+struct cpp {
     static sample_rate_t constexpr sample_rate = 4;
     static audio::pcm_format constexpr pcm_format = audio::pcm_format::int16;
     static uint32_t constexpr ch_count = 3;
@@ -287,7 +287,7 @@ struct audio_player_cpp {
     void skip_playing() {
         this->skip_ch_mapping();
 
-        this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), audio_player_cpp::length);
+        this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), cpp::length);
 
         this->resource->perform_overwrite_requests_handler = [](player_test::resource::overwrite_requests_f const &) {};
         this->resource->is_playing_handler = [] { return true; };
