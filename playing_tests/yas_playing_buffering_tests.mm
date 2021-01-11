@@ -60,7 +60,7 @@ struct channel : buffering_channel_protocol {
     }
 };
 
-struct audio_buffering_cpp {
+struct cpp {
     std::shared_ptr<buffering_resource> buffering = nullptr;
     std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
@@ -129,11 +129,11 @@ struct audio_buffering_cpp {
 @end
 
 @implementation yas_playing_buffering_tests {
-    buffering_test::audio_buffering_cpp _cpp;
+    buffering_test::cpp _cpp;
 }
 
 - (void)tearDown {
-    self->_cpp = buffering_test::audio_buffering_cpp{};
+    self->_cpp = buffering_test::cpp{};
     [super tearDown];
 }
 
