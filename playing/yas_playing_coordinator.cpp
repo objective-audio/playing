@@ -72,11 +72,9 @@ void coordinator::overwrite(proc::time::range const &range) {
 
     auto const begin_frag_idx = frags_range.frame / sample_rate;
     auto const next_frag_idx = frags_range.next_frame() / sample_rate;
-    auto frag_each = make_fast_each(begin_frag_idx, next_frag_idx);
+    auto const length = static_cast<length_t>(next_frag_idx - begin_frag_idx);
 
-    while (yas_each_next(frag_each)) {
-        player->overwrite(std::nullopt, yas_each_index(frag_each));
-    }
+    player->overwrite(std::nullopt, {.index = begin_frag_idx, .length = length});
 }
 
 std::string const &coordinator::identifier() const {

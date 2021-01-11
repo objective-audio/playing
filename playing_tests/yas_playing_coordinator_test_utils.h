@@ -68,7 +68,7 @@ struct player : playable {
     std::function<void(channel_mapping_ptr)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
-    std::function<void(std::optional<channel_index_t>, fragment_index_t)> overwrite_handler;
+    std::function<void(std::optional<channel_index_t>, fragment_range)> overwrite_handler;
     std::function<channel_mapping_ptr const &(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<frame_index_t(void)> current_frame_handler;
@@ -86,8 +86,8 @@ struct player : playable {
         this->seek_handler(frame);
     }
 
-    void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_index_t const frag_idx) override {
-        this->overwrite_handler(file_ch_idx, frag_idx);
+    void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_range const frag_range) override {
+        this->overwrite_handler(file_ch_idx, frag_range);
     }
 
     channel_mapping_ptr const &channel_mapping() const override {

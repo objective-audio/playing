@@ -131,11 +131,11 @@ using namespace yas::playing;
 - (void)test_overwrite {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    std::vector<std::pair<std::optional<channel_index_t>, fragment_index_t>> called;
+    std::vector<std::pair<std::optional<channel_index_t>, fragment_range>> called;
 
     self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> file_ch_idx,
-                                                     fragment_index_t frag_idx) {
-        called.emplace_back(file_ch_idx, frag_idx);
+                                                     fragment_range frag_range) {
+        called.emplace_back(file_ch_idx, frag_range);
     };
 
     self->_cpp.renderer->sample_rate_handler = [] { return 4; };
@@ -144,29 +144,26 @@ using namespace yas::playing;
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0).first, std::nullopt);
-    XCTAssertEqual(called.at(0).second, 0);
+    XCTAssertEqual(called.at(0).second.index, 0);
+    XCTAssertEqual(called.at(0).second.length, 1);
 
     called.clear();
 
     coordinator->overwrite(proc::time::range{0, 5});
 
-    XCTAssertEqual(called.size(), 2);
+    XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0).first, std::nullopt);
-    XCTAssertEqual(called.at(0).second, 0);
-    XCTAssertEqual(called.at(1).first, std::nullopt);
-    XCTAssertEqual(called.at(1).second, 1);
+    XCTAssertEqual(called.at(0).second.index, 0);
+    XCTAssertEqual(called.at(0).second.length, 2);
 
     called.clear();
 
     coordinator->overwrite(proc::time::range{-1, 6});
 
-    XCTAssertEqual(called.size(), 3);
+    XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0).first, std::nullopt);
-    XCTAssertEqual(called.at(0).second, -1);
-    XCTAssertEqual(called.at(1).first, std::nullopt);
-    XCTAssertEqual(called.at(1).second, 0);
-    XCTAssertEqual(called.at(2).first, std::nullopt);
-    XCTAssertEqual(called.at(2).second, 1);
+    XCTAssertEqual(called.at(0).second.index, -1);
+    XCTAssertEqual(called.at(0).second.length, 3);
 }
 
 - (void)test_identifier {
@@ -318,10 +315,10 @@ using namespace yas::playing;
 
     self->_cpp.renderer->sample_rate_handler = [] { return 4; };
 
-    std::vector<std::pair<std::optional<channel_index_t>, fragment_index_t>> called;
+    std::vector<std::pair<std::optional<channel_index_t>, fragment_range>> called;
 
-    self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> ch_idx, fragment_index_t frag_idx) {
-        called.emplace_back(std::make_pair(ch_idx, frag_idx));
+    self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> ch_idx, fragment_range frag_range) {
+        called.emplace_back(std::make_pair(ch_idx, frag_range));
     };
 
     self->_cpp.exporter_event_notifier->notify(
@@ -329,18 +326,16 @@ using namespace yas::playing;
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertEqual(called.at(0).first, std::nullopt);
-    XCTAssertEqual(called.at(0).second, 0);
+    XCTAssertEqual(called.at(0).second.index, 0);
+    XCTAssertEqual(called.at(0).second.length, 1);
 
     self->_cpp.exporter_event_notifier->notify(
         exporter_event{.result = exporter_result_t{exporter_method::export_ended}, .range = proc::time::range{-1, 6}});
 
-    XCTAssertEqual(called.size(), 4);
+    XCTAssertEqual(called.size(), 2);
     XCTAssertEqual(called.at(1).first, std::nullopt);
-    XCTAssertEqual(called.at(1).second, -1);
-    XCTAssertEqual(called.at(2).first, std::nullopt);
-    XCTAssertEqual(called.at(2).second, 0);
-    XCTAssertEqual(called.at(3).first, std::nullopt);
-    XCTAssertEqual(called.at(3).second, 1);
+    XCTAssertEqual(called.at(1).second.index, -1);
+    XCTAssertEqual(called.at(1).second.length, 3);
 }
 
 @end
