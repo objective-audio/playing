@@ -3,168 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <chaining/chaining.h>
-#import <playing/playing.h>
+#import "yas_playing_coordinator_test_utils.h"
 
 using namespace yas;
 using namespace yas::playing;
-
-namespace yas::playing::coordinator_test {
-std::string const identifier = "0";
-
-struct worker : workable {
-    std::function<void(uint32_t, task_f &&)> add_task_handler;
-    std::function<void(void)> start_handler;
-    std::function<void(void)> stop_handler;
-
-    void add_task(uint32_t const priority, task_f &&task) override {
-        this->add_task_handler(priority, std::move(task));
-    }
-
-    void start() override {
-        this->start_handler();
-    }
-
-    void stop() override {
-        this->stop_handler();
-    }
-};
-
-struct renderer : coordinator_renderable {
-    std::function<void(rendering_f &&)> set_rendering_handler_handler;
-    std::function<void(bool)> set_is_rendering_handler;
-    std::function<sample_rate_t(void)> sample_rate_handler;
-    std::function<audio::pcm_format(void)> pcm_format_handler;
-    std::function<std::size_t(void)> channel_count_handler;
-    std::function<chaining::chain_sync_t<configuration>(void)> configuration_chain_handler;
-
-    void set_rendering_handler(rendering_f &&handler) override {
-        this->set_rendering_handler_handler(std::move(handler));
-    }
-
-    void set_is_rendering(bool const is_rendering) override {
-        this->set_is_rendering_handler(is_rendering);
-    }
-
-    sample_rate_t sample_rate() const override {
-        return this->sample_rate_handler();
-    }
-
-    audio::pcm_format pcm_format() const override {
-        return this->pcm_format_handler();
-    }
-
-    std::size_t channel_count() const override {
-        return this->channel_count_handler();
-    }
-
-    chaining::chain_sync_t<configuration> configuration_chain() const override {
-        return this->configuration_chain_handler();
-    }
-
-    chaining::chain_sync_t<configuration> configuration_chain2() const {
-        return this->configuration_chain_handler();
-    }
-};
-
-struct player : playable {
-    std::function<void(channel_mapping_ptr)> set_ch_mapping_handler;
-    std::function<void(bool)> set_playing_handler;
-    std::function<void(frame_index_t)> seek_handler;
-    std::function<void(std::optional<channel_index_t>, fragment_index_t)> overwrite_handler;
-    std::function<channel_mapping_ptr const &(void)> ch_mapping_handler;
-    std::function<bool(void)> is_playing_handler;
-    std::function<frame_index_t(void)> current_frame_handler;
-    std::function<chaining::chain_sync_t<bool>(void)> is_playing_chain_handler;
-
-    void set_channel_mapping(channel_mapping_ptr const &ch_mapping) override {
-        this->set_ch_mapping_handler(ch_mapping);
-    }
-
-    void set_playing(bool const is_playing) override {
-        this->set_playing_handler(is_playing);
-    }
-
-    void seek(frame_index_t const frame) override {
-        this->seek_handler(frame);
-    }
-
-    void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_index_t const frag_idx) override {
-        this->overwrite_handler(file_ch_idx, frag_idx);
-    }
-
-    channel_mapping_ptr const &channel_mapping() const override {
-        return this->ch_mapping_handler();
-    }
-
-    bool is_playing() const override {
-        return this->is_playing_handler();
-    }
-
-    frame_index_t current_frame() const override {
-        return this->current_frame_handler();
-    }
-
-    chaining::chain_sync_t<bool> is_playing_chain() const override {
-        return this->is_playing_chain_handler();
-    }
-};
-
-struct exporter : exportable {
-    std::function<void(timeline_container_ptr)> set_timeline_container_handler;
-    std::function<chaining::chain_unsync_t<exporter_event>(void)> event_chain_handler;
-
-    void set_timeline_container(timeline_container_ptr const &container) override {
-        this->set_timeline_container_handler(container);
-    }
-
-    chaining::chain_unsync_t<exporter_event> event_chain() const override {
-        return this->event_chain_handler();
-    }
-};
-
-struct coordinator_cpp {
-    std::shared_ptr<coordinator_test::worker> worker = nullptr;
-    std::shared_ptr<coordinator_test::renderer> renderer = nullptr;
-    std::shared_ptr<coordinator_test::player> player = nullptr;
-    std::shared_ptr<coordinator_test::exporter> exporter = nullptr;
-
-    chaining::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
-    chaining::value::holder_ptr<configuration> configulation_notifier = nullptr;
-    coordinator_ptr coordinator = nullptr;
-
-    coordinator_ptr setup_coordinator() {
-        this->worker = std::make_shared<coordinator_test::worker>();
-        this->renderer = std::make_shared<coordinator_test::renderer>();
-        this->player = std::make_shared<coordinator_test::player>();
-        this->exporter = std::make_shared<coordinator_test::exporter>();
-
-        this->exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
-        this->exporter->event_chain_handler = [notifier = this->exporter_event_notifier] { return notifier->chain(); };
-
-        this->configulation_notifier = chaining::value::holder<configuration>::make_shared(configuration{});
-        this->renderer->configuration_chain_handler = [notifier = this->configulation_notifier] {
-            return notifier->chain();
-        };
-        this->renderer->pcm_format_handler = [] { return audio::pcm_format::float32; };
-
-        this->worker->start_handler = [] {};
-
-        this->coordinator = coordinator::make_shared(coordinator_test::identifier, this->worker, this->renderer,
-                                                     this->player, this->exporter);
-
-        return this->coordinator;
-    }
-
-    void reset() {
-        this->worker = nullptr;
-        this->renderer = nullptr;
-        this->player = nullptr;
-        this->exporter = nullptr;
-        this->coordinator = nullptr;
-    }
-};
-}
 
 @interface yas_playing_coordinator_tests : XCTestCase
 
@@ -178,6 +20,37 @@ struct coordinator_cpp {
     self->_cpp.reset();
 
     [super tearDown];
+}
+
+- (void)test_constructor {
+    auto const worker = std::make_shared<coordinator_test::worker>();
+    auto const renderer = std::make_shared<coordinator_test::renderer>();
+    auto const player = std::make_shared<coordinator_test::player>();
+    auto const exporter = std::make_shared<coordinator_test::exporter>();
+
+    bool exporter_event_called = false;
+    bool configuration_chain_called = false;
+    bool start_called = false;
+
+    auto const exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
+    exporter->event_chain_handler = [notifier = exporter_event_notifier, &exporter_event_called] {
+        exporter_event_called = true;
+        return notifier->chain();
+    };
+
+    auto const configulation_holder = chaining::value::holder<configuration>::make_shared(configuration{});
+    renderer->configuration_chain_handler = [holder = configulation_holder, &configuration_chain_called] {
+        configuration_chain_called = true;
+        return holder->chain();
+    };
+
+    worker->start_handler = [&start_called] { start_called = true; };
+
+    auto const coordinator = coordinator::make_shared(coordinator_test::identifier, worker, renderer, player, exporter);
+
+    XCTAssertTrue(exporter_event_called);
+    XCTAssertTrue(configuration_chain_called);
+    XCTAssertTrue(start_called);
 }
 
 - (void)test_set_timeline {
@@ -386,27 +259,34 @@ struct coordinator_cpp {
     auto const coordinator = self->_cpp.setup_coordinator();
     chaining::observer_pool pool;
 
-    auto const config = chaining::value::holder<configuration>::make_shared(
-        {.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3});
+    std::vector<timeline_container_ptr> called_containers;
 
-    self->_cpp.renderer->configuration_chain_handler = [&config] { return config->chain(); };
+    self->_cpp.exporter->set_timeline_container_handler = [&called_containers](timeline_container_ptr container) {
+        called_containers.emplace_back(container);
+    };
 
-    std::vector<configuration> called;
+    // configuration_chainとは別で返す（実際は同じ値になる）
+    self->_cpp.renderer->sample_rate_handler = [] { return 5; };
+
+    std::vector<configuration> called_configrations;
 
     coordinator->configuration_chain()
-        .perform([&called](auto const &config) { called.emplace_back(config); })
+        .perform([&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
         .sync()
         ->add_to(pool);
 
-    XCTAssertEqual(called.size(), 1);
-    XCTAssertEqual(called.at(0),
-                   (configuration{.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3}));
+    XCTAssertEqual(called_configrations.size(), 1);
+    XCTAssertEqual(called_configrations.at(0), (configuration{}));
+    XCTAssertEqual(called_containers.size(), 0);
 
-    config->set_value({.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
+    self->_cpp.configulation_holder->set_value(
+        {.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
 
-    XCTAssertEqual(called.size(), 2);
-    XCTAssertEqual(called.at(1),
+    XCTAssertEqual(called_configrations.size(), 2);
+    XCTAssertEqual(called_configrations.at(1),
                    (configuration{.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1}));
+    XCTAssertEqual(called_containers.size(), 1);
+    XCTAssertEqual(called_containers.at(0)->sample_rate(), 5);
 }
 
 - (void)test_is_playing_chain {
@@ -431,6 +311,36 @@ struct coordinator_cpp {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertTrue(called.at(1));
+}
+
+- (void)test_export {
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    self->_cpp.renderer->sample_rate_handler = [] { return 4; };
+
+    std::vector<std::pair<std::optional<channel_index_t>, fragment_index_t>> called;
+
+    self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> ch_idx, fragment_index_t frag_idx) {
+        called.emplace_back(std::make_pair(ch_idx, frag_idx));
+    };
+
+    self->_cpp.exporter_event_notifier->notify(
+        exporter_event{.result = exporter_result_t{exporter_method::export_ended}, .range = proc::time::range{0, 1}});
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0).first, std::nullopt);
+    XCTAssertEqual(called.at(0).second, 0);
+
+    self->_cpp.exporter_event_notifier->notify(
+        exporter_event{.result = exporter_result_t{exporter_method::export_ended}, .range = proc::time::range{-1, 6}});
+
+    XCTAssertEqual(called.size(), 4);
+    XCTAssertEqual(called.at(1).first, std::nullopt);
+    XCTAssertEqual(called.at(1).second, -1);
+    XCTAssertEqual(called.at(2).first, std::nullopt);
+    XCTAssertEqual(called.at(2).second, 0);
+    XCTAssertEqual(called.at(3).first, std::nullopt);
+    XCTAssertEqual(called.at(3).second, 1);
 }
 
 @end
