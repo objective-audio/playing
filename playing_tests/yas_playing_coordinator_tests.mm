@@ -130,7 +130,7 @@ struct coordinator_cpp {
     std::shared_ptr<coordinator_test::exporter> exporter = nullptr;
 
     chaining::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
-    chaining::value::holder_ptr<configuration> configulation_notifier = nullptr;
+    chaining::value::holder_ptr<configuration> configulation_holder = nullptr;
     coordinator_ptr coordinator = nullptr;
 
     coordinator_ptr setup_coordinator() {
@@ -142,11 +142,8 @@ struct coordinator_cpp {
         this->exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
         this->exporter->event_chain_handler = [notifier = this->exporter_event_notifier] { return notifier->chain(); };
 
-        this->configulation_notifier = chaining::value::holder<configuration>::make_shared(configuration{});
-        this->renderer->configuration_chain_handler = [notifier = this->configulation_notifier] {
-            return notifier->chain();
-        };
-        this->renderer->pcm_format_handler = [] { return audio::pcm_format::float32; };
+        this->configulation_holder = chaining::value::holder<configuration>::make_shared(configuration{});
+        this->renderer->configuration_chain_handler = [holder = this->configulation_holder] { return holder->chain(); };
 
         this->worker->start_handler = [] {};
 
@@ -178,6 +175,37 @@ struct coordinator_cpp {
     self->_cpp.reset();
 
     [super tearDown];
+}
+
+- (void)test_constructor {
+    auto const worker = std::make_shared<coordinator_test::worker>();
+    auto const renderer = std::make_shared<coordinator_test::renderer>();
+    auto const player = std::make_shared<coordinator_test::player>();
+    auto const exporter = std::make_shared<coordinator_test::exporter>();
+
+    bool exporter_event_called = false;
+    bool configuration_chain_called = false;
+    bool start_called = false;
+
+    auto const exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
+    exporter->event_chain_handler = [notifier = exporter_event_notifier, &exporter_event_called] {
+        exporter_event_called = true;
+        return notifier->chain();
+    };
+
+    auto const configulation_holder = chaining::value::holder<configuration>::make_shared(configuration{});
+    renderer->configuration_chain_handler = [holder = configulation_holder, &configuration_chain_called] {
+        configuration_chain_called = true;
+        return holder->chain();
+    };
+
+    worker->start_handler = [&start_called] { start_called = true; };
+
+    auto const coordinator = coordinator::make_shared(coordinator_test::identifier, worker, renderer, player, exporter);
+
+    XCTAssertTrue(exporter_event_called);
+    XCTAssertTrue(configuration_chain_called);
+    XCTAssertTrue(start_called);
 }
 
 - (void)test_set_timeline {
@@ -386,27 +414,34 @@ struct coordinator_cpp {
     auto const coordinator = self->_cpp.setup_coordinator();
     chaining::observer_pool pool;
 
-    auto const config = chaining::value::holder<configuration>::make_shared(
-        {.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3});
+    std::vector<timeline_container_ptr> called_containers;
 
-    self->_cpp.renderer->configuration_chain_handler = [&config] { return config->chain(); };
+    self->_cpp.exporter->set_timeline_container_handler = [&called_containers](timeline_container_ptr container) {
+        called_containers.emplace_back(container);
+    };
 
-    std::vector<configuration> called;
+    // configuration_chainとは別で返す（実際は同じ値になる）
+    self->_cpp.renderer->sample_rate_handler = [] { return 5; };
+
+    std::vector<configuration> called_configrations;
 
     coordinator->configuration_chain()
-        .perform([&called](auto const &config) { called.emplace_back(config); })
+        .perform([&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
         .sync()
         ->add_to(pool);
 
-    XCTAssertEqual(called.size(), 1);
-    XCTAssertEqual(called.at(0),
-                   (configuration{.sample_rate = 2, .pcm_format = audio::pcm_format::int16, .channel_count = 3}));
+    XCTAssertEqual(called_configrations.size(), 1);
+    XCTAssertEqual(called_configrations.at(0), (configuration{}));
+    XCTAssertEqual(called_containers.size(), 0);
 
-    config->set_value({.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
+    self->_cpp.configulation_holder->set_value(
+        {.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
 
-    XCTAssertEqual(called.size(), 2);
-    XCTAssertEqual(called.at(1),
+    XCTAssertEqual(called_configrations.size(), 2);
+    XCTAssertEqual(called_configrations.at(1),
                    (configuration{.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1}));
+    XCTAssertEqual(called_containers.size(), 1);
+    XCTAssertEqual(called_containers.at(0)->sample_rate(), 5);
 }
 
 - (void)test_is_playing_chain {
@@ -431,6 +466,36 @@ struct coordinator_cpp {
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertTrue(called.at(1));
+}
+
+- (void)test_export {
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    self->_cpp.renderer->sample_rate_handler = [] { return 4; };
+
+    std::vector<std::pair<std::optional<channel_index_t>, fragment_index_t>> called;
+
+    self->_cpp.player->overwrite_handler = [&called](std::optional<channel_index_t> ch_idx, fragment_index_t frag_idx) {
+        called.emplace_back(std::make_pair(ch_idx, frag_idx));
+    };
+
+    self->_cpp.exporter_event_notifier->notify(
+        exporter_event{.result = exporter_result_t{exporter_method::export_ended}, .range = proc::time::range{0, 1}});
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0).first, std::nullopt);
+    XCTAssertEqual(called.at(0).second, 0);
+
+    self->_cpp.exporter_event_notifier->notify(
+        exporter_event{.result = exporter_result_t{exporter_method::export_ended}, .range = proc::time::range{-1, 6}});
+
+    XCTAssertEqual(called.size(), 4);
+    XCTAssertEqual(called.at(1).first, std::nullopt);
+    XCTAssertEqual(called.at(1).second, -1);
+    XCTAssertEqual(called.at(2).first, std::nullopt);
+    XCTAssertEqual(called.at(2).second, 0);
+    XCTAssertEqual(called.at(3).first, std::nullopt);
+    XCTAssertEqual(called.at(3).second, 1);
 }
 
 @end
