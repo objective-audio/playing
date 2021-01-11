@@ -63,7 +63,8 @@ struct device : audio::io_device {
 - (void)test_constructor_with_format {
     auto const device = std::make_shared<renderer_test::device>();
 
-    std::optional<audio::format> output_format = audio::format{{.sample_rate = 1000, .channel_count = 2}};
+    std::optional<audio::format> output_format =
+        audio::format{{.sample_rate = 1000, .channel_count = 2, .pcm_format = audio::pcm_format::float32}};
 
     device->output_format_handler = [&output_format] { return output_format; };
 
@@ -71,6 +72,7 @@ struct device : audio::io_device {
 
     XCTAssertEqual(renderer->sample_rate(), 1000);
     XCTAssertEqual(renderer->channel_count(), 2);
+    XCTAssertEqual(renderer->pcm_format(), audio::pcm_format::float32);
 }
 
 - (void)test_constructor_null_format {
@@ -84,6 +86,7 @@ struct device : audio::io_device {
 
     XCTAssertEqual(renderer->sample_rate(), 0);
     XCTAssertEqual(renderer->channel_count(), 0);
+    XCTAssertEqual(renderer->pcm_format(), audio::pcm_format::other);
 }
 
 @end
