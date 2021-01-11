@@ -91,11 +91,13 @@ void renderer::_update_configuration() {
         if (auto const &output_format = device.value()->output_format()) {
             this->_sample_rate->set_value(output_format->sample_rate());
             this->_channel_count->set_value(output_format->channel_count());
+            this->_pcm_format->set_value(output_format->pcm_format());
             return;
         }
     }
     this->_sample_rate->set_value(0);
     this->_channel_count->set_value(0);
+    this->_pcm_format->set_value(audio::pcm_format::other);
 }
 
 void renderer::_update_connection() {
@@ -106,10 +108,12 @@ void renderer::_update_connection() {
 
     sample_rate_t const &sample_rate = this->_sample_rate->raw();
     std::size_t const ch_count = this->_channel_count->raw();
+    audio::pcm_format const pcm_format = this->_pcm_format->raw();
 
-    if (sample_rate > 0.0 && ch_count > 0) {
-        audio::format const format{
-            {.sample_rate = static_cast<double>(sample_rate), .channel_count = static_cast<uint32_t>(ch_count)}};
+    if (sample_rate > 0.0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
+        audio::format const format{{.sample_rate = static_cast<double>(sample_rate),
+                                    .channel_count = static_cast<uint32_t>(ch_count),
+                                    .pcm_format = pcm_format}};
         this->_connection = this->graph->connect(this->_tap->node, this->_io->output_node, format);
     }
 }
