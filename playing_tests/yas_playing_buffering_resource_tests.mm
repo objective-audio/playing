@@ -36,7 +36,7 @@ struct channel : buffering_channel_protocol {
     std::function<bool()> write_elements_handler;
     std::function<void(path::channel const &, fragment_index_t const)> write_all_elements_handler;
     std::function<void(fragment_index_t const)> advance_handler;
-    std::function<void(fragment_index_t const)> overwrite_element_handler;
+    std::function<void(fragment_range const)> overwrite_element_handler;
     std::function<bool(audio::pcm_buffer *, frame_index_t const)> read_into_buffer_handler;
 
     bool write_elements_if_needed_on_task() {
@@ -51,8 +51,8 @@ struct channel : buffering_channel_protocol {
         this->advance_handler(frag_idx);
     }
 
-    void overwrite_element_on_render(fragment_index_t const frag_idx) {
-        this->overwrite_element_handler(frag_idx);
+    void overwrite_element_on_render(fragment_range const frag_range) {
+        this->overwrite_element_handler(frag_range);
     }
 
     bool read_into_buffer_on_render(audio::pcm_buffer *out_buffer, frame_index_t const frame) {
@@ -410,27 +410,29 @@ struct cpp {
     auto const &buffering = self->_cpp.buffering;
     auto &channels = self->_cpp.channels;
 
-    std::vector<fragment_index_t> called0;
-    std::vector<fragment_index_t> called1;
+    std::vector<fragment_range> called0;
+    std::vector<fragment_range> called1;
 
-    channels.at(0)->overwrite_element_handler = [&called0](fragment_index_t const frag_idx) {
-        called0.emplace_back(frag_idx);
+    channels.at(0)->overwrite_element_handler = [&called0](fragment_range const frag_range) {
+        called0.emplace_back(frag_range);
     };
-    channels.at(1)->overwrite_element_handler = [&called1](fragment_index_t const frag_idx) {
-        called1.emplace_back(frag_idx);
+    channels.at(1)->overwrite_element_handler = [&called1](fragment_range const frag_range) {
+        called1.emplace_back(frag_range);
     };
 
     buffering->overwrite_element_on_render({.file_channel_index = 0, .fragment_range = {.index = 0, .length = 1}});
 
     XCTAssertEqual(called0.size(), 1);
-    XCTAssertEqual(called0.at(0), 0);
+    XCTAssertEqual(called0.at(0).index, 0);
+    XCTAssertEqual(called0.at(0).length, 1);
     XCTAssertEqual(called1.size(), 0);
 
     buffering->overwrite_element_on_render({.file_channel_index = 1, .fragment_range = {.index = 1, .length = 1}});
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
-    XCTAssertEqual(called1.at(0), 1);
+    XCTAssertEqual(called1.at(0).index, 1);
+    XCTAssertEqual(called1.at(0).length, 1);
 
     buffering->overwrite_element_on_render({.file_channel_index = 2, .fragment_range = {.index = 2, .length = 1}});
     buffering->overwrite_element_on_render({.file_channel_index = -1, .fragment_range = {.index = -1, .length = 1}});
@@ -448,12 +450,14 @@ struct cpp {
 
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 2);
-    XCTAssertEqual(called1.at(1), 3);
+    XCTAssertEqual(called1.at(1).index, 3);
+    XCTAssertEqual(called1.at(1).length, 1);
 
     buffering->overwrite_element_on_render({.file_channel_index = 2, .fragment_range = {.index = 4, .length = 1}});
 
     XCTAssertEqual(called0.size(), 2);
-    XCTAssertEqual(called0.at(1), 4);
+    XCTAssertEqual(called0.at(1).index, 4);
+    XCTAssertEqual(called0.at(1).length, 1);
     XCTAssertEqual(called1.size(), 2);
 
     buffering->overwrite_element_on_render({.file_channel_index = 0, .fragment_range = {.index = 5, .length = 1}});
@@ -467,9 +471,11 @@ struct cpp {
         {.file_channel_index = std::nullopt, .fragment_range = {.index = 7, .length = 1}});
 
     XCTAssertEqual(called0.size(), 3);
-    XCTAssertEqual(called0.at(2), 7);
+    XCTAssertEqual(called0.at(2).index, 7);
+    XCTAssertEqual(called0.at(2).length, 1);
     XCTAssertEqual(called1.size(), 3);
-    XCTAssertEqual(called1.at(2), 7);
+    XCTAssertEqual(called1.at(2).index, 7);
+    XCTAssertEqual(called1.at(2).length, 1);
 }
 
 - (void)test_read_into_buffer {

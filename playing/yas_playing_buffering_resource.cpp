@@ -214,13 +214,11 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
         if (auto const out_ch_idx =
                 this->_ch_mapping->out_index(address.file_channel_index.value(), this->_channels.size());
             out_ch_idx.has_value()) {
-#warning todo range
-            this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(address.fragment_range.index);
+            this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(address.fragment_range);
         }
     } else {
         for (auto const &channel : this->_channels) {
-#warning todo range
-            channel->overwrite_element_on_render(address.fragment_range.index);
+            channel->overwrite_element_on_render(address.fragment_range);
         }
     }
 }
