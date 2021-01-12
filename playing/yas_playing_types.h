@@ -20,7 +20,7 @@ struct fragment_range {
     length_t length;
 
     fragment_index_t end_index() const {
-        return this->index + this->length;
+        return this->index + static_cast<fragment_index_t>(this->length);
     }
 
     bool contains(fragment_index_t const idx) const {
