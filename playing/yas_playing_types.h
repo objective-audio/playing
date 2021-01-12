@@ -18,6 +18,14 @@ using sample_rate_t = proc::sample_rate_t;
 struct fragment_range {
     fragment_index_t index;
     length_t length;
+
+    fragment_index_t end_index() const {
+        return this->index + this->length;
+    }
+
+    bool contains(fragment_index_t const idx) const {
+        return this->index <= idx && idx < this->end_index();
+    }
 };
 
 struct element_address {
