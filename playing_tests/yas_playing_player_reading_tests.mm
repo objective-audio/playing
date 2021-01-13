@@ -114,8 +114,4 @@ using namespace yas::playing;
     XCTAssertEqual(called_setup_state, 1);
 }
 
-- (void)test_buffer {
-#warning todo
-}
-
 @end
