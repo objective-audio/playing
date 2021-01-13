@@ -9,17 +9,11 @@
 using namespace yas;
 using namespace yas::playing;
 
-@interface yas_playing_path_utils_tests : XCTestCase
+@interface yas_playing_path_tests : XCTestCase
 
 @end
 
-@implementation yas_playing_path_utils_tests
-
-- (void)setUp {
-}
-
-- (void)tearDown {
-}
+@implementation yas_playing_path_tests
 
 - (void)test_timeline {
     path::timeline tl_path{"/root", "0", 48000};
