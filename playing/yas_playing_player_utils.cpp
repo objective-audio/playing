@@ -11,10 +11,6 @@
 using namespace yas;
 using namespace yas::playing;
 
-sample_rate_t player_utils::fragment_length(audio::format const &format) {
-    return static_cast<sample_rate_t>(format.sample_rate());
-}
-
 std::optional<fragment_index_t> player_utils::top_fragment_idx(sample_rate_t const frag_length,
                                                                frame_index_t const frame) {
     if (frag_length > 0) {
