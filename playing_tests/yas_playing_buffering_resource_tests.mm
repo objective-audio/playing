@@ -68,7 +68,7 @@ struct cpp {
         std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
+            buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -92,7 +92,7 @@ struct cpp {
         std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
+            buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -141,7 +141,7 @@ struct cpp {
     std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
+        buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
@@ -181,7 +181,7 @@ struct cpp {
     std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        buffering_test::element_count, test_utils::root_path(), test_utils::identifier(),
+        buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
