@@ -205,20 +205,20 @@ bool buffering_resource::write_elements_if_needed_on_task() {
     return is_loaded;
 }
 
-void buffering_resource::overwrite_element_on_render(element_address const &index) {
+void buffering_resource::overwrite_element_on_render(element_address const &address) {
     if (this->_rendering_state.load() != rendering_state_t::advancing) {
         throw std::runtime_error("state is not advancing.");
     }
 
-    if (index.file_channel_index.has_value()) {
+    if (address.file_channel_index.has_value()) {
         if (auto const out_ch_idx =
-                this->_ch_mapping->out_index(index.file_channel_index.value(), this->_channels.size());
+                this->_ch_mapping->out_index(address.file_channel_index.value(), this->_channels.size());
             out_ch_idx.has_value()) {
-            this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(index.fragment_index);
+            this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(address.fragment_range);
         }
     } else {
         for (auto const &channel : this->_channels) {
-            channel->overwrite_element_on_render(index.fragment_index);
+            channel->overwrite_element_on_render(address.fragment_range);
         }
     }
 }

@@ -13,7 +13,7 @@ struct buffering_channel final : buffering_channel_protocol {
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
 
     void advance_on_render(fragment_index_t const prev_frag_idx) override;
-    void overwrite_element_on_render(fragment_index_t const) override;
+    void overwrite_element_on_render(fragment_range const) override;
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, frame_index_t const) override;
 
     [[nodiscard]] std::vector<buffering_element_protocol_ptr> const &elements_for_test() const;

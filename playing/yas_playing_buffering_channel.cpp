@@ -49,9 +49,10 @@ void buffering_channel::advance_on_render(fragment_index_t const frag_idx) {
     }
 }
 
-void buffering_channel::overwrite_element_on_render(fragment_index_t const frag_idx) {
+void buffering_channel::overwrite_element_on_render(fragment_range const range) {
     for (auto const &element : this->_elements) {
-        if (element->fragment_index_on_render() == frag_idx) {
+        auto const frag_idx = element->fragment_index_on_render();
+        if (range.contains(frag_idx)) {
             element->overwrite_on_render();
         }
     }

@@ -15,9 +15,22 @@ using module_index_t = proc::module_index_t;
 using length_t = proc::length_t;
 using sample_rate_t = proc::sample_rate_t;
 
+struct fragment_range {
+    fragment_index_t index;
+    length_t length;
+
+    fragment_index_t end_index() const {
+        return this->index + static_cast<fragment_index_t>(this->length);
+    }
+
+    bool contains(fragment_index_t const idx) const {
+        return this->index <= idx && idx < this->end_index();
+    }
+};
+
 struct element_address {
     std::optional<channel_index_t> file_channel_index;  // nulloptは全ch
-    fragment_index_t fragment_index;
+    fragment_range fragment_range;
 };
 
 enum class sample_store_type : char {

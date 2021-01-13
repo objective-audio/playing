@@ -14,7 +14,7 @@ struct player final : playable {
     void set_channel_mapping(channel_mapping_ptr const &) override;
     void set_playing(bool const) override;
     void seek(frame_index_t const) override;
-    void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_index_t const) override;
+    void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_range const) override;
 
     [[nodiscard]] channel_mapping_ptr const &channel_mapping() const override;
     [[nodiscard]] bool is_playing() const override;

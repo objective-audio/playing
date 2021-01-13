@@ -224,10 +224,20 @@ static buffering_element_ptr cast_to_buffering_element(buffering_element_protoco
 
     auto const channel = buffering_channel::make_shared({element0, element1});
 
-    channel->overwrite_element_on_render(1);
+    channel->overwrite_element_on_render({0, 1});
 
-    XCTAssertEqual(called0, 0);
+    XCTAssertEqual(called0, 1);
+    XCTAssertEqual(called1, 0);
+
+    channel->overwrite_element_on_render({1, 1});
+
+    XCTAssertEqual(called0, 1);
     XCTAssertEqual(called1, 1);
+
+    channel->overwrite_element_on_render({0, 2});
+
+    XCTAssertEqual(called0, 2);
+    XCTAssertEqual(called1, 2);
 }
 
 - (void)test_read_into_buffer {
