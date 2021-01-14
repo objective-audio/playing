@@ -22,7 +22,7 @@
 		B6DCC493229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC482229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm */; };
 		B6DCC494229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */; };
 		B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */; };
-		B6DCC496229AB1CE007F88B7 /* yas_playing_path_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */; };
+		B6DCC496229AB1CE007F88B7 /* yas_playing_path_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC486229AB1CD007F88B7 /* yas_playing_path_tests.mm */; };
 		B6DCC497229AB1CE007F88B7 /* yas_playing_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */; };
 		B6DCC498229AB1CE007F88B7 /* yas_playing_exporter_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC488229AB1CD007F88B7 /* yas_playing_exporter_tests.mm */; };
 		B6DCC49A229AB1CE007F88B7 /* yas_playing_test_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC48A229AB1CD007F88B7 /* yas_playing_test_utils_tests.mm */; };
@@ -59,7 +59,7 @@
 		B6DCC482229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_exporter_chain_tests.mm; sourceTree = "<group>"; };
 		B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_player_utils_tests.mm; sourceTree = "<group>"; };
 		B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_canceling_tests.mm; sourceTree = "<group>"; };
-		B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_path_utils_tests.mm; sourceTree = "<group>"; };
+		B6DCC486229AB1CD007F88B7 /* yas_playing_path_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_path_tests.mm; sourceTree = "<group>"; };
 		B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_math_tests.mm; sourceTree = "<group>"; };
 		B6DCC488229AB1CD007F88B7 /* yas_playing_exporter_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_exporter_tests.mm; sourceTree = "<group>"; };
 		B6DCC48A229AB1CD007F88B7 /* yas_playing_test_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_test_utils_tests.mm; sourceTree = "<group>"; };
@@ -134,7 +134,7 @@
 				B6F7998625ADD8390065127D /* yas_playing_fragment_range_tests.mm */,
 				B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */,
 				B6DCC47D229AB1CD007F88B7 /* yas_playing_numbers_file_tests.mm */,
-				B6DCC486229AB1CD007F88B7 /* yas_playing_path_utils_tests.mm */,
+				B6DCC486229AB1CD007F88B7 /* yas_playing_path_tests.mm */,
 				B67E94782598B5960040D431 /* yas_playing_player_buffering_tests.mm */,
 				B67E94762598B5960040D431 /* yas_playing_player_reading_tests.mm */,
 				B67E94752598B5960040D431 /* yas_playing_player_rendering_tests.mm */,
@@ -260,7 +260,7 @@
 				B6DCC494229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm in Sources */,
 				B684BBBE25569D8800AB537B /* yas_playing_reading_tests.mm in Sources */,
 				B6F490EB25A9D90600E229FA /* yas_playing_coordinator_tests.mm in Sources */,
-				B6DCC496229AB1CE007F88B7 /* yas_playing_path_utils_tests.mm in Sources */,
+				B6DCC496229AB1CE007F88B7 /* yas_playing_path_tests.mm in Sources */,
 				B6B30F9825596C2A0022D37A /* yas_playing_buffering_channel_tests.mm in Sources */,
 				B67E94792598B5960040D431 /* yas_playing_player_rendering_tests.mm in Sources */,
 				B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */,

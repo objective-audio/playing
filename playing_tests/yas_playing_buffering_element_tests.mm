@@ -385,4 +385,10 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
     }}.join();
 }
 
+- (void)test_state_to_string {
+    XCTAssertEqual(to_string(audio_buffering_element_state::initial), "initial");
+    XCTAssertEqual(to_string(audio_buffering_element_state::writable), "writable");
+    XCTAssertEqual(to_string(audio_buffering_element_state::readable), "readable");
+}
+
 @end

@@ -14,10 +14,6 @@ std::string test_utils::root_path() {
     return file_path{path}.appending("yas_playing_test_root").string();
 }
 
-std::string test_utils::identifier() {
-    return "0";
-}
-
 proc::timeline_ptr test_utils::test_timeline(int64_t const offset, uint32_t const ch_count) {
     proc::timeline_ptr timeline = proc::timeline::make_shared();
     track_index_t trk_idx = 0;

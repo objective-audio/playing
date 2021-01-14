@@ -8,7 +8,6 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing::player_utils {
-sample_rate_t fragment_length(audio::format const &);
 std::optional<fragment_index_t> top_fragment_idx(sample_rate_t const frag_length, frame_index_t const);
 
 uint32_t process_length(frame_index_t const frame, frame_index_t const next_frame, uint32_t const frag_length);
