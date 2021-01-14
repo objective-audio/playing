@@ -21,11 +21,11 @@ using namespace yas;
 using namespace yas::playing;
 
 player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
-               task_priority_t const &priority, player_resource_protocol_ptr const &rendering)
+               task_priority_t const &priority, player_resource_protocol_ptr const &resource)
     : _renderer(renderer),
       _worker(worker),
       _priority(priority),
-      _resource(rendering),
+      _resource(resource),
       _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())) {
     if (priority.rendering <= priority.setup) {
         throw std::invalid_argument("invalid priority");
@@ -288,6 +288,6 @@ chaining::chain_sync_t<bool> player::is_playing_chain() const {
 }
 
 player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
-                               task_priority_t const &priority, player_resource_protocol_ptr const &rendering) {
-    return player_ptr(new player{root_path, renderer, worker, priority, rendering});
+                               task_priority_t const &priority, player_resource_protocol_ptr const &resource) {
+    return player_ptr(new player{root_path, renderer, worker, priority, resource});
 }

@@ -23,7 +23,7 @@ using namespace yas::playing;
     self->_cpp.skip_buffering_rendering();
 
     auto const &buffering = self->_cpp.buffering;
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
@@ -34,19 +34,19 @@ using namespace yas::playing;
     std::optional<frame_index_t> seek_frame = 300;
     auto ch_mapping = channel_mapping::make_shared({13, 14, 15});
 
-    rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
-    rendering->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
+    resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
+    resource->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
         called_set_current_frame.emplace_back(frame);
     };
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
                                                                    std::optional<channel_mapping_ptr> &&ch_mapping) {
         called_set_all_writing.emplace_back(frame, ch_mapping);
     };
-    rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
+    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
@@ -69,7 +69,7 @@ using namespace yas::playing;
     self->_cpp.skip_buffering_rendering();
 
     auto const &buffering = self->_cpp.buffering;
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
@@ -82,12 +82,12 @@ using namespace yas::playing;
     std::optional<frame_index_t> seek_frame = std::nullopt;
     std::optional<channel_mapping_ptr> ch_mapping = channel_mapping::make_shared({16, 17, 18});
 
-    rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
-    rendering->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
+    resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
+    resource->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->current_frame_handler = [&called_current_frame, &current_frame] {
+    resource->current_frame_handler = [&called_current_frame, &current_frame] {
         ++called_current_frame;
         return current_frame;
     };
@@ -95,7 +95,7 @@ using namespace yas::playing;
                                                                    std::optional<channel_mapping_ptr> &&ch_mapping) {
         called_set_all_writing.emplace_back(frame, ch_mapping);
     };
-    rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
+    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
@@ -116,17 +116,17 @@ using namespace yas::playing;
 
     self->_cpp.skip_ch_mapping();
 
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     std::vector<player_test::resource::overwrite_requests_f> called_perform;
     std::size_t called_is_playing = 0;
 
-    rendering->perform_overwrite_requests_handler =
+    resource->perform_overwrite_requests_handler =
         [&called_perform](player_test::resource::overwrite_requests_f const &handler) {
             called_perform.emplace_back(handler);
         };
 
-    rendering->is_playing_handler = [&called_is_playing] {
+    resource->is_playing_handler = [&called_is_playing] {
         ++called_is_playing;
         return false;
     };
@@ -142,16 +142,16 @@ using namespace yas::playing;
 
     self->_cpp.skip_ch_mapping();
 
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
     auto const &reading = self->_cpp.reading;
 
     bool is_playing = false;
     std::size_t called_is_playing = 0;
     std::size_t called_buffer = 0;
 
-    rendering->perform_overwrite_requests_handler = [](player_test::resource::overwrite_requests_f const &) {};
+    resource->perform_overwrite_requests_handler = [](player_test::resource::overwrite_requests_f const &) {};
 
-    rendering->is_playing_handler = [&is_playing, &called_is_playing] {
+    resource->is_playing_handler = [&is_playing, &called_is_playing] {
         ++called_is_playing;
         return is_playing;
     };

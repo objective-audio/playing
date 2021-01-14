@@ -27,18 +27,18 @@ using namespace yas::playing;
     auto const renderer = std::make_shared<player_test::renderer>();
     auto const reading = std::make_shared<player_test::reading>();
     auto const buffering = std::make_shared<player_test::buffering>();
-    auto const rendering = std::make_shared<player_test::resource>(reading, buffering);
+    auto const resource = std::make_shared<player_test::resource>(reading, buffering);
 
     std::vector<channel_mapping_ptr> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;
     std::vector<renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
 
-    rendering->set_ch_mapping_handler = [&called_set_ch_mapping](channel_mapping_ptr const &ch_mapping) {
+    resource->set_ch_mapping_handler = [&called_set_ch_mapping](channel_mapping_ptr const &ch_mapping) {
         called_set_ch_mapping.emplace_back(ch_mapping);
     };
 
-    rendering->set_playing_handler = [&called_set_is_playing](bool is_playing) {
+    resource->set_playing_handler = [&called_set_is_playing](bool is_playing) {
         called_set_is_playing.emplace_back(is_playing);
     };
 
@@ -50,7 +50,7 @@ using namespace yas::playing;
         called_set_is_rendering.emplace_back(is_rendering);
     };
 
-    auto const player = player::make_shared(test_utils::root_path(), renderer, worker, priority, rendering);
+    auto const player = player::make_shared(test_utils::root_path(), renderer, worker, priority, resource);
 
     XCTAssertEqual(called_set_ch_mapping.size(), 1);
     XCTAssertEqual(called_set_ch_mapping.at(0)->indices.size(), 0);

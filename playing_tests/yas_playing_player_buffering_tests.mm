@@ -104,7 +104,7 @@ using namespace yas::playing;
     self->_cpp.skip_buffering_setup();
 
     auto const &buffering = self->_cpp.buffering;
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
@@ -117,12 +117,12 @@ using namespace yas::playing;
     auto ch_mapping = channel_mapping::make_shared({10, 11, 12});
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::waiting; };
-    rendering->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
-    rendering->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
+    resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
+    resource->pull_seek_frame_handler = [&seek_frame, &called_pull_seek] {
         ++called_pull_seek;
         return seek_frame;
     };
-    rendering->current_frame_handler = [&called_current_frame, &current_frame] {
+    resource->current_frame_handler = [&called_current_frame, &current_frame] {
         ++called_current_frame;
         return current_frame;
     };
@@ -130,7 +130,7 @@ using namespace yas::playing;
                                                                    std::optional<channel_mapping_ptr> &&ch_mapping) {
         called_set_all_writing.emplace_back(frame, ch_mapping);
     };
-    rendering->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
+    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
@@ -168,12 +168,12 @@ using namespace yas::playing;
     self->_cpp.skip_buffering_setup();
 
     auto const &buffering = self->_cpp.buffering;
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     bool called_pull_seek = false;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::all_writing; };
-    rendering->pull_seek_frame_handler = [&called_pull_seek] {
+    resource->pull_seek_frame_handler = [&called_pull_seek] {
         called_pull_seek = true;
         return std::nullopt;
     };
@@ -189,19 +189,19 @@ using namespace yas::playing;
     self->_cpp.skip_buffering_setup();
 
     auto const &buffering = self->_cpp.buffering;
-    auto const &rendering = self->_cpp.resource;
+    auto const &resource = self->_cpp.resource;
 
     std::size_t called_pull_seek = 0;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::advancing; };
-    rendering->reset_overwrite_requests_handler = [] {};
-    rendering->pull_seek_frame_handler = [&called_pull_seek] {
+    resource->reset_overwrite_requests_handler = [] {};
+    resource->pull_seek_frame_handler = [&called_pull_seek] {
         ++called_pull_seek;
         return 0;
     };
-    rendering->set_current_frame_handler = [](frame_index_t frame) {};
+    resource->set_current_frame_handler = [](frame_index_t frame) {};
     buffering->set_all_writing_handler = [](frame_index_t frame, std::optional<channel_mapping_ptr> &&ch_mapping) {};
-    rendering->pull_ch_mapping_handler = [] { return std::nullopt; };
+    resource->pull_ch_mapping_handler = [] { return std::nullopt; };
 
     self->_cpp.rendering_handler(&buffer);
 
