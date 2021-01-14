@@ -20,9 +20,8 @@
 using namespace yas;
 using namespace yas::playing;
 
-player::player(std::string const &root_path, std::string const &identifier, renderable_ptr const &renderer,
-               workable_ptr const &worker, task_priority_t const &priority,
-               player_resource_protocol_ptr const &rendering)
+player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
+               task_priority_t const &priority, player_resource_protocol_ptr const &rendering)
     : _renderer(renderer),
       _worker(worker),
       _priority(priority),
@@ -288,8 +287,7 @@ chaining::chain_sync_t<bool> player::is_playing_chain() const {
     return this->_is_playing->chain();
 }
 
-player_ptr player::make_shared(std::string const &root_path, std::string const &identifier,
-                               renderable_ptr const &renderer, workable_ptr const &worker,
+player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
                                task_priority_t const &priority, player_resource_protocol_ptr const &rendering) {
-    return player_ptr(new player{root_path, identifier, renderer, worker, priority, rendering});
+    return player_ptr(new player{root_path, renderer, worker, priority, rendering});
 }
