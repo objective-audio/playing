@@ -62,6 +62,27 @@ using namespace yas::playing;
     XCTAssertTrue(called_set_is_rendering.at(0));
 }
 
+- (void)test_set_identifier {
+    self->_cpp.setup_initial();
+
+    auto const &player = self->_cpp.player;
+
+    std::vector<std::string> called;
+
+    self->_cpp.resource->set_identifier_handler = [&called](std::string const &identifier) {
+        called.emplace_back(identifier);
+    };
+
+    XCTAssertEqual(player->identifier(), test_utils::identifier);
+
+    player->set_identifier("123");
+
+    XCTAssertEqual(player->identifier(), "123");
+
+    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called.at(0), "123");
+}
+
 - (void)test_set_ch_mapping {
     self->_cpp.setup_initial();
 
