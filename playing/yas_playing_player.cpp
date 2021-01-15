@@ -164,36 +164,30 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
                 frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
                 buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render(),
                                                      resource->pull_identifier_on_render());
-            }
                 return;
+            }
             case buffering_resource::rendering_state_t::all_writing:
                 // task側で書き込み中
                 return;
-            case buffering_resource::rendering_state_t::advancing:
+            case buffering_resource::rendering_state_t::advancing: {
                 // 全バッファ書き込み済み
-                break;
-        }
 
-        // シークされたかチェック
-        if (auto const seek_frame = resource->pull_seek_frame_on_render(); seek_frame.has_value()) {
-            // 全バッファ再書き込み開始
-            resource->reset_overwrite_requests_on_render();
-            auto const &frame = seek_frame.value();
-            resource->set_current_frame_on_render(frame);
-            buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render(),
-                                                 resource->pull_identifier_on_render());
-            return;
-        }
+                // シークされたか、チャンネルマッピングかIdentifierが変更されたかチェック
+                auto const seek_frame = resource->pull_seek_frame_on_render();
+                auto ch_mapping = resource->pull_channel_mapping_on_render();
+                auto identifier = resource->pull_identifier_on_render();
 
-        // チャンネルマッピングかIdentifierが変更されたかチェック
-        auto ch_mapping = resource->pull_channel_mapping_on_render();
-        auto identifier = resource->pull_identifier_on_render();
-        if (ch_mapping.has_value() || identifier.has_value()) {
-            // 全バッファ再書き込み開始
-            resource->reset_overwrite_requests_on_render();
-            buffering->set_all_writing_on_render(resource->current_frame(), std::move(ch_mapping),
-                                                 std::move(identifier));
-            return;
+                if (seek_frame.has_value() || ch_mapping.has_value() || identifier.has_value()) {
+                    // 全バッファ再書き込み開始
+                    resource->reset_overwrite_requests_on_render();
+                    auto const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
+                    if (seek_frame.has_value()) {
+                        resource->set_current_frame_on_render(frame);
+                    }
+                    buffering->set_all_writing_on_render(frame, std::move(ch_mapping), std::move(identifier));
+                    return;
+                }
+            } break;
         }
 
         // bufferingの要素の上書き
