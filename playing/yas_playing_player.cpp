@@ -162,6 +162,9 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
                 resource->reset_overwrite_requests_on_render();
                 auto const seek_frame = resource->pull_seek_frame_on_render();
                 frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
+                if (seek_frame.has_value()) {
+                    resource->set_current_frame_on_render(frame);
+                }
                 buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render(),
                                                      resource->pull_identifier_on_render());
                 return;

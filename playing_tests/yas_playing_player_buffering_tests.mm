@@ -127,6 +127,8 @@ using namespace yas::playing;
         ++called_current_frame;
         return current_frame;
     };
+#warning todo
+    resource->set_current_frame_handler = [](frame_index_t frame) {};
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
                                                                    std::optional<channel_mapping_ptr> &&ch_mapping,
                                                                    std::optional<std::string> &&identifier) {
