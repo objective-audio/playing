@@ -27,6 +27,10 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
       _priority(priority),
       _resource(resource),
       _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())) {
+    using reading_state_t = reading_resource::state_t;
+    using rendering_state_t = buffering_resource::rendering_state_t;
+    using setup_state_t = buffering_resource::setup_state_t;
+
     if (priority.rendering <= priority.setup) {
         throw std::invalid_argument("invalid priority");
     }
@@ -39,14 +43,14 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
 
         auto result = worker::task_result::unprocessed;
 
-        if (reading->state() == reading_resource::state_t::creating) {
+        if (reading->state() == reading_state_t::creating) {
             reading->create_buffer_on_task();
             std::this_thread::yield();
             result = worker::task_result::processed;
             std::this_thread::yield();
         }
 
-        if (buffering->setup_state() == buffering_resource::setup_state_t::creating) {
+        if (buffering->setup_state() == setup_state_t::creating) {
             buffering->create_buffer_on_task();
             std::this_thread::yield();
             result = worker::task_result::processed;
@@ -59,12 +63,12 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
     worker->add_task(priority.rendering, [buffering = this->_resource->buffering()] {
 #warning 細かく処理を分ける&他のステートを見て途中でやめる
         switch (buffering->rendering_state()) {
-            case buffering_resource::rendering_state_t::waiting:
+            case rendering_state_t::waiting:
                 return worker::task_result::unprocessed;
-            case buffering_resource::rendering_state_t::all_writing:
+            case rendering_state_t::all_writing:
                 buffering->write_all_elements_on_task();
                 return worker::task_result::processed;
-            case buffering_resource::rendering_state_t::advancing:
+            case rendering_state_t::advancing:
                 if (buffering->write_elements_if_needed_on_task()) {
                     return worker::task_result::processed;
                 } else {
@@ -113,14 +117,14 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
         // reading_resourceのセットアップ
 
         switch (reading->state()) {
-            case reading_resource::state_t::initial:
+            case reading_state_t::initial:
                 // 初期状態なのでバッファ生成開始
                 reading->set_creating_on_render(sample_rate, pcm_format, out_length);
                 return;
-            case reading_resource::state_t::creating:
+            case reading_state_t::creating:
                 // task側で生成中
                 return;
-            case reading_resource::state_t::rendering:
+            case reading_state_t::rendering:
                 // バッファ生成済み
                 break;
         }
@@ -135,14 +139,14 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
         // buffering_resourceのセットアップ
 
         switch (buffering->setup_state()) {
-            case buffering_resource::setup_state_t::initial:
+            case setup_state_t::initial:
                 // 初期状態なのでバッファ生成開始
                 buffering->set_creating_on_render(sample_rate, pcm_format, out_ch_count);
                 return;
-            case buffering_resource::setup_state_t::creating:
+            case setup_state_t::creating:
                 // task側で生成中
                 return;
-            case buffering_resource::setup_state_t::rendering:
+            case setup_state_t::rendering:
                 // バッファ生成済み
                 break;
         }
@@ -155,32 +159,22 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
         }
 
         // bufferingバッファへの書き込み
-
-        switch (buffering->rendering_state()) {
-            case buffering_resource::rendering_state_t::waiting: {
-                // 書き込み待機状態なので全バッファ書き込み開始
-                resource->reset_overwrite_requests_on_render();
-                auto const seek_frame = resource->pull_seek_frame_on_render();
-                frame_index_t const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
-                if (seek_frame.has_value()) {
-                    resource->set_current_frame_on_render(frame);
-                }
-                buffering->set_all_writing_on_render(frame, resource->pull_channel_mapping_on_render(),
-                                                     resource->pull_identifier_on_render());
-                return;
-            }
-            case buffering_resource::rendering_state_t::all_writing:
+        auto const rendering_state = buffering->rendering_state();
+        switch (rendering_state) {
+            case rendering_state_t::all_writing:
                 // task側で書き込み中
                 return;
-            case buffering_resource::rendering_state_t::advancing: {
+            case rendering_state_t::waiting:
+                // 書き込み待機状態
+                [[fallthrough]];
+            case rendering_state_t::advancing: {
                 // 全バッファ書き込み済み
-
-                // シークされたか、チャンネルマッピングかIdentifierが変更されたかチェック
                 auto const seek_frame = resource->pull_seek_frame_on_render();
                 auto ch_mapping = resource->pull_channel_mapping_on_render();
                 auto identifier = resource->pull_identifier_on_render();
 
-                if (seek_frame.has_value() || ch_mapping.has_value() || identifier.has_value()) {
+                if (rendering_state == rendering_state_t::waiting || seek_frame.has_value() || ch_mapping.has_value() ||
+                    identifier.has_value()) {
                     // 全バッファ再書き込み開始
                     resource->reset_overwrite_requests_on_render();
                     auto const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
