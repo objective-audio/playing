@@ -43,7 +43,6 @@ struct buffering_resource final : buffering_resource_protocol {
    private:
     std::size_t const _element_count;
     std::string const _root_path;
-    std::string const _identifier;
     make_channel_f const _make_channel_handler;
 
     std::atomic<setup_state_t> _setup_state{setup_state_t::initial};
@@ -57,6 +56,7 @@ struct buffering_resource final : buffering_resource_protocol {
     std::atomic<rendering_state_t> _rendering_state{rendering_state_t::waiting};
     frame_index_t _all_writing_frame = 0;
     channel_mapping_ptr _ch_mapping;
+    std::string _identifier;
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 
