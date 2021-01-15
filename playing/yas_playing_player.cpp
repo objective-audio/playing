@@ -28,7 +28,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
       _priority(priority),
       _resource(resource),
       _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())),
-      _identifier(identifier) {
+      _id_holder(chaining::value::holder<std::string>::make_shared(identifier)) {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
     using setup_state_t = buffering_resource::setup_state_t;
@@ -254,7 +254,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
 }
 
 void player::set_identifier(std::string const &identifier) {
-    this->_identifier = identifier;
+    this->_id_holder->set_value(identifier);
     this->_resource->set_identifier_on_main(identifier);
 }
 
@@ -275,7 +275,7 @@ void player::overwrite(std::optional<channel_index_t> const file_ch_idx, fragmen
 }
 
 std::string const &player::identifier() const {
-    return this->_identifier;
+    return this->_id_holder->raw();
 }
 
 channel_mapping_ptr const &player::channel_mapping() const {
