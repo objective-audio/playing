@@ -249,8 +249,9 @@ struct cpp {
     }
 
     void setup_initial() {
-        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &ch_mapping) {};
-        this->resource->set_playing_handler = [](bool is_playing) {};
+        this->resource->set_identifier_handler = [](std::string const &) {};
+        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &) {};
+        this->resource->set_playing_handler = [](bool) {};
         this->renderer->set_rendering_handler_handler = [this](renderable::rendering_f &&handler) {
             this->rendering_handler = std::move(handler);
         };

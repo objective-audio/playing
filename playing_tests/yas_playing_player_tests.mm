@@ -29,10 +29,15 @@ using namespace yas::playing;
     auto const buffering = std::make_shared<player_test::buffering>();
     auto const resource = std::make_shared<player_test::resource>(reading, buffering);
 
+    std::vector<std::string> called_set_identifier;
     std::vector<channel_mapping_ptr> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;
     std::vector<renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
+
+    resource->set_identifier_handler = [&called_set_identifier](std::string const &identifier) {
+        called_set_identifier.emplace_back(identifier);
+    };
 
     resource->set_ch_mapping_handler = [&called_set_ch_mapping](channel_mapping_ptr const &ch_mapping) {
         called_set_ch_mapping.emplace_back(ch_mapping);
@@ -53,6 +58,8 @@ using namespace yas::playing;
     auto const player =
         player::make_shared(test_utils::root_path(), test_utils::identifier, renderer, worker, priority, resource);
 
+    XCTAssertEqual(called_set_identifier.size(), 1);
+    XCTAssertEqual(called_set_identifier.at(0), test_utils::identifier);
     XCTAssertEqual(called_set_ch_mapping.size(), 1);
     XCTAssertEqual(called_set_ch_mapping.at(0)->indices.size(), 0);
     XCTAssertEqual(called_set_is_playing.size(), 1);

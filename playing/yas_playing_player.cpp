@@ -242,7 +242,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
 
     this->_identifier->chain()
         .perform([this](auto const &identifier) { this->_resource->set_identifier_on_main(identifier); })
-        .end()
+        .sync()
         ->add_to(this->_pool);
 
     this->_ch_mapping->chain()
