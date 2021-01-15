@@ -112,10 +112,13 @@ using namespace yas::playing;
     std::vector<std::tuple<frame_index_t, std::optional<channel_mapping_ptr>, std::optional<std::string>>>
         called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
+    std::size_t called_pull_identifier = 0;
+    std::vector<frame_index_t> called_set_current_frame;
 
     frame_index_t current_frame = 100;
     std::optional<frame_index_t> seek_frame = std::nullopt;
     auto ch_mapping = channel_mapping::make_shared({10, 11, 12});
+    std::string identifier = "234";
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::waiting; };
     resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
@@ -127,8 +130,9 @@ using namespace yas::playing;
         ++called_current_frame;
         return current_frame;
     };
-#warning todo
-    resource->set_current_frame_handler = [](frame_index_t frame) {};
+    resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
+        called_set_current_frame.emplace_back(frame);
+    };
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
                                                                    std::optional<channel_mapping_ptr> &&ch_mapping,
                                                                    std::optional<std::string> &&identifier) {
@@ -138,8 +142,10 @@ using namespace yas::playing;
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
-#warning todo
-    resource->pull_identifier_handler = [] { return std::nullopt; };
+    resource->pull_identifier_handler = [&called_pull_identifier, &identifier] {
+        ++called_pull_identifier;
+        return identifier;
+    };
 
     // seek_frameなし
 
@@ -152,7 +158,10 @@ using namespace yas::playing;
     XCTAssertEqual(std::get<0>(called_set_all_writing.at(0)), 100);
     XCTAssertEqual(std::get<1>(called_set_all_writing.at(0)).value()->indices,
                    (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(std::get<2>(called_set_all_writing.at(0)), "234");
     XCTAssertEqual(called_pull_ch_mapping, 1);
+    XCTAssertEqual(called_pull_identifier, 1);
+    XCTAssertEqual(called_set_current_frame.size(), 0);
 
     // seek_frameあり
 
@@ -167,7 +176,11 @@ using namespace yas::playing;
     XCTAssertEqual(std::get<0>(called_set_all_writing.at(1)), 200);
     XCTAssertEqual(std::get<1>(called_set_all_writing.at(1)).value()->indices,
                    (std::vector<channel_index_t>{10, 11, 12}));
+    XCTAssertEqual(std::get<2>(called_set_all_writing.at(1)), "234");
     XCTAssertEqual(called_pull_ch_mapping, 2);
+    XCTAssertEqual(called_pull_identifier, 2);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
+    XCTAssertEqual(called_set_current_frame.at(0), 200);
 }
 
 - (void)test_rendering_state_all_writing {
