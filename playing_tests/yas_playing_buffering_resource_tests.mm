@@ -112,7 +112,7 @@ struct cpp {
                                                                                fragment_index_t const) {};
         }
 
-        std::thread{[&buffering] { buffering->set_all_writing_on_render(0, std::nullopt); }}.join();
+        std::thread{[&buffering] { buffering->set_all_writing_on_render(0, std::nullopt, std::nullopt); }}.join();
 
         std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
@@ -203,7 +203,7 @@ struct cpp {
     XCTAssertEqual(buffering->setup_state(), audio_buffering_setup_state::rendering);
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::waiting);
 
-    buffering->set_all_writing_on_render(0, std::nullopt);
+    buffering->set_all_writing_on_render(0, std::nullopt, std::nullopt);
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
 
@@ -211,7 +211,7 @@ struct cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
-    buffering->set_all_writing_on_render(20, std::nullopt);
+    buffering->set_all_writing_on_render(20, std::nullopt, std::nullopt);
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
 }
@@ -246,7 +246,7 @@ struct cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::waiting);
 
-    buffering->set_all_writing_on_render(100, std::nullopt);
+    buffering->set_all_writing_on_render(100, std::nullopt, std::nullopt);
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 100);
@@ -260,7 +260,7 @@ struct cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
-    buffering->set_all_writing_on_render(200, channel_mapping::make_shared({1, 0}));
+    buffering->set_all_writing_on_render(200, channel_mapping::make_shared({1, 0}), std::nullopt);
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 200);
@@ -362,7 +362,7 @@ struct cpp {
         called_channel_1.emplace_back(ch_path, top_frag_idx);
     };
 
-    buffering->set_all_writing_on_render(0, std::nullopt);
+    buffering->set_all_writing_on_render(0, std::nullopt, std::nullopt);
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
 
@@ -381,7 +381,7 @@ struct cpp {
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
     std::thread{[&buffering] {
-        buffering->set_all_writing_on_render(10, channel_mapping::make_shared({1, 0}));
+        buffering->set_all_writing_on_render(10, channel_mapping::make_shared({1, 0}), std::nullopt);
     }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
@@ -392,7 +392,7 @@ struct cpp {
     XCTAssertEqual(called_channel_1.at(1).first, buffering_test::channel_path(0));
     XCTAssertEqual(called_channel_1.at(1).second, 2);
 
-    std::thread{[&buffering] { buffering->set_all_writing_on_render(20, std::nullopt); }}.join();
+    std::thread{[&buffering] { buffering->set_all_writing_on_render(20, std::nullopt, std::nullopt); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 3);
@@ -440,7 +440,9 @@ struct cpp {
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
 
-    std::thread{[&buffering] { buffering->set_all_writing_on_render(0, channel_mapping::make_shared({2, 3})); }}.join();
+    std::thread{[&buffering] {
+        buffering->set_all_writing_on_render(0, channel_mapping::make_shared({2, 3}), std::nullopt);
+    }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called0.size(), 1);

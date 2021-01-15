@@ -28,7 +28,8 @@ using namespace yas::playing;
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
     std::vector<frame_index_t> called_set_current_frame;
-    std::vector<std::pair<frame_index_t, std::optional<channel_mapping_ptr>>> called_set_all_writing;
+    std::vector<std::tuple<frame_index_t, std::optional<channel_mapping_ptr>, std::optional<std::string>>>
+        called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
 
     std::optional<frame_index_t> seek_frame = 300;
@@ -43,13 +44,16 @@ using namespace yas::playing;
         called_set_current_frame.emplace_back(frame);
     };
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
-                                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
-        called_set_all_writing.emplace_back(frame, ch_mapping);
+                                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
+                                                                   std::optional<std::string> &&identifier) {
+        called_set_all_writing.emplace_back(frame, ch_mapping, identifier);
     };
     resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
+#warning todo
+    resource->pull_identifier_handler = [] { return std::nullopt; };
 
     self->_cpp.rendering_handler(&buffer);
 
@@ -59,8 +63,9 @@ using namespace yas::playing;
     XCTAssertEqual(called_set_current_frame.at(0), 300);
     XCTAssertEqual(called_pull_ch_mapping, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
-    XCTAssertEqual(called_set_all_writing.at(0).first, 300);
-    XCTAssertEqual(called_set_all_writing.at(0).second.value()->indices, (std::vector<channel_index_t>{13, 14, 15}));
+    XCTAssertEqual(std::get<0>(called_set_all_writing.at(0)), 300);
+    XCTAssertEqual(std::get<1>(called_set_all_writing.at(0)).value()->indices,
+                   (std::vector<channel_index_t>{13, 14, 15}));
 }
 
 - (void)test_pull_ch_mapping {
@@ -75,7 +80,8 @@ using namespace yas::playing;
     std::size_t called_pull_seek = 0;
     std::size_t called_current_frame = 0;
     std::vector<frame_index_t> called_set_current_frame;
-    std::vector<std::pair<frame_index_t, std::optional<channel_mapping_ptr>>> called_set_all_writing;
+    std::vector<std::tuple<frame_index_t, std::optional<channel_mapping_ptr>, std::optional<std::string>>>
+        called_set_all_writing;
     std::size_t called_pull_ch_mapping = 0;
 
     frame_index_t current_frame = 400;
@@ -92,13 +98,16 @@ using namespace yas::playing;
         return current_frame;
     };
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
-                                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
-        called_set_all_writing.emplace_back(frame, ch_mapping);
+                                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
+                                                                   std::optional<std::string> &&identifier) {
+        called_set_all_writing.emplace_back(frame, std::move(ch_mapping), std::move(identifier));
     };
     resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
         ++called_pull_ch_mapping;
         return ch_mapping;
     };
+#warning todo
+    resource->pull_identifier_handler = [] { return std::nullopt; };
 
     self->_cpp.rendering_handler(&buffer);
 
@@ -107,8 +116,9 @@ using namespace yas::playing;
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_pull_ch_mapping, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
-    XCTAssertEqual(called_set_all_writing.at(0).first, 400);
-    XCTAssertEqual(called_set_all_writing.at(0).second.value()->indices, (std::vector<channel_index_t>{16, 17, 18}));
+    XCTAssertEqual(std::get<0>(called_set_all_writing.at(0)), 400);
+    XCTAssertEqual(std::get<1>(called_set_all_writing.at(0)).value()->indices,
+                   (std::vector<channel_index_t>{16, 17, 18}));
 }
 
 - (void)test_perform_overwrite_requests {

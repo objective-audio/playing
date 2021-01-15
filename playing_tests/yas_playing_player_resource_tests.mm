@@ -59,7 +59,8 @@ struct buffering_resource : buffering_resource_protocol {
     void create_buffer_on_task() override {
     }
 
-    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping) override {
+    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
+                                   std::optional<std::string> &&identifier) override {
     }
     void write_all_elements_on_task() override {
     }

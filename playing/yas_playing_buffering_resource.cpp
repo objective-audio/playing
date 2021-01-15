@@ -137,7 +137,9 @@ void buffering_resource::create_buffer_on_task() {
 }
 
 void buffering_resource::set_all_writing_on_render(frame_index_t const frame,
-                                                   std::optional<channel_mapping_ptr> &&ch_mapping) {
+                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
+                                                   std::optional<std::string> &&identifier) {
+#warning todo identifier
     if (this->_rendering_state.load() == rendering_state_t::all_writing) {
         throw std::runtime_error("state is already all_writing.");
     }
