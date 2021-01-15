@@ -47,8 +47,9 @@ coordinator::coordinator(std::string const &identifier, workable_ptr const &work
     this->_worker->start();
 }
 
-void coordinator::set_timeline(proc::timeline_ptr const &timeline) {
+void coordinator::set_timeline(proc::timeline_ptr const &timeline, std::string const &identifier) {
     this->_timeline = timeline;
+    this->_identifier = identifier;
     this->_update_exporter();
 }
 

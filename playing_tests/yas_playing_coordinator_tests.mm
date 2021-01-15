@@ -69,13 +69,13 @@ using namespace yas::playing;
 
     auto const timeline = proc::timeline::make_shared();
 
-    coordinator->set_timeline(timeline);
+    coordinator->set_timeline(timeline, "1");
 
     XCTAssertEqual(coordinator->timeline(), timeline);
     XCTAssertEqual(called.size(), 1);
 
     auto const &container = called.at(0);
-    XCTAssertEqual(container->identifier(), coordinator_test::identifier);
+    XCTAssertEqual(container->identifier(), "1");
     XCTAssertEqual(container->timeline(), timeline);
     XCTAssertEqual(container->sample_rate(), 44100);
 }
