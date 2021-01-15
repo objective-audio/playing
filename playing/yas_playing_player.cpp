@@ -79,19 +79,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
         }
     });
 
-    // setup chaining
-
-    this->_ch_mapping->chain()
-        .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
-        .sync()
-        ->add_to(this->_pool);
-
-    this->_is_playing->chain()
-        .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
-        .sync()
-        ->add_to(this->_pool);
-
-    // setup renderable
+    // setup renderer
 
     player_resource::overwrite_requests_f overwrite_requests_handler =
         [buffering = this->_resource->buffering()](player_resource::overwrite_requests_t const &requests) {
@@ -250,12 +238,30 @@ player::player(std::string const &root_path, std::string const &identifier, rend
         }
     });
 
+    // setup chaining
+
+    this->_identifier->chain()
+        .perform([this](auto const &identifier) { this->_resource->set_identifier_on_main(identifier); })
+        .end()
+        ->add_to(this->_pool);
+
+    this->_ch_mapping->chain()
+        .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
+        .sync()
+        ->add_to(this->_pool);
+
+    this->_is_playing->chain()
+        .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
+        .sync()
+        ->add_to(this->_pool);
+
+    // begin rendering
+
     this->_renderer->set_is_rendering(true);
 }
 
 void player::set_identifier(std::string const &identifier) {
     this->_identifier->set_value(identifier);
-    this->_resource->set_identifier_on_main(identifier);
 }
 
 void player::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
