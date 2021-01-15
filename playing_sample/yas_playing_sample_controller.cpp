@@ -70,7 +70,7 @@ void sample::controller::seek_minus_one_sec() {
 void sample::controller::_update_timeline() {
     auto const timeline = this->make_timeline();
     this->_timeline = timeline;
-    this->coordinator->set_timeline(timeline);
+    this->coordinator->set_timeline(timeline, this->identifier);
     this->_update_pi_track();
 }
 
