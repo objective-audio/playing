@@ -258,8 +258,8 @@ struct cpp {
 
         player_task_priority const priority{.setup = 100, .rendering = 101};
 
-        this->player =
-            player::make_shared(test_utils::root_path(), this->renderer, this->worker, priority, this->resource);
+        this->player = player::make_shared(test_utils::root_path(), test_utils::identifier, this->renderer,
+                                           this->worker, priority, this->resource);
     }
 
     void skip_reading() {

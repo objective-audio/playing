@@ -50,7 +50,9 @@ coordinator::coordinator(std::string const &identifier, workable_ptr const &work
 void coordinator::set_timeline(proc::timeline_ptr const &timeline, std::string const &identifier) {
     this->_timeline = timeline;
     this->_identifier = identifier;
+
     this->_update_exporter();
+    this->_player->set_identifier(identifier);
 }
 
 void coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
@@ -128,7 +130,7 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::stri
     auto const worker = worker::make_shared();
 
     auto const player = player::make_shared(
-        root_path, renderer, worker, {},
+        root_path, identifier, renderer, worker, {},
         player_resource::make_shared(
             reading_resource::make_shared(),
             buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)));

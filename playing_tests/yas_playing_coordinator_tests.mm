@@ -62,6 +62,8 @@ using namespace yas::playing;
         called.emplace_back(container);
     };
     self->_cpp.renderer->sample_rate_handler = [] { return 44100; };
+#warning todo
+    self->_cpp.player->set_identifier_handler = [](auto const &identifier) {};
 
     auto chain = self->_cpp.renderer->configuration_chain();
 

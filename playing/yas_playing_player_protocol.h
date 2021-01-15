@@ -18,11 +18,13 @@ struct playable {
 
     virtual ~playable() = default;
 
+    virtual void set_identifier(std::string const &) = 0;
     virtual void set_channel_mapping(channel_mapping_ptr const &) = 0;
     virtual void set_playing(bool const) = 0;
     virtual void seek(frame_index_t const) = 0;
     virtual void overwrite(std::optional<channel_index_t> const, fragment_range const) = 0;
 
+    [[nodiscard]] virtual std::string const &identifier() const = 0;
     [[nodiscard]] virtual channel_mapping_ptr const &channel_mapping() const = 0;
     [[nodiscard]] virtual bool is_playing() const = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;

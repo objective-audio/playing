@@ -20,13 +20,15 @@
 using namespace yas;
 using namespace yas::playing;
 
-player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
-               task_priority_t const &priority, player_resource_protocol_ptr const &resource)
+player::player(std::string const &root_path, std::string const &identifier, renderable_ptr const &renderer,
+               workable_ptr const &worker, task_priority_t const &priority,
+               player_resource_protocol_ptr const &resource)
     : _renderer(renderer),
       _worker(worker),
       _priority(priority),
       _resource(resource),
-      _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())) {
+      _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())),
+      _identifier(identifier) {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
     using setup_state_t = buffering_resource::setup_state_t;
@@ -251,6 +253,11 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
     this->_renderer->set_is_rendering(true);
 }
 
+void player::set_identifier(std::string const &identifier) {
+    this->_identifier = identifier;
+    this->_resource->set_identifier_on_main(identifier);
+}
+
 void player::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
     this->_ch_mapping->set_value(ch_mapping);
 }
@@ -265,6 +272,10 @@ void player::seek(frame_index_t const frame) {
 
 void player::overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_range const frag_range) {
     this->_resource->add_overwrite_request_on_main({.file_channel_index = file_ch_idx, .fragment_range = frag_range});
+}
+
+std::string const &player::identifier() const {
+    return this->_identifier;
 }
 
 channel_mapping_ptr const &player::channel_mapping() const {
@@ -283,7 +294,8 @@ chaining::chain_sync_t<bool> player::is_playing_chain() const {
     return this->_is_playing->chain();
 }
 
-player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
+player_ptr player::make_shared(std::string const &root_path, std::string const &identifier,
+                               renderable_ptr const &renderer, workable_ptr const &worker,
                                task_priority_t const &priority, player_resource_protocol_ptr const &resource) {
-    return player_ptr(new player{root_path, renderer, worker, priority, resource});
+    return player_ptr(new player{root_path, identifier, renderer, worker, priority, resource});
 }
