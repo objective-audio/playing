@@ -28,6 +28,11 @@ struct buffering_resource final : buffering_resource_protocol {
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
     void overwrite_element_on_render(element_address const &) override;
 
+#warning todo override
+    bool needs_all_writing_on_render() const;
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &);
+    void set_identifier_request_on_main(std::string const &);
+
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,
                                                   frame_index_t const) override;
 
@@ -59,6 +64,10 @@ struct buffering_resource final : buffering_resource_protocol {
     std::string _identifier;
 
     std::vector<buffering_channel_protocol_ptr> _channels;
+
+    mutable std::mutex _request_mutex;
+    std::optional<channel_mapping_ptr> _ch_mapping_request = std::nullopt;
+    std::optional<std::string> _identifier_request = std::nullopt;
 
     buffering_resource(std::size_t const element_count, std::string const &root_path, std::string const &identifier,
                        make_channel_f &&);

@@ -9,6 +9,7 @@
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_result.h>
 
+#include <mutex>
 #include <thread>
 
 #include "yas_playing_buffering_channel.h"
@@ -228,6 +229,23 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
             channel->overwrite_element_on_render(address.fragment_range);
         }
     }
+}
+
+bool buffering_resource::needs_all_writing_on_render() const {
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        return this->_ch_mapping_request.has_value() || this->_identifier_request.has_value();
+    }
+    return false;
+}
+
+void buffering_resource::set_channel_mapping_request_on_main(channel_mapping_ptr const &ch_mapping) {
+    std::lock_guard<std::mutex> lock(this->_request_mutex);
+    this->_ch_mapping_request = ch_mapping;
+}
+
+void buffering_resource::set_identifier_request_on_main(std::string const &identifier) {
+    std::lock_guard<std::mutex> lock(this->_request_mutex);
+    this->_identifier_request = identifier;
 }
 
 bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
