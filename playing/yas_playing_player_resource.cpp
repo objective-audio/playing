@@ -25,6 +25,21 @@ buffering_resource_protocol_ptr const &player_resource::buffering() const {
     return this->_buffering;
 }
 
+void player_resource::set_identifier_on_main(std::string const &identifier) {
+    std::lock_guard<std::recursive_mutex> lock(this->_identifier_mutex);
+    this->_identifier = identifier;
+}
+
+std::optional<std::string> player_resource::pull_identifier_on_render() {
+    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_identifier_mutex, std::try_to_lock);
+        lock.owns_lock()) {
+        auto identifier = std::move(this->_identifier);
+        this->_identifier = std::nullopt;
+        return identifier;
+    }
+    return std::nullopt;
+}
+
 void player_resource::set_playing_on_main(bool const is_playing) {
     this->_is_playing.store(is_playing);
 }

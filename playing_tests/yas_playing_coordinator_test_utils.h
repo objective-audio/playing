@@ -65,14 +65,20 @@ struct renderer : coordinator_renderable {
 };
 
 struct player : playable {
+    std::function<void(std::string)> set_identifier_handler;
     std::function<void(channel_mapping_ptr)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
     std::function<void(std::optional<channel_index_t>, fragment_range)> overwrite_handler;
+    std::function<std::string const &(void)> identifier_handler;
     std::function<channel_mapping_ptr const &(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<chaining::chain_sync_t<bool>(void)> is_playing_chain_handler;
+
+    void set_identifier(std::string const &identifier) override {
+        this->set_identifier_handler(identifier);
+    }
 
     void set_channel_mapping(channel_mapping_ptr const &ch_mapping) override {
         this->set_ch_mapping_handler(ch_mapping);
@@ -88,6 +94,10 @@ struct player : playable {
 
     void overwrite(std::optional<channel_index_t> const file_ch_idx, fragment_range const frag_range) override {
         this->overwrite_handler(file_ch_idx, frag_range);
+    }
+
+    std::string const &identifier() const override {
+        return this->identifier_handler();
     }
 
     channel_mapping_ptr const &channel_mapping() const override {

@@ -24,6 +24,8 @@ struct renderer : renderable {
 };
 
 struct resource : player_resource_protocol {
+    std::function<void(std::string)> set_identifier_handler;
+    std::function<std::optional<std::string>(void)> pull_identifier_handler;
     std::function<void(bool)> set_playing_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
@@ -49,6 +51,14 @@ struct resource : player_resource_protocol {
 
     buffering_resource_protocol_ptr const &buffering() const override {
         return this->_buffering;
+    }
+
+    void set_identifier_on_main(std::string const &identifier) override {
+        this->set_identifier_handler(identifier);
+    }
+
+    std::optional<std::string> pull_identifier_on_render() override {
+        return this->pull_identifier_handler();
     }
 
     void set_playing_on_main(bool const is_playing) override {
@@ -135,7 +145,8 @@ struct buffering : buffering_resource_protocol {
     std::function<void(sample_rate_t, audio::pcm_format, uint32_t)> set_creating_handler;
     std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;
     std::function<void(void)> create_buffer_handler;
-    std::function<void(frame_index_t, std::optional<channel_mapping_ptr> &&)> set_all_writing_handler;
+    std::function<void(frame_index_t, std::optional<channel_mapping_ptr> &&, std::optional<std::string> &&)>
+        set_all_writing_handler;
     std::function<void(void)> write_all_elements_handler;
     std::function<void(fragment_index_t)> advance_handler;
     std::function<bool(void)> write_elements_if_needed_handler;
@@ -176,9 +187,9 @@ struct buffering : buffering_resource_protocol {
         this->create_buffer_handler();
     }
 
-    void set_all_writing_on_render(frame_index_t const frame,
-                                   std::optional<channel_mapping_ptr> &&ch_mapping) override {
-        this->set_all_writing_handler(frame, std::move(ch_mapping));
+    void set_all_writing_on_render(frame_index_t const frame, std::optional<channel_mapping_ptr> &&ch_mapping,
+                                   std::optional<std::string> &&identifier) override {
+        this->set_all_writing_handler(frame, std::move(ch_mapping), std::move(identifier));
     }
 
     void write_all_elements_on_task() override {
@@ -238,8 +249,9 @@ struct cpp {
     }
 
     void setup_initial() {
-        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &ch_mapping) {};
-        this->resource->set_playing_handler = [](bool is_playing) {};
+        this->resource->set_identifier_handler = [](std::string const &) {};
+        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &) {};
+        this->resource->set_playing_handler = [](bool) {};
         this->renderer->set_rendering_handler_handler = [this](renderable::rendering_f &&handler) {
             this->rendering_handler = std::move(handler);
         };
@@ -282,6 +294,7 @@ struct cpp {
 
         this->resource->pull_seek_frame_handler = [] { return std::nullopt; };
         this->resource->pull_ch_mapping_handler = [] { return std::nullopt; };
+        this->resource->pull_identifier_handler = [] { return std::nullopt; };
     }
 
     void skip_playing() {

@@ -66,7 +66,8 @@ struct buffering_resource_protocol {
 
     virtual void create_buffer_on_task() = 0;
 
-    virtual void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping) = 0;
+    virtual void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
+                                           std::optional<std::string> &&identifier) = 0;
     virtual void write_all_elements_on_task() = 0;
     virtual void advance_on_render(fragment_index_t const) = 0;
     [[nodiscard]] virtual bool write_elements_if_needed_on_task() = 0;

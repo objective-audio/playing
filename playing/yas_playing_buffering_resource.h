@@ -21,7 +21,8 @@ struct buffering_resource final : buffering_resource_protocol {
                                               uint32_t const ch_count) override;
     void create_buffer_on_task() override;
 
-    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping) override;
+    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
+                                   std::optional<std::string> &&identifier) override;
     void write_all_elements_on_task() override;
     void advance_on_render(fragment_index_t const) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
@@ -42,7 +43,6 @@ struct buffering_resource final : buffering_resource_protocol {
    private:
     std::size_t const _element_count;
     std::string const _root_path;
-    std::string const _identifier;
     make_channel_f const _make_channel_handler;
 
     std::atomic<setup_state_t> _setup_state{setup_state_t::initial};
@@ -56,6 +56,7 @@ struct buffering_resource final : buffering_resource_protocol {
     std::atomic<rendering_state_t> _rendering_state{rendering_state_t::waiting};
     frame_index_t _all_writing_frame = 0;
     channel_mapping_ptr _ch_mapping;
+    std::string _identifier;
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 

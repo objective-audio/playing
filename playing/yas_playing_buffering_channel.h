@@ -21,7 +21,7 @@ struct buffering_channel final : buffering_channel_protocol {
     [[nodiscard]] static buffering_channel_ptr make_shared(std::vector<buffering_element_protocol_ptr> &&);
 
    private:
-    std::vector<buffering_element_protocol_ptr> _elements;
+    std::vector<buffering_element_protocol_ptr> const _elements;
     std::optional<path::channel> _ch_path = std::nullopt;
 
     explicit buffering_channel(std::vector<buffering_element_protocol_ptr> &&);

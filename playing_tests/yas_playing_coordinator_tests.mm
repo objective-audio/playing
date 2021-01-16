@@ -56,12 +56,16 @@ using namespace yas::playing;
 - (void)test_set_timeline {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    std::vector<timeline_container_ptr> called;
+    std::vector<timeline_container_ptr> called_set_container;
+    std::vector<std::string> called_set_identifier;
 
-    self->_cpp.exporter->set_timeline_container_handler = [&called](auto const &container) {
-        called.emplace_back(container);
+    self->_cpp.exporter->set_timeline_container_handler = [&called_set_container](auto const &container) {
+        called_set_container.emplace_back(container);
     };
     self->_cpp.renderer->sample_rate_handler = [] { return 44100; };
+    self->_cpp.player->set_identifier_handler = [&called_set_identifier](std::string const &identifier) {
+        called_set_identifier.emplace_back(identifier);
+    };
 
     auto chain = self->_cpp.renderer->configuration_chain();
 
@@ -69,15 +73,18 @@ using namespace yas::playing;
 
     auto const timeline = proc::timeline::make_shared();
 
-    coordinator->set_timeline(timeline);
+    coordinator->set_timeline(timeline, "1");
 
     XCTAssertEqual(coordinator->timeline(), timeline);
-    XCTAssertEqual(called.size(), 1);
+    XCTAssertEqual(called_set_container.size(), 1);
 
-    auto const &container = called.at(0);
-    XCTAssertEqual(container->identifier(), coordinator_test::identifier);
+    auto const &container = called_set_container.at(0);
+    XCTAssertEqual(container->identifier(), "1");
     XCTAssertEqual(container->timeline(), timeline);
     XCTAssertEqual(container->sample_rate(), 44100);
+
+    XCTAssertEqual(called_set_identifier.size(), 1);
+    XCTAssertEqual(called_set_identifier.at(0), "1");
 }
 
 - (void)test_set_channel_mapping {

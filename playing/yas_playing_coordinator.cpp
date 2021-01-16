@@ -47,9 +47,12 @@ coordinator::coordinator(std::string const &identifier, workable_ptr const &work
     this->_worker->start();
 }
 
-void coordinator::set_timeline(proc::timeline_ptr const &timeline) {
+void coordinator::set_timeline(proc::timeline_ptr const &timeline, std::string const &identifier) {
     this->_timeline = timeline;
+    this->_identifier = identifier;
+
     this->_update_exporter();
+    this->_player->set_identifier(identifier);
 }
 
 void coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
