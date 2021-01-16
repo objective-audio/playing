@@ -133,6 +133,8 @@ using namespace yas::playing;
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
         called_set_all_writing.emplace_back(frame);
     };
+#warning todo seek_frameだけでなくch_mappingやidentifierもチェック
+    buffering->needs_all_writing_handler = [] { return false; };
 
     // seek_frameなし
 
@@ -190,6 +192,7 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
 
     std::size_t called_pull_seek = 0;
+    std::size_t called_needs_all_writing = 0;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::advancing; };
     resource->reset_overwrite_requests_handler = [] {};
@@ -199,10 +202,15 @@ using namespace yas::playing;
     };
     resource->set_current_frame_handler = [](frame_index_t frame) {};
     buffering->set_all_writing_handler = [](frame_index_t frame) {};
+    buffering->needs_all_writing_handler = [&called_needs_all_writing] {
+        ++called_needs_all_writing;
+        return false;
+    };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_pull_seek, 1);
+    XCTAssertEqual(called_needs_all_writing, 1);
 }
 
 @end

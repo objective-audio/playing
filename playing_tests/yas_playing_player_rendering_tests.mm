@@ -27,6 +27,7 @@ using namespace yas::playing;
 
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
+    std::size_t called_needs_all_writing = 0;
     std::vector<frame_index_t> called_set_current_frame;
     std::vector<frame_index_t> called_set_all_writing;
 
@@ -45,10 +46,15 @@ using namespace yas::playing;
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
         called_set_all_writing.emplace_back(frame);
     };
+    buffering->needs_all_writing_handler = [&called_needs_all_writing] {
+        ++called_needs_all_writing;
+        return true;
+    };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_pull_seek, 1);
+    XCTAssertEqual(called_needs_all_writing, 1);
     XCTAssertEqual(called_reset_overwrite, 1);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 300);

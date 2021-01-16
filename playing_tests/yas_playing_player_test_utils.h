@@ -131,6 +131,7 @@ struct buffering : buffering_resource_protocol {
     std::function<bool(void)> write_elements_if_needed_handler;
     std::function<void(element_address const &)> overwrite_element_handler;
     std::function<bool(audio::pcm_buffer *, channel_index_t, frame_index_t)> read_into_buffer_handler;
+    std::function<bool(void)> needs_all_writing_handler;
 
     setup_state_t setup_state() const override {
         return this->setup_state_handler();
@@ -187,8 +188,7 @@ struct buffering : buffering_resource_protocol {
     }
 
     bool needs_all_writing_on_render() const override {
-#warning todo
-        return false;
+        return this->needs_all_writing_handler();
     }
     void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override {
 #warning todo
@@ -280,6 +280,7 @@ struct cpp {
         this->skip_buffering_rendering();
 
         this->resource->pull_seek_frame_handler = [] { return std::nullopt; };
+        this->buffering->needs_all_writing_handler = [] { return false; };
     }
 
     void skip_playing() {
