@@ -34,6 +34,8 @@ using namespace yas::playing;
     std::vector<bool> called_set_is_playing;
     std::vector<renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
+    std::vector<std::string> called_set_identifier_request_handler;
+    std::vector<channel_mapping_ptr> called_set_ch_mapping_request_handler;
 
     resource->set_playing_handler = [&called_set_is_playing](bool is_playing) {
         called_set_is_playing.emplace_back(is_playing);
@@ -47,6 +49,15 @@ using namespace yas::playing;
         called_set_is_rendering.emplace_back(is_rendering);
     };
 
+    buffering->set_identifier_request_handler = [&called_set_identifier_request_handler](std::string identifier) {
+        called_set_identifier_request_handler.emplace_back(identifier);
+    };
+
+    buffering->set_ch_mapping_request_handler =
+        [&called_set_ch_mapping_request_handler](channel_mapping_ptr ch_mapping) {
+            called_set_ch_mapping_request_handler.emplace_back(ch_mapping);
+        };
+
     auto const player =
         player::make_shared(test_utils::root_path(), test_utils::identifier, renderer, worker, priority, resource);
 
@@ -55,6 +66,10 @@ using namespace yas::playing;
     XCTAssertEqual(called_set_rendering_handler.size(), 1);
     XCTAssertEqual(called_set_is_rendering.size(), 1);
     XCTAssertTrue(called_set_is_rendering.at(0));
+    XCTAssertEqual(called_set_identifier_request_handler.size(), 1);
+    XCTAssertEqual(called_set_identifier_request_handler.at(0), test_utils::identifier);
+    XCTAssertEqual(called_set_ch_mapping_request_handler.size(), 1);
+    XCTAssertEqual(called_set_ch_mapping_request_handler.at(0)->indices, (std::vector<channel_index_t>{}));
 }
 
 - (void)test_is_playing {
