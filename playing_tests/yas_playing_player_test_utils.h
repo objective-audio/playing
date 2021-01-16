@@ -24,14 +24,10 @@ struct renderer : renderable {
 };
 
 struct resource : player_resource_protocol {
-    std::function<void(std::string)> set_identifier_handler;
-    std::function<std::optional<std::string>(void)> pull_identifier_handler;
     std::function<void(bool)> set_playing_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
     std::function<std::optional<frame_index_t>(void)> pull_seek_frame_handler;
-    std::function<void(channel_mapping_ptr const &)> set_ch_mapping_handler;
-    std::function<std::optional<channel_mapping_ptr>(void)> pull_ch_mapping_handler;
     std::function<void(frame_index_t)> set_current_frame_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<void(element_address &&)> add_overwrite_request_handler;
@@ -53,14 +49,6 @@ struct resource : player_resource_protocol {
         return this->_buffering;
     }
 
-    void set_identifier_on_main(std::string const &identifier) override {
-        this->set_identifier_handler(identifier);
-    }
-
-    std::optional<std::string> pull_identifier_on_render() override {
-        return this->pull_identifier_handler();
-    }
-
     void set_playing_on_main(bool const is_playing) override {
         this->set_playing_handler(is_playing);
     }
@@ -75,14 +63,6 @@ struct resource : player_resource_protocol {
 
     std::optional<frame_index_t> pull_seek_frame_on_render() override {
         return this->pull_seek_frame_handler();
-    }
-
-    void set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) override {
-        this->set_ch_mapping_handler(ch_mapping);
-    }
-
-    std::optional<channel_mapping_ptr> pull_channel_mapping_on_render() override {
-        return this->pull_ch_mapping_handler();
     }
 
     void set_current_frame_on_render(frame_index_t const frame) override {
@@ -258,8 +238,6 @@ struct cpp {
     }
 
     void setup_initial() {
-        this->resource->set_identifier_handler = [](std::string const &) {};
-        this->resource->set_ch_mapping_handler = [](channel_mapping_ptr const &) {};
         this->resource->set_playing_handler = [](bool) {};
         this->renderer->set_rendering_handler_handler = [this](renderable::rendering_f &&handler) {
             this->rendering_handler = std::move(handler);
@@ -302,8 +280,6 @@ struct cpp {
         this->skip_buffering_rendering();
 
         this->resource->pull_seek_frame_handler = [] { return std::nullopt; };
-        this->resource->pull_ch_mapping_handler = [] { return std::nullopt; };
-        this->resource->pull_identifier_handler = [] { return std::nullopt; };
     }
 
     void skip_playing() {

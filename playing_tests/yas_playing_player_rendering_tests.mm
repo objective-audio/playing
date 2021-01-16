@@ -29,8 +29,6 @@ using namespace yas::playing;
     std::size_t called_pull_seek = 0;
     std::vector<frame_index_t> called_set_current_frame;
     std::vector<frame_index_t> called_set_all_writing;
-    std::size_t called_pull_ch_mapping = 0;
-    std::size_t called_pull_identifier = 0;
 
     std::optional<frame_index_t> seek_frame = 300;
     auto ch_mapping = channel_mapping::make_shared({13, 14, 15});
@@ -47,14 +45,6 @@ using namespace yas::playing;
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
         called_set_all_writing.emplace_back(frame);
     };
-    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
-        ++called_pull_ch_mapping;
-        return ch_mapping;
-    };
-    resource->pull_identifier_handler = [&called_pull_identifier, &identifier] {
-        ++called_pull_identifier;
-        return identifier;
-    };
 
     self->_cpp.rendering_handler(&buffer);
 
@@ -62,8 +52,6 @@ using namespace yas::playing;
     XCTAssertEqual(called_reset_overwrite, 1);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 300);
-    XCTAssertEqual(called_pull_ch_mapping, 1);
-    XCTAssertEqual(called_pull_identifier, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0), 300);
 }

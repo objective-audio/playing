@@ -131,20 +131,6 @@ struct cpp {
     XCTAssertEqual(resource->pull_seek_frame_on_render(), std::nullopt);
 }
 
-- (void)test_ch_mapping {
-    auto const resource = self->_cpp.make_resource();
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), std::nullopt);
-
-    auto const ch_mapping = channel_mapping::make_shared({1, 2});
-
-    resource->set_channel_mapping_on_main(ch_mapping);
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), ch_mapping);
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), std::nullopt);
-}
-
 - (void)test_current_frame {
     auto const resource = self->_cpp.make_resource();
 

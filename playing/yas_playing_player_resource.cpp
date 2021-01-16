@@ -25,20 +25,6 @@ buffering_resource_protocol_ptr const &player_resource::buffering() const {
     return this->_buffering;
 }
 
-void player_resource::set_identifier_on_main(std::string const &identifier) {
-    std::lock_guard<std::mutex> lock(this->_identifier_mutex);
-    this->_identifier = identifier;
-}
-
-std::optional<std::string> player_resource::pull_identifier_on_render() {
-    if (auto lock = std::unique_lock<std::mutex>(this->_identifier_mutex, std::try_to_lock); lock.owns_lock()) {
-        auto identifier = std::move(this->_identifier);
-        this->_identifier = std::nullopt;
-        return identifier;
-    }
-    return std::nullopt;
-}
-
 void player_resource::set_playing_on_main(bool const is_playing) {
     this->_is_playing.store(is_playing);
 }
@@ -58,22 +44,6 @@ std::optional<frame_index_t> player_resource::pull_seek_frame_on_render() {
             auto frame = this->_seek_frame;
             this->_seek_frame = std::nullopt;
             return frame;
-        }
-    }
-    return std::nullopt;
-}
-
-void player_resource::set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) {
-    std::lock_guard<std::mutex> lock(this->_ch_mapping_mutex);
-    this->_ch_mapping = ch_mapping;
-    this->_ch_mapping_changed = true;
-}
-
-std::optional<channel_mapping_ptr> player_resource::pull_channel_mapping_on_render() {
-    if (auto lock = std::unique_lock<std::mutex>(this->_ch_mapping_mutex, std::try_to_lock); lock.owns_lock()) {
-        if (this->_ch_mapping_changed) {
-            this->_ch_mapping_changed = false;
-            return std::move(this->_ch_mapping);
         }
     }
     return std::nullopt;

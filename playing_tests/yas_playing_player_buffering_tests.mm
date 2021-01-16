@@ -110,8 +110,6 @@ using namespace yas::playing;
     std::size_t called_pull_seek = 0;
     std::size_t called_current_frame = 0;
     std::vector<frame_index_t> called_set_all_writing;
-    std::size_t called_pull_ch_mapping = 0;
-    std::size_t called_pull_identifier = 0;
     std::vector<frame_index_t> called_set_current_frame;
 
     frame_index_t current_frame = 100;
@@ -135,14 +133,6 @@ using namespace yas::playing;
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
         called_set_all_writing.emplace_back(frame);
     };
-    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
-        ++called_pull_ch_mapping;
-        return ch_mapping;
-    };
-    resource->pull_identifier_handler = [&called_pull_identifier, &identifier] {
-        ++called_pull_identifier;
-        return identifier;
-    };
 
     // seek_frameなし
 
@@ -153,8 +143,6 @@ using namespace yas::playing;
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0), 100);
-    XCTAssertEqual(called_pull_ch_mapping, 1);
-    XCTAssertEqual(called_pull_identifier, 1);
     XCTAssertEqual(called_set_current_frame.size(), 0);
 
     // seek_frameあり
@@ -168,8 +156,6 @@ using namespace yas::playing;
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 2);
     XCTAssertEqual(called_set_all_writing.at(1), 200);
-    XCTAssertEqual(called_pull_ch_mapping, 2);
-    XCTAssertEqual(called_pull_identifier, 2);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 200);
 }
@@ -213,8 +199,6 @@ using namespace yas::playing;
     };
     resource->set_current_frame_handler = [](frame_index_t frame) {};
     buffering->set_all_writing_handler = [](frame_index_t frame) {};
-    resource->pull_ch_mapping_handler = [] { return std::nullopt; };
-    resource->pull_identifier_handler = [] { return std::nullopt; };
 
     self->_cpp.rendering_handler(&buffer);
 

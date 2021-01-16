@@ -35,14 +35,6 @@ using namespace yas::playing;
     std::vector<renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
 
-    resource->set_identifier_handler = [&called_set_identifier](std::string const &identifier) {
-        called_set_identifier.emplace_back(identifier);
-    };
-
-    resource->set_ch_mapping_handler = [&called_set_ch_mapping](channel_mapping_ptr const &ch_mapping) {
-        called_set_ch_mapping.emplace_back(ch_mapping);
-    };
-
     resource->set_playing_handler = [&called_set_is_playing](bool is_playing) {
         called_set_is_playing.emplace_back(is_playing);
     };
@@ -58,55 +50,11 @@ using namespace yas::playing;
     auto const player =
         player::make_shared(test_utils::root_path(), test_utils::identifier, renderer, worker, priority, resource);
 
-    XCTAssertEqual(called_set_identifier.size(), 1);
-    XCTAssertEqual(called_set_identifier.at(0), test_utils::identifier);
-    XCTAssertEqual(called_set_ch_mapping.size(), 1);
-    XCTAssertEqual(called_set_ch_mapping.at(0)->indices.size(), 0);
     XCTAssertEqual(called_set_is_playing.size(), 1);
     XCTAssertFalse(called_set_is_playing.at(0));
     XCTAssertEqual(called_set_rendering_handler.size(), 1);
     XCTAssertEqual(called_set_is_rendering.size(), 1);
     XCTAssertTrue(called_set_is_rendering.at(0));
-}
-
-- (void)test_set_identifier {
-    self->_cpp.setup_initial();
-
-    auto const &player = self->_cpp.player;
-
-    std::vector<std::string> called;
-
-    self->_cpp.resource->set_identifier_handler = [&called](std::string const &identifier) {
-        called.emplace_back(identifier);
-    };
-
-    XCTAssertEqual(player->identifier(), test_utils::identifier);
-
-    player->set_identifier("123");
-
-    XCTAssertEqual(player->identifier(), "123");
-
-    XCTAssertEqual(called.size(), 1);
-    XCTAssertEqual(called.at(0), "123");
-}
-
-- (void)test_set_ch_mapping {
-    self->_cpp.setup_initial();
-
-    auto const &player = self->_cpp.player;
-
-    std::vector<channel_mapping_ptr> called;
-
-    self->_cpp.resource->set_ch_mapping_handler = [&called](channel_mapping_ptr const &ch_mapping) {
-        called.emplace_back(ch_mapping);
-    };
-
-    player->set_channel_mapping(channel_mapping::make_shared({10, 11, 12}));
-
-    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{10, 11, 12}));
-
-    XCTAssertEqual(called.size(), 1);
-    XCTAssertEqual(called.at(0)->indices, (std::vector<channel_index_t>{10, 11, 12}));
 }
 
 - (void)test_is_playing {
