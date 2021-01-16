@@ -75,6 +75,14 @@ struct buffering_resource : buffering_resource_protocol {
     bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const, frame_index_t const) override {
         return false;
     }
+
+    bool needs_all_writing_on_render() const override {
+        return false;
+    }
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override {
+    }
+    void set_identifier_request_on_main(std::string const &) override {
+    }
 };
 
 struct cpp {

@@ -208,6 +208,17 @@ struct buffering : buffering_resource_protocol {
         this->overwrite_element_handler(address);
     }
 
+    bool needs_all_writing_on_render() const override {
+#warning todo
+        return false;
+    }
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override {
+#warning todo
+    }
+    void set_identifier_request_on_main(std::string const &) override {
+#warning todo
+    }
+
     bool read_into_buffer_on_render(audio::pcm_buffer *buffer, channel_index_t const ch_idx,
                                     frame_index_t const frame_idx) override {
         return this->read_into_buffer_handler(buffer, ch_idx, frame_idx);
