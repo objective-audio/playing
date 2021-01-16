@@ -261,6 +261,24 @@ bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffe
     return this->_channels.at(ch_idx)->read_into_buffer_on_render(out_buffer, frame);
 }
 
+std::optional<channel_mapping_ptr> buffering_resource::_pull_ch_mapping_request_on_task() {
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        auto ch_mapping = std::move(this->_ch_mapping_request);
+        this->_ch_mapping_request = std::nullopt;
+        return ch_mapping;
+    }
+    return std::nullopt;
+}
+
+std::optional<std::string> buffering_resource::_pull_identifier_request_on_task() {
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        auto identifier = std::move(this->_identifier_request);
+        this->_identifier_request = std::nullopt;
+        return identifier;
+    }
+    return std::nullopt;
+}
+
 buffering_resource_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
 
                                                        std::string const &identifier,
