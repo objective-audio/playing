@@ -449,6 +449,8 @@ struct cpp {
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
 
+    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({2, 3}));
+
     std::thread{[&buffering] { buffering->set_all_writing_on_render(0); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
