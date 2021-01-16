@@ -19,9 +19,17 @@ static audio::format const format{
     {.sample_rate = sample_rate, .pcm_format = pcm_format, .channel_count = 1, .interleaved = false}};
 static path::timeline tl_path{
     .root_path = test_utils::root_path(), .identifier = "0", .sample_rate = static_cast<sample_rate_t>(sample_rate)};
+static path::timeline timeline_path(std::string const &identifier) {
+    return path::timeline{.root_path = test_utils::root_path(),
+                          .identifier = identifier,
+                          .sample_rate = static_cast<sample_rate_t>(sample_rate)};
+}
 
 static path::channel channel_path(channel_index_t const ch_idx) {
     return path::channel{buffering_test::tl_path, ch_idx};
+}
+static path::channel channel_path(std::string const &identifier, channel_index_t const ch_idx) {
+    return path::channel{buffering_test::timeline_path(identifier), ch_idx};
 }
 
 struct channel : buffering_channel_protocol {
@@ -264,7 +272,6 @@ struct cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 200);
-    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{1, 0}));
 }
 
 - (void)test_advance {
@@ -380,6 +387,8 @@ struct cpp {
     XCTAssertEqual(called_channel_1.at(0).first, buffering_test::channel_path(1));
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
+    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({1, 0}));
+
     std::thread{[&buffering] { buffering->set_all_writing_on_render(10); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
@@ -390,15 +399,17 @@ struct cpp {
     XCTAssertEqual(called_channel_1.at(1).first, buffering_test::channel_path(0));
     XCTAssertEqual(called_channel_1.at(1).second, 2);
 
+    buffering->set_identifier_request_on_main("111");
+
     std::thread{[&buffering] { buffering->set_all_writing_on_render(20); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 3);
-    XCTAssertEqual(called_channel_0.at(2).first, buffering_test::channel_path(1),
+    XCTAssertEqual(called_channel_0.at(2).first, buffering_test::channel_path("111", 1),
                    @"nulloptの場合は最後のch_pathが使われる");
     XCTAssertEqual(called_channel_0.at(2).second, 5, @"20(frame) / 4(frag_length) = 5");
     XCTAssertEqual(called_channel_1.size(), 3);
-    XCTAssertEqual(called_channel_1.at(2).first, buffering_test::channel_path(0));
+    XCTAssertEqual(called_channel_1.at(2).first, buffering_test::channel_path("111", 0));
     XCTAssertEqual(called_channel_1.at(2).second, 5);
 }
 
