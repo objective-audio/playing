@@ -133,22 +133,12 @@ void buffering_resource::create_buffer_on_task() {
     std::this_thread::yield();
 }
 
-void buffering_resource::set_all_writing_on_render(frame_index_t const frame,
-                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
-                                                   std::optional<std::string> &&identifier) {
+void buffering_resource::set_all_writing_on_render(frame_index_t const frame) {
     if (this->_rendering_state.load() == rendering_state_t::all_writing) {
         throw std::runtime_error("state is already all_writing.");
     }
 
     this->_all_writing_frame = frame;
-
-    if (ch_mapping.has_value()) {
-        this->_ch_mapping = std::move(ch_mapping.value());
-    }
-
-    if (identifier.has_value()) {
-        this->_identifier = std::move(identifier.value());
-    }
 
     this->_rendering_state.store(rendering_state_t::all_writing);
 }

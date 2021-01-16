@@ -21,8 +21,7 @@ struct buffering_resource final : buffering_resource_protocol {
                                               uint32_t const ch_count) override;
     void create_buffer_on_task() override;
 
-    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
-                                   std::optional<std::string> &&identifier) override;
+    void set_all_writing_on_render(frame_index_t const) override;
     void write_all_elements_on_task() override;
     void advance_on_render(fragment_index_t const) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;

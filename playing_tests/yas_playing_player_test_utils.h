@@ -145,8 +145,7 @@ struct buffering : buffering_resource_protocol {
     std::function<void(sample_rate_t, audio::pcm_format, uint32_t)> set_creating_handler;
     std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;
     std::function<void(void)> create_buffer_handler;
-    std::function<void(frame_index_t, std::optional<channel_mapping_ptr> &&, std::optional<std::string> &&)>
-        set_all_writing_handler;
+    std::function<void(frame_index_t)> set_all_writing_handler;
     std::function<void(void)> write_all_elements_handler;
     std::function<void(fragment_index_t)> advance_handler;
     std::function<bool(void)> write_elements_if_needed_handler;
@@ -187,9 +186,8 @@ struct buffering : buffering_resource_protocol {
         this->create_buffer_handler();
     }
 
-    void set_all_writing_on_render(frame_index_t const frame, std::optional<channel_mapping_ptr> &&ch_mapping,
-                                   std::optional<std::string> &&identifier) override {
-        this->set_all_writing_handler(frame, std::move(ch_mapping), std::move(identifier));
+    void set_all_writing_on_render(frame_index_t const frame) override {
+        this->set_all_writing_handler(frame);
     }
 
     void write_all_elements_on_task() override {

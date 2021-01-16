@@ -169,7 +169,7 @@ player::player(std::string const &root_path, std::string const &identifier, rend
                     if (seek_frame.has_value()) {
                         resource->set_current_frame_on_render(frame);
                     }
-                    buffering->set_all_writing_on_render(frame, std::nullopt, std::nullopt);
+                    buffering->set_all_writing_on_render(frame);
                     return;
                 }
             } break;
