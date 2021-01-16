@@ -162,6 +162,14 @@ void buffering_resource::write_all_elements_on_task() {
         throw std::runtime_error("state is not all_writing.");
     }
 
+    if (auto ch_mapping = this->_pull_ch_mapping_request_on_task(); ch_mapping.has_value()) {
+        this->_ch_mapping = std::move(ch_mapping.value());
+    }
+
+    if (auto identifier = this->_pull_identifier_request_on_task(); identifier.has_value()) {
+        this->_identifier = std::move(identifier.value());
+    }
+
     auto const top_frag_idx = player_utils::top_fragment_idx(this->_frag_length, this->_all_writing_frame);
     if (!top_frag_idx.has_value()) {
         throw std::runtime_error("sample_rate is empty.");
