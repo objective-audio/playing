@@ -132,6 +132,8 @@ struct buffering : buffering_resource_protocol {
     std::function<void(element_address const &)> overwrite_element_handler;
     std::function<bool(audio::pcm_buffer *, channel_index_t, frame_index_t)> read_into_buffer_handler;
     std::function<bool(void)> needs_all_writing_handler;
+    std::function<void(channel_mapping_ptr)> set_ch_mapping_request_handler;
+    std::function<void(std::string)> set_identifier_request_handler;
 
     setup_state_t setup_state() const override {
         return this->setup_state_handler();
@@ -190,11 +192,13 @@ struct buffering : buffering_resource_protocol {
     bool needs_all_writing_on_render() const override {
         return this->needs_all_writing_handler();
     }
-    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override {
-#warning todo
+
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &ch_mapping) override {
+        this->set_ch_mapping_request_handler(ch_mapping);
     }
-    void set_identifier_request_on_main(std::string const &) override {
-#warning todo
+
+    void set_identifier_request_on_main(std::string const &identifier) override {
+        this->set_identifier_request_handler(identifier);
     }
 
     bool read_into_buffer_on_render(audio::pcm_buffer *buffer, channel_index_t const ch_idx,
@@ -243,6 +247,8 @@ struct cpp {
             this->rendering_handler = std::move(handler);
         };
         this->renderer->set_is_rendering_handler = [](bool is_rendering) {};
+        this->buffering->set_identifier_request_handler = [](std::string) {};
+        this->buffering->set_ch_mapping_request_handler = [](channel_mapping_ptr) {};
 
         player_task_priority const priority{.setup = 100, .rendering = 101};
 
