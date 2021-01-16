@@ -160,18 +160,16 @@ player::player(std::string const &root_path, std::string const &identifier, rend
             case rendering_state_t::advancing: {
                 // 全バッファ書き込み済み
                 auto const seek_frame = resource->pull_seek_frame_on_render();
-                auto ch_mapping = resource->pull_channel_mapping_on_render();
-                auto identifier = resource->pull_identifier_on_render();
+                bool const needs_all_writing = buffering->needs_all_writing_on_render();
 
-                if (rendering_state == rendering_state_t::waiting || seek_frame.has_value() || ch_mapping.has_value() ||
-                    identifier.has_value()) {
+                if (rendering_state == rendering_state_t::waiting || seek_frame.has_value() || needs_all_writing) {
                     // 全バッファ再書き込み開始
                     resource->reset_overwrite_requests_on_render();
                     auto const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
                     if (seek_frame.has_value()) {
                         resource->set_current_frame_on_render(frame);
                     }
-                    buffering->set_all_writing_on_render(frame, std::move(ch_mapping), std::move(identifier));
+                    buffering->set_all_writing_on_render(frame);
                     return;
                 }
             } break;
@@ -241,12 +239,16 @@ player::player(std::string const &root_path, std::string const &identifier, rend
     // setup chaining
 
     this->_identifier->chain()
-        .perform([this](auto const &identifier) { this->_resource->set_identifier_on_main(identifier); })
+        .perform([this](std::string const &identifier) {
+            this->_resource->buffering()->set_identifier_request_on_main(identifier);
+        })
         .sync()
         ->add_to(this->_pool);
 
     this->_ch_mapping->chain()
-        .perform([this](auto const &ch_mapping) { this->_resource->set_channel_mapping_on_main(ch_mapping); })
+        .perform([this](channel_mapping_ptr const &ch_mapping) {
+            this->_resource->buffering()->set_channel_mapping_request_on_main(ch_mapping);
+        })
         .sync()
         ->add_to(this->_pool);
 

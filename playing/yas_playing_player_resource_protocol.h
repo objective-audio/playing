@@ -20,17 +20,11 @@ struct player_resource_protocol {
     virtual reading_resource_protocol_ptr const &reading() const = 0;
     virtual buffering_resource_protocol_ptr const &buffering() const = 0;
 
-    virtual void set_identifier_on_main(std::string const &) = 0;
-    [[nodiscard]] virtual std::optional<std::string> pull_identifier_on_render() = 0;
-
     virtual void set_playing_on_main(bool const) = 0;
     [[nodiscard]] virtual bool is_playing_on_render() const = 0;
 
     virtual void seek_on_main(frame_index_t const frame) = 0;
     [[nodiscard]] virtual std::optional<frame_index_t> pull_seek_frame_on_render() = 0;
-
-    virtual void set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) = 0;
-    [[nodiscard]] virtual std::optional<channel_mapping_ptr> pull_channel_mapping_on_render() = 0;
 
     virtual void set_current_frame_on_render(frame_index_t const) = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;

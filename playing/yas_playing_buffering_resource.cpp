@@ -9,6 +9,7 @@
 #include <cpp_utils/yas_file_manager.h>
 #include <cpp_utils/yas_result.h>
 
+#include <mutex>
 #include <thread>
 
 #include "yas_playing_buffering_channel.h"
@@ -123,10 +124,6 @@ void buffering_resource::create_buffer_on_task() {
         std::this_thread::yield();
     }
 
-    this->_tl_path = path::timeline{.root_path = this->_root_path,
-                                    .identifier = this->_identifier,
-                                    .sample_rate = static_cast<sample_rate_t>(this->_sample_rate)};
-
     this->_rendering_state.store(rendering_state_t::waiting);
 
     std::this_thread::yield();
@@ -136,22 +133,12 @@ void buffering_resource::create_buffer_on_task() {
     std::this_thread::yield();
 }
 
-void buffering_resource::set_all_writing_on_render(frame_index_t const frame,
-                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
-                                                   std::optional<std::string> &&identifier) {
+void buffering_resource::set_all_writing_on_render(frame_index_t const frame) {
     if (this->_rendering_state.load() == rendering_state_t::all_writing) {
         throw std::runtime_error("state is already all_writing.");
     }
 
     this->_all_writing_frame = frame;
-
-    if (ch_mapping.has_value()) {
-        this->_ch_mapping = std::move(ch_mapping.value());
-    }
-
-    if (identifier.has_value()) {
-        this->_identifier = std::move(identifier.value());
-    }
 
     this->_rendering_state.store(rendering_state_t::all_writing);
 }
@@ -160,6 +147,18 @@ void buffering_resource::write_all_elements_on_task() {
     if (this->_rendering_state.load() != rendering_state_t::all_writing) {
         throw std::runtime_error("state is not all_writing.");
     }
+
+    if (auto ch_mapping = this->_pull_ch_mapping_request_on_task(); ch_mapping.has_value()) {
+        this->_ch_mapping = std::move(ch_mapping.value());
+    }
+
+    if (auto identifier = this->_pull_identifier_request_on_task(); identifier.has_value()) {
+        this->_identifier = std::move(identifier.value());
+    }
+
+    this->_tl_path = path::timeline{.root_path = this->_root_path,
+                                    .identifier = this->_identifier,
+                                    .sample_rate = static_cast<sample_rate_t>(this->_sample_rate)};
 
     auto const top_frag_idx = player_utils::top_fragment_idx(this->_frag_length, this->_all_writing_frame);
     if (!top_frag_idx.has_value()) {
@@ -230,6 +229,29 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
     }
 }
 
+bool buffering_resource::needs_all_writing_on_render() const {
+    if (auto const state = this->_rendering_state.load(); true) {
+        if (state != rendering_state_t::waiting && state != rendering_state_t::advancing) {
+            throw std::runtime_error("state is not waiting or advanding.");
+        }
+    }
+
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        return this->_ch_mapping_request.has_value() || this->_identifier_request.has_value();
+    }
+    return false;
+}
+
+void buffering_resource::set_channel_mapping_request_on_main(channel_mapping_ptr const &ch_mapping) {
+    std::lock_guard<std::mutex> lock(this->_request_mutex);
+    this->_ch_mapping_request = ch_mapping;
+}
+
+void buffering_resource::set_identifier_request_on_main(std::string const &identifier) {
+    std::lock_guard<std::mutex> lock(this->_request_mutex);
+    this->_identifier_request = identifier;
+}
+
 bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
                                                     frame_index_t const frame) {
     if (this->_rendering_state.load() != rendering_state_t::advancing) {
@@ -241,6 +263,24 @@ bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffe
     }
 
     return this->_channels.at(ch_idx)->read_into_buffer_on_render(out_buffer, frame);
+}
+
+std::optional<channel_mapping_ptr> buffering_resource::_pull_ch_mapping_request_on_task() {
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        auto ch_mapping = std::move(this->_ch_mapping_request);
+        this->_ch_mapping_request = std::nullopt;
+        return ch_mapping;
+    }
+    return std::nullopt;
+}
+
+std::optional<std::string> buffering_resource::_pull_identifier_request_on_task() {
+    if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
+        auto identifier = std::move(this->_identifier_request);
+        this->_identifier_request = std::nullopt;
+        return identifier;
+    }
+    return std::nullopt;
 }
 
 buffering_resource_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
@@ -257,4 +297,8 @@ frame_index_t buffering_resource::all_writing_frame_for_test() const {
 
 channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
+}
+
+std::string const &buffering_resource::identifier_for_test() const {
+    return this->_identifier;
 }

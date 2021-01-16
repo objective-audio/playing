@@ -21,12 +21,15 @@ struct buffering_resource final : buffering_resource_protocol {
                                               uint32_t const ch_count) override;
     void create_buffer_on_task() override;
 
-    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
-                                   std::optional<std::string> &&identifier) override;
+    void set_all_writing_on_render(frame_index_t const) override;
     void write_all_elements_on_task() override;
     void advance_on_render(fragment_index_t const) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
     void overwrite_element_on_render(element_address const &) override;
+
+    bool needs_all_writing_on_render() const override;
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override;
+    void set_identifier_request_on_main(std::string const &) override;
 
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,
                                                   frame_index_t const) override;
@@ -39,6 +42,7 @@ struct buffering_resource final : buffering_resource_protocol {
 
     frame_index_t all_writing_frame_for_test() const;
     channel_mapping_ptr const &ch_mapping_for_test() const;
+    std::string const &identifier_for_test() const;
 
    private:
     std::size_t const _element_count;
@@ -60,7 +64,14 @@ struct buffering_resource final : buffering_resource_protocol {
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 
+    mutable std::mutex _request_mutex;
+    std::optional<channel_mapping_ptr> _ch_mapping_request = std::nullopt;
+    std::optional<std::string> _identifier_request = std::nullopt;
+
     buffering_resource(std::size_t const element_count, std::string const &root_path, std::string const &identifier,
                        make_channel_f &&);
+
+    std::optional<channel_mapping_ptr> _pull_ch_mapping_request_on_task();
+    std::optional<std::string> _pull_identifier_request_on_task();
 };
 }  // namespace yas::playing

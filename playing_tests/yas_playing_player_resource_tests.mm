@@ -59,8 +59,7 @@ struct buffering_resource : buffering_resource_protocol {
     void create_buffer_on_task() override {
     }
 
-    void set_all_writing_on_render(frame_index_t const, std::optional<channel_mapping_ptr> &&ch_mapping,
-                                   std::optional<std::string> &&identifier) override {
+    void set_all_writing_on_render(frame_index_t const) override {
     }
     void write_all_elements_on_task() override {
     }
@@ -74,6 +73,14 @@ struct buffering_resource : buffering_resource_protocol {
 
     bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const, frame_index_t const) override {
         return false;
+    }
+
+    bool needs_all_writing_on_render() const override {
+        return false;
+    }
+    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override {
+    }
+    void set_identifier_request_on_main(std::string const &) override {
     }
 };
 
@@ -122,20 +129,6 @@ struct cpp {
     XCTAssertEqual(resource->pull_seek_frame_on_render(), 666);
 
     XCTAssertEqual(resource->pull_seek_frame_on_render(), std::nullopt);
-}
-
-- (void)test_ch_mapping {
-    auto const resource = self->_cpp.make_resource();
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), std::nullopt);
-
-    auto const ch_mapping = channel_mapping::make_shared({1, 2});
-
-    resource->set_channel_mapping_on_main(ch_mapping);
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), ch_mapping);
-
-    XCTAssertEqual(resource->pull_channel_mapping_on_render(), std::nullopt);
 }
 
 - (void)test_current_frame {

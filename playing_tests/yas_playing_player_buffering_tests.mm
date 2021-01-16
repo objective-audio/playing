@@ -109,10 +109,7 @@ using namespace yas::playing;
     std::size_t called_reset_overwrite = 0;
     std::size_t called_pull_seek = 0;
     std::size_t called_current_frame = 0;
-    std::vector<std::tuple<frame_index_t, std::optional<channel_mapping_ptr>, std::optional<std::string>>>
-        called_set_all_writing;
-    std::size_t called_pull_ch_mapping = 0;
-    std::size_t called_pull_identifier = 0;
+    std::vector<frame_index_t> called_set_all_writing;
     std::vector<frame_index_t> called_set_current_frame;
 
     frame_index_t current_frame = 100;
@@ -133,19 +130,11 @@ using namespace yas::playing;
     resource->set_current_frame_handler = [&called_set_current_frame](frame_index_t frame) {
         called_set_current_frame.emplace_back(frame);
     };
-    buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame,
-                                                                   std::optional<channel_mapping_ptr> &&ch_mapping,
-                                                                   std::optional<std::string> &&identifier) {
-        called_set_all_writing.emplace_back(frame, ch_mapping, identifier);
+    buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
+        called_set_all_writing.emplace_back(frame);
     };
-    resource->pull_ch_mapping_handler = [&called_pull_ch_mapping, &ch_mapping] {
-        ++called_pull_ch_mapping;
-        return ch_mapping;
-    };
-    resource->pull_identifier_handler = [&called_pull_identifier, &identifier] {
-        ++called_pull_identifier;
-        return identifier;
-    };
+#warning todo seek_frameだけでなくch_mappingやidentifierもチェック
+    buffering->needs_all_writing_handler = [] { return false; };
 
     // seek_frameなし
 
@@ -155,12 +144,7 @@ using namespace yas::playing;
     XCTAssertEqual(called_pull_seek, 1);
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
-    XCTAssertEqual(std::get<0>(called_set_all_writing.at(0)), 100);
-    XCTAssertEqual(std::get<1>(called_set_all_writing.at(0)).value()->indices,
-                   (std::vector<channel_index_t>{10, 11, 12}));
-    XCTAssertEqual(std::get<2>(called_set_all_writing.at(0)), "234");
-    XCTAssertEqual(called_pull_ch_mapping, 1);
-    XCTAssertEqual(called_pull_identifier, 1);
+    XCTAssertEqual(called_set_all_writing.at(0), 100);
     XCTAssertEqual(called_set_current_frame.size(), 0);
 
     // seek_frameあり
@@ -173,12 +157,7 @@ using namespace yas::playing;
     XCTAssertEqual(called_pull_seek, 2);
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 2);
-    XCTAssertEqual(std::get<0>(called_set_all_writing.at(1)), 200);
-    XCTAssertEqual(std::get<1>(called_set_all_writing.at(1)).value()->indices,
-                   (std::vector<channel_index_t>{10, 11, 12}));
-    XCTAssertEqual(std::get<2>(called_set_all_writing.at(1)), "234");
-    XCTAssertEqual(called_pull_ch_mapping, 2);
-    XCTAssertEqual(called_pull_identifier, 2);
+    XCTAssertEqual(called_set_all_writing.at(1), 200);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 200);
 }
@@ -213,6 +192,7 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
 
     std::size_t called_pull_seek = 0;
+    std::size_t called_needs_all_writing = 0;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::advancing; };
     resource->reset_overwrite_requests_handler = [] {};
@@ -221,14 +201,16 @@ using namespace yas::playing;
         return 0;
     };
     resource->set_current_frame_handler = [](frame_index_t frame) {};
-    buffering->set_all_writing_handler = [](frame_index_t frame, std::optional<channel_mapping_ptr> &&,
-                                            std::optional<std::string> &&) {};
-    resource->pull_ch_mapping_handler = [] { return std::nullopt; };
-    resource->pull_identifier_handler = [] { return std::nullopt; };
+    buffering->set_all_writing_handler = [](frame_index_t frame) {};
+    buffering->needs_all_writing_handler = [&called_needs_all_writing] {
+        ++called_needs_all_writing;
+        return false;
+    };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_pull_seek, 1);
+    XCTAssertEqual(called_needs_all_writing, 1);
 }
 
 @end

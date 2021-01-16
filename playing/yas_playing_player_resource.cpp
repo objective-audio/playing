@@ -25,21 +25,6 @@ buffering_resource_protocol_ptr const &player_resource::buffering() const {
     return this->_buffering;
 }
 
-void player_resource::set_identifier_on_main(std::string const &identifier) {
-    std::lock_guard<std::recursive_mutex> lock(this->_identifier_mutex);
-    this->_identifier = identifier;
-}
-
-std::optional<std::string> player_resource::pull_identifier_on_render() {
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_identifier_mutex, std::try_to_lock);
-        lock.owns_lock()) {
-        auto identifier = std::move(this->_identifier);
-        this->_identifier = std::nullopt;
-        return identifier;
-    }
-    return std::nullopt;
-}
-
 void player_resource::set_playing_on_main(bool const is_playing) {
     this->_is_playing.store(is_playing);
 }
@@ -49,33 +34,16 @@ bool player_resource::is_playing_on_render() const {
 }
 
 void player_resource::seek_on_main(frame_index_t const frame) {
-    std::lock_guard<std::recursive_mutex> lock(this->_seek_mutex);
+    std::lock_guard<std::mutex> lock(this->_seek_mutex);
     this->_seek_frame = frame;
 }
 
 std::optional<frame_index_t> player_resource::pull_seek_frame_on_render() {
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_seek_mutex, std::try_to_lock); lock.owns_lock()) {
+    if (auto lock = std::unique_lock<std::mutex>(this->_seek_mutex, std::try_to_lock); lock.owns_lock()) {
         if (this->_seek_frame.has_value()) {
             auto frame = this->_seek_frame;
             this->_seek_frame = std::nullopt;
             return frame;
-        }
-    }
-    return std::nullopt;
-}
-
-void player_resource::set_channel_mapping_on_main(channel_mapping_ptr const &ch_mapping) {
-    std::lock_guard<std::recursive_mutex> lock(this->_ch_mapping_mutex);
-    this->_ch_mapping = ch_mapping;
-    this->_ch_mapping_changed = true;
-}
-
-std::optional<channel_mapping_ptr> player_resource::pull_channel_mapping_on_render() {
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_ch_mapping_mutex, std::try_to_lock);
-        lock.owns_lock()) {
-        if (this->_ch_mapping_changed) {
-            this->_ch_mapping_changed = false;
-            return std::move(this->_ch_mapping);
         }
     }
     return std::nullopt;
@@ -90,7 +58,7 @@ frame_index_t player_resource::current_frame() const {
 }
 
 void player_resource::add_overwrite_request_on_main(element_address &&request) {
-    std::lock_guard<std::recursive_mutex> lock(this->_overwrite_mutex);
+    std::lock_guard<std::mutex> lock(this->_overwrite_mutex);
     if (this->_is_overwritten) {
         this->_overwrite_requests.clear();
         this->_is_overwritten = false;
@@ -99,8 +67,7 @@ void player_resource::add_overwrite_request_on_main(element_address &&request) {
 }
 
 void player_resource::perform_overwrite_requests_on_render(overwrite_requests_f const &handler) {
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_overwrite_mutex, std::try_to_lock);
-        lock.owns_lock()) {
+    if (auto lock = std::unique_lock<std::mutex>(this->_overwrite_mutex, std::try_to_lock); lock.owns_lock()) {
         if (!this->_is_overwritten) {
             handler(this->_overwrite_requests);
             this->_is_overwritten = true;
@@ -109,8 +76,7 @@ void player_resource::perform_overwrite_requests_on_render(overwrite_requests_f 
 }
 
 void player_resource::reset_overwrite_requests_on_render() {
-    if (auto lock = std::unique_lock<std::recursive_mutex>(this->_overwrite_mutex, std::try_to_lock);
-        lock.owns_lock()) {
+    if (auto lock = std::unique_lock<std::mutex>(this->_overwrite_mutex, std::try_to_lock); lock.owns_lock()) {
         this->_is_overwritten = true;
     }
 }
