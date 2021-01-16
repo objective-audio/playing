@@ -230,6 +230,10 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
 }
 
 bool buffering_resource::needs_all_writing_on_render() const {
+    if (this->_rendering_state.load() != rendering_state_t::advancing) {
+        throw std::runtime_error("state is not advancing.");
+    }
+
     if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
         return this->_ch_mapping_request.has_value() || this->_identifier_request.has_value();
     }
