@@ -544,4 +544,60 @@ struct cpp {
     XCTAssertFalse(buffering->read_into_buffer_on_render(&buffer, 1, 301));
 }
 
+- (void)test_needs_all_writing_on_render {
+    self->_cpp.setup_advancing();
+
+    auto const &buffering = self->_cpp.buffering;
+
+    XCTAssertFalse(buffering->needs_all_writing_on_render(), @"初期状態はfalse");
+
+    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared());
+
+    XCTAssertTrue(buffering->needs_all_writing_on_render(), @"channel_mapping_requestがあればtrue");
+
+    buffering->set_all_writing_on_render(0);
+    buffering->write_all_elements_on_task();
+
+    XCTAssertFalse(buffering->needs_all_writing_on_render(), @"書き込めばリセットされてfalse");
+
+    buffering->set_identifier_request_on_main("333");
+
+    XCTAssertTrue(buffering->needs_all_writing_on_render(), @"identifier_requestがあればtrue");
+
+    buffering->set_all_writing_on_render(0);
+    buffering->write_all_elements_on_task();
+
+    XCTAssertFalse(buffering->needs_all_writing_on_render(), @"書き込めばリセットされてfalse");
+}
+
+- (void)test_channel_mapping_request {
+    self->_cpp.setup_advancing();
+
+    auto const &buffering = self->_cpp.buffering;
+
+    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({2, 1}));
+
+    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{}));
+
+    buffering->set_all_writing_on_render(0);
+    buffering->write_all_elements_on_task();
+
+    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{2, 1}));
+}
+
+- (void)test_identifier_request {
+    self->_cpp.setup_advancing();
+
+    auto const &buffering = self->_cpp.buffering;
+
+    buffering->set_identifier_request_on_main("444");
+
+    XCTAssertEqual(buffering->identifier_for_test(), test_utils::identifier);
+
+    buffering->set_all_writing_on_render(0);
+    buffering->write_all_elements_on_task();
+
+    XCTAssertEqual(buffering->identifier_for_test(), "444");
+}
+
 @end
