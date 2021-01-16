@@ -58,8 +58,7 @@ using namespace yas::playing;
             called_set_ch_mapping_request_handler.emplace_back(ch_mapping);
         };
 
-    auto const player =
-        player::make_shared(test_utils::root_path(), test_utils::identifier, renderer, worker, priority, resource);
+    auto const player = player::make_shared(test_utils::root_path(), renderer, worker, priority, resource);
 
     XCTAssertEqual(called_set_is_playing.size(), 1);
     XCTAssertFalse(called_set_is_playing.at(0));
@@ -67,7 +66,7 @@ using namespace yas::playing;
     XCTAssertEqual(called_set_is_rendering.size(), 1);
     XCTAssertTrue(called_set_is_rendering.at(0));
     XCTAssertEqual(called_set_identifier_request_handler.size(), 1);
-    XCTAssertEqual(called_set_identifier_request_handler.at(0), test_utils::identifier);
+    XCTAssertEqual(called_set_identifier_request_handler.at(0), "");
     XCTAssertEqual(called_set_ch_mapping_request_handler.size(), 1);
     XCTAssertEqual(called_set_ch_mapping_request_handler.at(0)->indices, (std::vector<channel_index_t>{}));
 }

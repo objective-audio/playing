@@ -20,15 +20,14 @@
 using namespace yas;
 using namespace yas::playing;
 
-player::player(std::string const &root_path, std::string const &identifier, renderable_ptr const &renderer,
-               workable_ptr const &worker, task_priority_t const &priority,
-               player_resource_protocol_ptr const &resource)
+player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
+               task_priority_t const &priority, player_resource_protocol_ptr const &resource)
     : _renderer(renderer),
       _worker(worker),
       _priority(priority),
       _resource(resource),
       _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())),
-      _identifier(chaining::value::holder<std::string>::make_shared(identifier)) {
+      _identifier(chaining::value::holder<std::string>::make_shared("")) {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
     using setup_state_t = buffering_resource::setup_state_t;
@@ -302,8 +301,7 @@ chaining::chain_sync_t<bool> player::is_playing_chain() const {
     return this->_is_playing->chain();
 }
 
-player_ptr player::make_shared(std::string const &root_path, std::string const &identifier,
-                               renderable_ptr const &renderer, workable_ptr const &worker,
+player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
                                task_priority_t const &priority, player_resource_protocol_ptr const &resource) {
-    return player_ptr(new player{root_path, identifier, renderer, worker, priority, resource});
+    return player_ptr(new player{root_path, renderer, worker, priority, resource});
 }

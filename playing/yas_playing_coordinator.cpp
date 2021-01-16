@@ -22,10 +22,9 @@
 using namespace yas;
 using namespace yas::playing;
 
-coordinator::coordinator(std::string const &identifier, workable_ptr const &worker,
-                         coordinator_renderable_ptr const &renderer, playable_ptr const &player,
-                         exportable_ptr const &exporter)
-    : _identifier(identifier), _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
+coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr const &renderer,
+                         playable_ptr const &player, exportable_ptr const &exporter)
+    : _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
     this->_exporter->event_chain()
         .perform([this](exporter_event const &event) {
             if (event.result.is_success()) {
@@ -125,24 +124,21 @@ void coordinator::_update_exporter() {
         timeline_container::make_shared(this->_identifier, this->_renderer->sample_rate(), this->_timeline));
 }
 
-coordinator_ptr coordinator::make_shared(std::string const &root_path, std::string const &identifier,
-                                         coordinator_renderable_ptr const &renderer) {
+coordinator_ptr coordinator::make_shared(std::string const &root_path, coordinator_renderable_ptr const &renderer) {
     auto const worker = worker::make_shared();
 
     auto const player = player::make_shared(
-        root_path, identifier, renderer, worker, {},
-        player_resource::make_shared(
-            reading_resource::make_shared(),
-            buffering_resource::make_shared(3, root_path, identifier, playing::make_buffering_channel)));
+        root_path, renderer, worker, {},
+        player_resource::make_shared(reading_resource::make_shared(),
+                                     buffering_resource::make_shared(3, root_path, playing::make_buffering_channel)));
 
     auto const exporter =
         exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1});
 
-    return make_shared(identifier, worker, renderer, player, exporter);
+    return make_shared(worker, renderer, player, exporter);
 }
 
-coordinator_ptr coordinator::make_shared(std::string const &identifier, workable_ptr const &worker,
-                                         coordinator_renderable_ptr const &renderer, playable_ptr const &player,
-                                         exportable_ptr const &exporter) {
-    return coordinator_ptr(new coordinator{identifier, worker, renderer, player, exporter});
+coordinator_ptr coordinator::make_shared(workable_ptr const &worker, coordinator_renderable_ptr const &renderer,
+                                         playable_ptr const &player, exportable_ptr const &exporter) {
+    return coordinator_ptr(new coordinator{worker, renderer, player, exporter});
 }

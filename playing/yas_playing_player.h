@@ -24,8 +24,8 @@ struct player final : playable {
 
     [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
 
-    static player_ptr make_shared(std::string const &root_path, std::string const &identifier, renderable_ptr const &,
-                                  workable_ptr const &, task_priority_t const &, player_resource_protocol_ptr const &);
+    static player_ptr make_shared(std::string const &root_path, renderable_ptr const &, workable_ptr const &,
+                                  task_priority_t const &, player_resource_protocol_ptr const &);
 
    private:
     renderable_ptr const _renderer;
@@ -38,7 +38,7 @@ struct player final : playable {
     chaining::value::holder_ptr<std::string> _identifier;
     chaining::observer_pool _pool;
 
-    player(std::string const &root_path, std::string const &identifier, renderable_ptr const &, workable_ptr const &,
-           task_priority_t const &, player_resource_protocol_ptr const &);
+    player(std::string const &root_path, renderable_ptr const &, workable_ptr const &, task_priority_t const &,
+           player_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing

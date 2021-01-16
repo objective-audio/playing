@@ -23,10 +23,9 @@ using namespace yas;
 using namespace yas::playing;
 
 buffering_resource::buffering_resource(std::size_t const element_count, std::string const &root_path,
-                                       std::string const &identifier, make_channel_f &&make_channel_handler)
+                                       make_channel_f &&make_channel_handler)
     : _element_count(element_count),
       _root_path(root_path),
-      _identifier(identifier),
       _make_channel_handler(make_channel_handler),
       _ch_mapping(channel_mapping::make_shared()) {
 }
@@ -285,10 +284,8 @@ std::optional<std::string> buffering_resource::_pull_identifier_request_on_task(
 
 buffering_resource_ptr buffering_resource::make_shared(std::size_t const element_count, std::string const &root_path,
 
-                                                       std::string const &identifier,
                                                        make_channel_f &&make_channel_handler) {
-    return buffering_resource_ptr{
-        new buffering_resource{element_count, root_path, identifier, std::move(make_channel_handler)}};
+    return buffering_resource_ptr{new buffering_resource{element_count, root_path, std::move(make_channel_handler)}};
 }
 
 frame_index_t buffering_resource::all_writing_frame_for_test() const {
