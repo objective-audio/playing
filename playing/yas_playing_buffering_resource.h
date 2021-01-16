@@ -38,7 +38,7 @@ struct buffering_resource final : buffering_resource_protocol {
         std::function<buffering_channel_protocol_ptr(std::size_t const, audio::format const &, sample_rate_t const)>;
 
     static buffering_resource_ptr make_shared(std::size_t const element_count, std::string const &root_path,
-                                              std::string const &identifier, make_channel_f &&);
+                                              make_channel_f &&);
 
     frame_index_t all_writing_frame_for_test() const;
     channel_mapping_ptr const &ch_mapping_for_test() const;
@@ -60,7 +60,7 @@ struct buffering_resource final : buffering_resource_protocol {
     std::atomic<rendering_state_t> _rendering_state{rendering_state_t::waiting};
     frame_index_t _all_writing_frame = 0;
     channel_mapping_ptr _ch_mapping;
-    std::string _identifier;
+    std::string _identifier = "";
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 
@@ -68,8 +68,7 @@ struct buffering_resource final : buffering_resource_protocol {
     std::optional<channel_mapping_ptr> _ch_mapping_request = std::nullopt;
     std::optional<std::string> _identifier_request = std::nullopt;
 
-    buffering_resource(std::size_t const element_count, std::string const &root_path, std::string const &identifier,
-                       make_channel_f &&);
+    buffering_resource(std::size_t const element_count, std::string const &root_path, make_channel_f &&);
 
     std::optional<channel_mapping_ptr> _pull_ch_mapping_request_on_task();
     std::optional<std::string> _pull_identifier_request_on_task();

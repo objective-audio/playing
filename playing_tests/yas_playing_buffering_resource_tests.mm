@@ -25,9 +25,6 @@ static path::timeline timeline_path(std::string const &identifier) {
                           .sample_rate = static_cast<sample_rate_t>(sample_rate)};
 }
 
-static path::channel channel_path(channel_index_t const ch_idx) {
-    return path::channel{buffering_test::tl_path, ch_idx};
-}
 static path::channel channel_path(std::string const &identifier, channel_index_t const ch_idx) {
     return path::channel{buffering_test::timeline_path(identifier), ch_idx};
 }
@@ -76,7 +73,7 @@ struct cpp {
         std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
+            buffering_test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -100,7 +97,7 @@ struct cpp {
         std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
         auto const buffering = buffering_resource::make_shared(
-            buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
+            buffering_test::element_count, test_utils::root_path(),
             [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
                 auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
                 channels.emplace_back(channel);
@@ -149,7 +146,7 @@ struct cpp {
     std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
+        buffering_test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
@@ -189,7 +186,7 @@ struct cpp {
     std::vector<std::shared_ptr<buffering_test::channel>> channels;
 
     auto const buffering = buffering_resource::make_shared(
-        buffering_test::element_count, test_utils::root_path(), test_utils::identifier,
+        buffering_test::element_count, test_utils::root_path(),
         [&channels](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
             auto channel = std::make_shared<buffering_test::channel>(element_count, format, frag_length);
             channels.emplace_back(channel);
@@ -381,10 +378,10 @@ struct cpp {
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::advancing);
 
     XCTAssertEqual(called_channel_0.size(), 1);
-    XCTAssertEqual(called_channel_0.at(0).first, buffering_test::channel_path(0));
+    XCTAssertEqual(called_channel_0.at(0).first, buffering_test::channel_path("", 0));
     XCTAssertEqual(called_channel_0.at(0).second, 0);
     XCTAssertEqual(called_channel_1.size(), 1);
-    XCTAssertEqual(called_channel_1.at(0).first, buffering_test::channel_path(1));
+    XCTAssertEqual(called_channel_1.at(0).first, buffering_test::channel_path("", 1));
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
     buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({1, 0}));
@@ -393,10 +390,10 @@ struct cpp {
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
 
     XCTAssertEqual(called_channel_0.size(), 2);
-    XCTAssertEqual(called_channel_0.at(1).first, buffering_test::channel_path(1));
+    XCTAssertEqual(called_channel_0.at(1).first, buffering_test::channel_path("", 1));
     XCTAssertEqual(called_channel_0.at(1).second, 2, @"10(frame) / 4(frag_length) = 2");
     XCTAssertEqual(called_channel_1.size(), 2);
-    XCTAssertEqual(called_channel_1.at(1).first, buffering_test::channel_path(0));
+    XCTAssertEqual(called_channel_1.at(1).first, buffering_test::channel_path("", 0));
     XCTAssertEqual(called_channel_1.at(1).second, 2);
 
     buffering->set_identifier_request_on_main("111");
@@ -592,7 +589,7 @@ struct cpp {
 
     buffering->set_identifier_request_on_main("444");
 
-    XCTAssertEqual(buffering->identifier_for_test(), test_utils::identifier);
+    XCTAssertEqual(buffering->identifier_for_test(), "");
 
     buffering->set_all_writing_on_render(0);
     buffering->write_all_elements_on_task();
