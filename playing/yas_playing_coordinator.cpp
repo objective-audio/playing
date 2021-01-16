@@ -130,7 +130,7 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::stri
     auto const worker = worker::make_shared();
 
     auto const player = player::make_shared(
-        root_path, identifier, renderer, worker, {},
+        root_path, renderer, worker, {},
         player_resource::make_shared(reading_resource::make_shared(),
                                      buffering_resource::make_shared(3, root_path, playing::make_buffering_channel)));
 
