@@ -160,18 +160,16 @@ player::player(std::string const &root_path, std::string const &identifier, rend
             case rendering_state_t::advancing: {
                 // 全バッファ書き込み済み
                 auto const seek_frame = resource->pull_seek_frame_on_render();
-                auto ch_mapping = resource->pull_channel_mapping_on_render();
-                auto identifier = resource->pull_identifier_on_render();
+                bool const needs_all_writing = buffering->needs_all_writing_on_render();
 
-                if (rendering_state == rendering_state_t::waiting || seek_frame.has_value() || ch_mapping.has_value() ||
-                    identifier.has_value()) {
+                if (rendering_state == rendering_state_t::waiting || seek_frame.has_value() || needs_all_writing) {
                     // 全バッファ再書き込み開始
                     resource->reset_overwrite_requests_on_render();
                     auto const frame = seek_frame.has_value() ? seek_frame.value() : resource->current_frame();
                     if (seek_frame.has_value()) {
                         resource->set_current_frame_on_render(frame);
                     }
-                    buffering->set_all_writing_on_render(frame, std::move(ch_mapping), std::move(identifier));
+                    buffering->set_all_writing_on_render(frame, std::nullopt, std::nullopt);
                     return;
                 }
             } break;
