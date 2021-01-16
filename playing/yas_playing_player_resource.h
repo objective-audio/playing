@@ -40,20 +40,20 @@ struct player_resource final : player_resource_protocol {
     reading_resource_protocol_ptr const _reading;
     buffering_resource_protocol_ptr const _buffering;
 
-    std::recursive_mutex _identifier_mutex;
+    std::mutex _identifier_mutex;
     std::optional<std::string> _identifier = std::nullopt;
 
     std::atomic<bool> _is_playing{false};
     std::atomic<frame_index_t> _current_frame{0};
 
-    std::recursive_mutex _seek_mutex;
+    std::mutex _seek_mutex;
     std::optional<frame_index_t> _seek_frame = std::nullopt;
 
-    std::recursive_mutex _ch_mapping_mutex;
+    std::mutex _ch_mapping_mutex;
     channel_mapping_ptr _ch_mapping;
     bool _ch_mapping_changed = false;
 
-    std::recursive_mutex _overwrite_mutex;
+    std::mutex _overwrite_mutex;
     overwrite_requests_t _overwrite_requests;
     bool _is_overwritten = false;
 
