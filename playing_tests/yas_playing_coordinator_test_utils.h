@@ -154,8 +154,7 @@ struct cpp {
 
         this->worker->start_handler = [] {};
 
-        this->coordinator = coordinator::make_shared(coordinator_test::identifier, this->worker, this->renderer,
-                                                     this->player, this->exporter);
+        this->coordinator = coordinator::make_shared(this->worker, this->renderer, this->player, this->exporter);
 
         return this->coordinator;
     }

@@ -46,7 +46,7 @@ using namespace yas::playing;
 
     worker->start_handler = [&start_called] { start_called = true; };
 
-    auto const coordinator = coordinator::make_shared(coordinator_test::identifier, worker, renderer, player, exporter);
+    auto const coordinator = coordinator::make_shared(worker, renderer, player, exporter);
 
     XCTAssertTrue(exporter_event_called);
     XCTAssertTrue(configuration_chain_called);
@@ -176,7 +176,29 @@ using namespace yas::playing;
 - (void)test_identifier {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    XCTAssertEqual(coordinator->identifier(), coordinator_test::identifier);
+    std::vector<std::string> called_exporter_identifier;
+    std::vector<std::string> called_player_identifier;
+
+    self->_cpp.renderer->sample_rate_handler = [] { return 4; };
+    self->_cpp.exporter->set_timeline_container_handler =
+        [&called_exporter_identifier](timeline_container_ptr container) {
+            called_exporter_identifier.emplace_back(container->identifier());
+        };
+    self->_cpp.player->set_identifier_handler = [&called_player_identifier](std::string identifier) {
+        called_player_identifier.emplace_back(identifier);
+    };
+
+    XCTAssertEqual(coordinator->identifier(), "");
+
+    auto const timeline = proc::timeline::make_shared();
+
+    coordinator->set_timeline(timeline, "1");
+
+    XCTAssertEqual(coordinator->identifier(), "1");
+    XCTAssertEqual(called_exporter_identifier.size(), 1);
+    XCTAssertEqual(called_exporter_identifier.at(0), "1");
+    XCTAssertEqual(called_player_identifier.size(), 1);
+    XCTAssertEqual(called_player_identifier.at(0), "1");
 }
 
 - (void)test_channel_mapping {
