@@ -42,6 +42,7 @@ struct buffering_resource final : buffering_resource_protocol {
 
     frame_index_t all_writing_frame_for_test() const;
     channel_mapping_ptr const &ch_mapping_for_test() const;
+    std::string const &identifier_for_test() const;
 
    private:
     std::size_t const _element_count;

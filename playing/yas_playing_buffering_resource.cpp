@@ -296,3 +296,7 @@ frame_index_t buffering_resource::all_writing_frame_for_test() const {
 channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
 }
+
+std::string const &buffering_resource::identifier_for_test() const {
+    return this->_identifier;
+}
