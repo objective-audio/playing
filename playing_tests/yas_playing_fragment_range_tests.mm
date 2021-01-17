@@ -26,4 +26,14 @@ using namespace yas::playing;
     XCTAssertFalse((fragment_range{.index = -1, .length = 2}.contains(1)));
 }
 
+- (void)test_equal {
+    XCTAssertTrue((fragment_range{.index = 0, .length = 1}) == (fragment_range{.index = 0, .length = 1}));
+    XCTAssertFalse((fragment_range{.index = 0, .length = 1}) == (fragment_range{.index = 0, .length = 2}));
+    XCTAssertFalse((fragment_range{.index = 0, .length = 1}) == (fragment_range{.index = 3, .length = 1}));
+
+    XCTAssertFalse((fragment_range{.index = 0, .length = 1}) != (fragment_range{.index = 0, .length = 1}));
+    XCTAssertTrue((fragment_range{.index = 0, .length = 1}) != (fragment_range{.index = 0, .length = 2}));
+    XCTAssertTrue((fragment_range{.index = 0, .length = 1}) != (fragment_range{.index = 3, .length = 1}));
+}
+
 @end
