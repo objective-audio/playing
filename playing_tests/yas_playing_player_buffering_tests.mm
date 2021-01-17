@@ -111,11 +111,11 @@ using namespace yas::playing;
     std::size_t called_current_frame = 0;
     std::vector<frame_index_t> called_set_all_writing;
     std::vector<frame_index_t> called_set_current_frame;
+    std::size_t called_needs_all_writing = 0;
 
     frame_index_t current_frame = 100;
     std::optional<frame_index_t> seek_frame = std::nullopt;
-    auto ch_mapping = channel_mapping::make_shared({10, 11, 12});
-    std::string identifier = "234";
+    bool needs_all_writing = false;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::waiting; };
     resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };
@@ -133,21 +133,25 @@ using namespace yas::playing;
     buffering->set_all_writing_handler = [&called_set_all_writing](frame_index_t frame) {
         called_set_all_writing.emplace_back(frame);
     };
-#warning todo seek_frameだけでなくch_mappingやidentifierもチェック
-    buffering->needs_all_writing_handler = [] { return false; };
 
-    // seek_frameなし
+    buffering->needs_all_writing_handler = [&needs_all_writing, &called_needs_all_writing] {
+        ++called_needs_all_writing;
+        return needs_all_writing;
+    };
+
+    // seek_frameなし、needs_all_writingなし
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_reset_overwrite, 1);
     XCTAssertEqual(called_pull_seek, 1);
+    XCTAssertEqual(called_needs_all_writing, 1);
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 1);
     XCTAssertEqual(called_set_all_writing.at(0), 100);
     XCTAssertEqual(called_set_current_frame.size(), 0);
 
-    // seek_frameあり
+    // seek_frameあり、needs_all_writingなし
 
     seek_frame = 200;
 
@@ -155,11 +159,26 @@ using namespace yas::playing;
 
     XCTAssertEqual(called_reset_overwrite, 2);
     XCTAssertEqual(called_pull_seek, 2);
+    XCTAssertEqual(called_needs_all_writing, 2);
     XCTAssertEqual(called_current_frame, 1);
     XCTAssertEqual(called_set_all_writing.size(), 2);
     XCTAssertEqual(called_set_all_writing.at(1), 200);
     XCTAssertEqual(called_set_current_frame.size(), 1);
     XCTAssertEqual(called_set_current_frame.at(0), 200);
+
+    // seek_frameなし、needs_all_writingあり
+
+    seek_frame = std::nullopt;
+    needs_all_writing = true;
+
+    self->_cpp.rendering_handler(&buffer);
+
+    XCTAssertEqual(called_reset_overwrite, 3);
+    XCTAssertEqual(called_pull_seek, 3);
+    XCTAssertEqual(called_needs_all_writing, 3);
+    XCTAssertEqual(called_current_frame, 2);
+    XCTAssertEqual(called_set_all_writing.size(), 3);
+    XCTAssertEqual(called_set_current_frame.size(), 1);
 }
 
 - (void)test_rendering_state_all_writing {
@@ -171,16 +190,22 @@ using namespace yas::playing;
     auto const &resource = self->_cpp.resource;
 
     bool called_pull_seek = false;
+    bool called_needs_all_writing = false;
 
     buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::all_writing; };
     resource->pull_seek_frame_handler = [&called_pull_seek] {
         called_pull_seek = true;
         return std::nullopt;
     };
+    buffering->needs_all_writing_handler = [&called_needs_all_writing] {
+        called_needs_all_writing = true;
+        return false;
+    };
 
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertFalse(called_pull_seek);
+    XCTAssertFalse(called_needs_all_writing);
 }
 
 - (void)test_rendering_state_advancing {
