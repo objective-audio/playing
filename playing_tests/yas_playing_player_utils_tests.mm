@@ -14,6 +14,24 @@ using namespace yas::playing;
 
 @implementation yas_playing_rendering_info_tests
 
+- (void)test_top_fragment_index {
+    // frag_lengthが0ならnulloptを返す
+    XCTAssertEqual(player_utils::top_fragment_idx(0, 1), std::nullopt);
+
+    XCTAssertEqual(player_utils::top_fragment_idx(1, -2), -2);
+    XCTAssertEqual(player_utils::top_fragment_idx(1, -1), -1);
+    XCTAssertEqual(player_utils::top_fragment_idx(1, 0), 0);
+    XCTAssertEqual(player_utils::top_fragment_idx(1, 1), 1);
+    XCTAssertEqual(player_utils::top_fragment_idx(1, 2), 2);
+
+    XCTAssertEqual(player_utils::top_fragment_idx(2, -3), -2);
+    XCTAssertEqual(player_utils::top_fragment_idx(2, -2), -1);
+    XCTAssertEqual(player_utils::top_fragment_idx(2, -1), -1);
+    XCTAssertEqual(player_utils::top_fragment_idx(2, 0), 0);
+    XCTAssertEqual(player_utils::top_fragment_idx(2, 1), 0);
+    XCTAssertEqual(player_utils::top_fragment_idx(2, 2), 1);
+}
+
 - (void)test_process_length {
     // ファイルの終わりに隣接しない
     XCTAssertEqual(player_utils::process_length(0, 2, 3), 2);
