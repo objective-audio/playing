@@ -5,6 +5,9 @@
 #import <XCTest/XCTest.h>
 #import "yas_playing_player_test_utils.h"
 
+using namespace yas;
+using namespace yas::playing;
+
 @interface yas_playing_player_task_tests : XCTestCase
 
 @end
