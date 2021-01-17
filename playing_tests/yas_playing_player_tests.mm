@@ -30,12 +30,12 @@ using namespace yas::playing;
     auto const resource = std::make_shared<player_test::resource>(reading, buffering);
 
     std::vector<std::string> called_set_identifier;
-    std::vector<channel_mapping_ptr> called_set_ch_mapping;
+    std::vector<channel_mapping> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;
     std::vector<renderable::rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
     std::vector<std::string> called_set_identifier_request_handler;
-    std::vector<channel_mapping_ptr> called_set_ch_mapping_request_handler;
+    std::vector<channel_mapping> called_set_ch_mapping_request_handler;
 
     resource->set_playing_handler = [&called_set_is_playing](bool is_playing) {
         called_set_is_playing.emplace_back(is_playing);
@@ -53,10 +53,9 @@ using namespace yas::playing;
         called_set_identifier_request_handler.emplace_back(identifier);
     };
 
-    buffering->set_ch_mapping_request_handler =
-        [&called_set_ch_mapping_request_handler](channel_mapping_ptr ch_mapping) {
-            called_set_ch_mapping_request_handler.emplace_back(ch_mapping);
-        };
+    buffering->set_ch_mapping_request_handler = [&called_set_ch_mapping_request_handler](channel_mapping ch_mapping) {
+        called_set_ch_mapping_request_handler.emplace_back(ch_mapping);
+    };
 
     auto const player = player::make_shared(test_utils::root_path(), renderer, worker, priority, resource);
 
@@ -68,7 +67,7 @@ using namespace yas::playing;
     XCTAssertEqual(called_set_identifier_request_handler.size(), 1);
     XCTAssertEqual(called_set_identifier_request_handler.at(0), "");
     XCTAssertEqual(called_set_ch_mapping_request_handler.size(), 1);
-    XCTAssertEqual(called_set_ch_mapping_request_handler.at(0)->indices, (std::vector<channel_index_t>{}));
+    XCTAssertEqual(called_set_ch_mapping_request_handler.at(0).indices, (std::vector<channel_index_t>{}));
 }
 
 - (void)test_is_playing {
@@ -207,19 +206,19 @@ using namespace yas::playing;
 
     auto const &player = self->_cpp.player;
 
-    std::vector<channel_mapping_ptr> called_ch_mapping;
+    std::vector<channel_mapping> called_ch_mapping;
 
-    self->_cpp.buffering->set_ch_mapping_request_handler = [&called_ch_mapping](channel_mapping_ptr ch_mapping) {
+    self->_cpp.buffering->set_ch_mapping_request_handler = [&called_ch_mapping](channel_mapping ch_mapping) {
         called_ch_mapping.emplace_back(ch_mapping);
     };
 
-    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{}));
+    XCTAssertEqual(player->channel_mapping().indices, (std::vector<channel_index_t>{}));
 
-    player->set_channel_mapping(channel_mapping::make_shared({1, 2, 3}));
+    player->set_channel_mapping(channel_mapping{.indices = {1, 2, 3}});
 
-    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{1, 2, 3}));
+    XCTAssertEqual(player->channel_mapping().indices, (std::vector<channel_index_t>{1, 2, 3}));
     XCTAssertEqual(called_ch_mapping.size(), 1);
-    XCTAssertEqual(called_ch_mapping.at(0)->indices, (std::vector<channel_index_t>{1, 2, 3}));
+    XCTAssertEqual(called_ch_mapping.at(0).indices, (std::vector<channel_index_t>{1, 2, 3}));
 }
 
 @end

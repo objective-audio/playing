@@ -28,7 +28,7 @@ struct buffering_resource final : buffering_resource_protocol {
     void overwrite_element_on_render(element_address const &) override;
 
     bool needs_all_writing_on_render() const override;
-    void set_channel_mapping_request_on_main(channel_mapping_ptr const &) override;
+    void set_channel_mapping_request_on_main(channel_mapping const &) override;
     void set_identifier_request_on_main(std::string const &) override;
 
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,
@@ -41,7 +41,7 @@ struct buffering_resource final : buffering_resource_protocol {
                                               make_channel_f &&);
 
     frame_index_t all_writing_frame_for_test() const;
-    channel_mapping_ptr const &ch_mapping_for_test() const;
+    channel_mapping const &ch_mapping_for_test() const;
     std::string const &identifier_for_test() const;
 
    private:
@@ -59,18 +59,18 @@ struct buffering_resource final : buffering_resource_protocol {
 
     std::atomic<rendering_state_t> _rendering_state{rendering_state_t::waiting};
     frame_index_t _all_writing_frame = 0;
-    channel_mapping_ptr _ch_mapping;
+    channel_mapping _ch_mapping;
     std::string _identifier = "";
 
     std::vector<buffering_channel_protocol_ptr> _channels;
 
     mutable std::mutex _request_mutex;
-    std::optional<channel_mapping_ptr> _ch_mapping_request = std::nullopt;
+    std::optional<channel_mapping> _ch_mapping_request = std::nullopt;
     std::optional<std::string> _identifier_request = std::nullopt;
 
     buffering_resource(std::size_t const element_count, std::string const &root_path, make_channel_f &&);
 
-    std::optional<channel_mapping_ptr> _pull_ch_mapping_request_on_task();
+    std::optional<channel_mapping> _pull_ch_mapping_request_on_task();
     std::optional<std::string> _pull_identifier_request_on_task();
 };
 }  // namespace yas::playing

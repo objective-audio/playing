@@ -5,6 +5,7 @@
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
+#include <playing/yas_playing_channel_mapping.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_types.h>
 
@@ -73,7 +74,7 @@ struct buffering_resource_protocol {
     virtual void overwrite_element_on_render(element_address const &) = 0;
 
     virtual bool needs_all_writing_on_render() const = 0;
-    virtual void set_channel_mapping_request_on_main(channel_mapping_ptr const &) = 0;
+    virtual void set_channel_mapping_request_on_main(channel_mapping const &) = 0;
     virtual void set_identifier_request_on_main(std::string const &) = 0;
 
     [[nodiscard]] virtual bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,

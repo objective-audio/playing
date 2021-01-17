@@ -22,12 +22,7 @@ using namespace yas::playing;
 
 player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
                task_priority_t const &priority, player_resource_protocol_ptr const &resource)
-    : _renderer(renderer),
-      _worker(worker),
-      _priority(priority),
-      _resource(resource),
-      _ch_mapping(chaining::value::holder<channel_mapping_ptr>::make_shared(channel_mapping::make_shared())),
-      _identifier(chaining::value::holder<std::string>::make_shared("")) {
+    : _renderer(renderer), _worker(worker), _priority(priority), _resource(resource), _ch_mapping(), _identifier("") {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
     using setup_state_t = buffering_resource::setup_state_t;
@@ -235,21 +230,10 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
         }
     });
 
+    this->_resource->buffering()->set_identifier_request_on_main(this->_identifier);
+    this->_resource->buffering()->set_channel_mapping_request_on_main(this->_ch_mapping);
+
     // setup chaining
-
-    this->_identifier->chain()
-        .perform([this](std::string const &identifier) {
-            this->_resource->buffering()->set_identifier_request_on_main(identifier);
-        })
-        .sync()
-        ->add_to(this->_pool);
-
-    this->_ch_mapping->chain()
-        .perform([this](channel_mapping_ptr const &ch_mapping) {
-            this->_resource->buffering()->set_channel_mapping_request_on_main(ch_mapping);
-        })
-        .sync()
-        ->add_to(this->_pool);
 
     this->_is_playing->chain()
         .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
@@ -262,11 +246,13 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
 }
 
 void player::set_identifier(std::string const &identifier) {
-    this->_identifier->set_value(identifier);
+    this->_identifier = identifier;
+    this->_resource->buffering()->set_identifier_request_on_main(identifier);
 }
 
-void player::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
-    this->_ch_mapping->set_value(ch_mapping);
+void player::set_channel_mapping(playing::channel_mapping const &ch_mapping) {
+    this->_ch_mapping = ch_mapping;
+    this->_resource->buffering()->set_channel_mapping_request_on_main(ch_mapping);
 }
 
 void player::set_playing(bool const is_playing) {
@@ -282,11 +268,11 @@ void player::overwrite(std::optional<channel_index_t> const file_ch_idx, fragmen
 }
 
 std::string const &player::identifier() const {
-    return this->_identifier->raw();
+    return this->_identifier;
 }
 
-channel_mapping_ptr const &player::channel_mapping() const {
-    return this->_ch_mapping->raw();
+channel_mapping player::channel_mapping() const {
+    return this->_ch_mapping;
 }
 
 bool player::is_playing() const {

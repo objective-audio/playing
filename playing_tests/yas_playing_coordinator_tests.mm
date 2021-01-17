@@ -90,13 +90,13 @@ using namespace yas::playing;
 - (void)test_set_channel_mapping {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    std::vector<channel_mapping_ptr> called;
+    std::vector<channel_mapping> called;
 
-    self->_cpp.player->set_ch_mapping_handler = [&called](channel_mapping_ptr const &ch_mapping) {
+    self->_cpp.player->set_ch_mapping_handler = [&called](channel_mapping const &ch_mapping) {
         called.emplace_back(ch_mapping);
     };
 
-    auto const ch_mapping = channel_mapping::make_shared({3, 2, 1});
+    auto const ch_mapping = channel_mapping{.indices = {3, 2, 1}};
 
     coordinator->set_channel_mapping(ch_mapping);
 
@@ -204,11 +204,11 @@ using namespace yas::playing;
 - (void)test_channel_mapping {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    auto const ch_mapping = channel_mapping::make_shared({2, 3});
+    channel_mapping const ch_mapping{.indices = {2, 3}};
 
     self->_cpp.player->ch_mapping_handler = [&ch_mapping] { return ch_mapping; };
 
-    XCTAssertEqual(coordinator->channel_mapping(), ch_mapping);
+    XCTAssertEqual(coordinator->channel_mapping(), (channel_mapping{.indices = {2, 3}}));
 }
 
 - (void)test_is_playing {

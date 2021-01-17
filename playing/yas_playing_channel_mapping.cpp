@@ -9,9 +9,6 @@
 using namespace yas;
 using namespace yas::playing;
 
-channel_mapping::channel_mapping(std::vector<channel_index_t> &&indices) : indices(indices) {
-}
-
 std::optional<channel_index_t> channel_mapping::file_index(channel_index_t const out_idx,
                                                            std::size_t const ch_count) const {
     if (out_idx < ch_count) {
@@ -43,10 +40,10 @@ std::optional<channel_index_t> channel_mapping::out_index(channel_index_t const 
     return std::nullopt;
 }
 
-channel_mapping_ptr channel_mapping::make_shared() {
-    return make_shared({});
+bool channel_mapping::operator==(channel_mapping const &rhs) const {
+    return this->indices == rhs.indices;
 }
 
-channel_mapping_ptr channel_mapping::make_shared(std::vector<channel_index_t> &&indices) {
-    return std::shared_ptr<channel_mapping>(new channel_mapping{std::move(indices)});
+bool channel_mapping::operator!=(channel_mapping const &rhs) const {
+    return !(*this == rhs);
 }

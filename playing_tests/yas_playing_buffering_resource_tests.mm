@@ -255,7 +255,7 @@ struct cpp {
 
     XCTAssertEqual(buffering->rendering_state(), audio_buffering_rendering_state::all_writing);
     XCTAssertEqual(buffering->all_writing_frame_for_test(), 100);
-    XCTAssertEqual(buffering->ch_mapping_for_test()->indices.size(), 0);
+    XCTAssertEqual(buffering->ch_mapping_for_test().indices.size(), 0);
 }
 
 - (void)test_set_all_writing_from_advancing {
@@ -384,7 +384,7 @@ struct cpp {
     XCTAssertEqual(called_channel_1.at(0).first, buffering_test::channel_path("", 1));
     XCTAssertEqual(called_channel_1.at(0).second, 0);
 
-    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({1, 0}));
+    buffering->set_channel_mapping_request_on_main(channel_mapping{.indices = {1, 0}});
 
     std::thread{[&buffering] { buffering->set_all_writing_on_render(10); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
@@ -446,7 +446,7 @@ struct cpp {
     XCTAssertEqual(called0.size(), 1);
     XCTAssertEqual(called1.size(), 1);
 
-    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({2, 3}));
+    buffering->set_channel_mapping_request_on_main(channel_mapping{.indices = {2, 3}});
 
     std::thread{[&buffering] { buffering->set_all_writing_on_render(0); }}.join();
     std::thread{[&buffering] { buffering->write_all_elements_on_task(); }}.join();
@@ -548,7 +548,7 @@ struct cpp {
 
     XCTAssertFalse(buffering->needs_all_writing_on_render(), @"初期状態はfalse");
 
-    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared());
+    buffering->set_channel_mapping_request_on_main(channel_mapping{});
 
     XCTAssertTrue(buffering->needs_all_writing_on_render(), @"channel_mapping_requestがあればtrue");
 
@@ -572,14 +572,14 @@ struct cpp {
 
     auto const &buffering = self->_cpp.buffering;
 
-    buffering->set_channel_mapping_request_on_main(channel_mapping::make_shared({2, 1}));
+    buffering->set_channel_mapping_request_on_main(channel_mapping{.indices = {2, 1}});
 
-    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{}));
+    XCTAssertEqual(buffering->ch_mapping_for_test().indices, (std::vector<channel_index_t>{}));
 
     buffering->set_all_writing_on_render(0);
     buffering->write_all_elements_on_task();
 
-    XCTAssertEqual(buffering->ch_mapping_for_test()->indices, (std::vector<channel_index_t>{2, 1}));
+    XCTAssertEqual(buffering->ch_mapping_for_test().indices, (std::vector<channel_index_t>{2, 1}));
 }
 
 - (void)test_identifier_request {

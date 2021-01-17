@@ -49,7 +49,7 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
 
     this->ch_mapping_idx->chain()
         .perform([this](channel_index_t const &idx) {
-            this->coordinator->set_channel_mapping(channel_mapping::make_shared({idx, idx + 1}));
+            this->coordinator->set_channel_mapping(channel_mapping{.indices = {idx, idx + 1}});
         })
         .sync()
         ->add_to(this->_pool);
