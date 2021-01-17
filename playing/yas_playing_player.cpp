@@ -276,7 +276,7 @@ channel_mapping player::channel_mapping() const {
 }
 
 bool player::is_playing() const {
-    return this->_is_playing->raw();
+    return this->_is_playing->value();
 }
 
 frame_index_t player::current_frame() const {
