@@ -597,4 +597,14 @@ struct cpp {
     XCTAssertEqual(buffering->identifier_for_test(), "444");
 }
 
+- (void)test_element_count {
+    auto const buffering = buffering_resource::make_shared(
+        buffering_test::element_count, test_utils::root_path(),
+        [](std::size_t const element_count, audio::format const &format, sample_rate_t const frag_length) {
+            return std::make_shared<buffering_test::channel>(element_count, format, frag_length);
+        });
+
+    XCTAssertEqual(buffering->element_count(), buffering_test::element_count);
+}
+
 @end
