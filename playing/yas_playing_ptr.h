@@ -21,7 +21,6 @@ class buffering_channel;
 class buffering_element;
 class reading_resource;
 class player_resource;
-class channel_mapping;
 
 class playable;
 class renderable;
@@ -47,7 +46,6 @@ using buffering_channel_ptr = std::shared_ptr<buffering_channel>;
 using buffering_element_ptr = std::shared_ptr<buffering_element>;
 using reading_resource_ptr = std::shared_ptr<reading_resource>;
 using player_resource_ptr = std::shared_ptr<player_resource>;
-using channel_mapping_ptr = std::shared_ptr<channel_mapping>;
 
 using playable_ptr = std::shared_ptr<playable>;
 using renderable_ptr = std::shared_ptr<renderable>;

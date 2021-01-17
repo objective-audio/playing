@@ -66,12 +66,12 @@ struct renderer : coordinator_renderable {
 
 struct player : playable {
     std::function<void(std::string)> set_identifier_handler;
-    std::function<void(channel_mapping_ptr)> set_ch_mapping_handler;
+    std::function<void(playing::channel_mapping)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
     std::function<void(std::optional<channel_index_t>, fragment_range)> overwrite_handler;
     std::function<std::string const &(void)> identifier_handler;
-    std::function<channel_mapping_ptr const &(void)> ch_mapping_handler;
+    std::function<playing::channel_mapping(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<chaining::chain_sync_t<bool>(void)> is_playing_chain_handler;
@@ -80,7 +80,7 @@ struct player : playable {
         this->set_identifier_handler(identifier);
     }
 
-    void set_channel_mapping(channel_mapping_ptr const &ch_mapping) override {
+    void set_channel_mapping(playing::channel_mapping const &ch_mapping) override {
         this->set_ch_mapping_handler(ch_mapping);
     }
 
@@ -100,7 +100,7 @@ struct player : playable {
         return this->identifier_handler();
     }
 
-    channel_mapping_ptr const &channel_mapping() const override {
+    playing::channel_mapping channel_mapping() const override {
         return this->ch_mapping_handler();
     }
 

@@ -22,12 +22,7 @@ using namespace yas::playing;
 
 player::player(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,
                task_priority_t const &priority, player_resource_protocol_ptr const &resource)
-    : _renderer(renderer),
-      _worker(worker),
-      _priority(priority),
-      _resource(resource),
-      _ch_mapping(channel_mapping::make_shared()),
-      _identifier("") {
+    : _renderer(renderer), _worker(worker), _priority(priority), _resource(resource), _ch_mapping(), _identifier("") {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
     using setup_state_t = buffering_resource::setup_state_t;
@@ -255,7 +250,7 @@ void player::set_identifier(std::string const &identifier) {
     this->_resource->buffering()->set_identifier_request_on_main(identifier);
 }
 
-void player::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
+void player::set_channel_mapping(playing::channel_mapping const &ch_mapping) {
     this->_ch_mapping = ch_mapping;
     this->_resource->buffering()->set_channel_mapping_request_on_main(ch_mapping);
 }
@@ -276,7 +271,7 @@ std::string const &player::identifier() const {
     return this->_identifier;
 }
 
-channel_mapping_ptr const &player::channel_mapping() const {
+channel_mapping player::channel_mapping() const {
     return this->_ch_mapping;
 }
 

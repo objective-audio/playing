@@ -54,7 +54,7 @@ void coordinator::set_timeline(proc::timeline_ptr const &timeline, std::string c
     this->_player->set_identifier(identifier);
 }
 
-void coordinator::set_channel_mapping(channel_mapping_ptr const &ch_mapping) {
+void coordinator::set_channel_mapping(playing::channel_mapping const &ch_mapping) {
     this->_player->set_channel_mapping(ch_mapping);
 }
 
@@ -87,7 +87,7 @@ std::optional<proc::timeline_ptr> const &coordinator::timeline() const {
     return this->_timeline;
 }
 
-channel_mapping_ptr const &coordinator::channel_mapping() const {
+channel_mapping coordinator::channel_mapping() const {
     return this->_player->channel_mapping();
 }
 

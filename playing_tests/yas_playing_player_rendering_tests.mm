@@ -32,7 +32,7 @@ using namespace yas::playing;
     std::vector<frame_index_t> called_set_all_writing;
 
     std::optional<frame_index_t> seek_frame = 300;
-    auto ch_mapping = channel_mapping::make_shared({13, 14, 15});
+    channel_mapping ch_mapping{.indices = {13, 14, 15}};
     std::optional<std::string> identifier = "345";
 
     resource->reset_overwrite_requests_handler = [&called_reset_overwrite] { ++called_reset_overwrite; };

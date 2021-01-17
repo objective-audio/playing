@@ -24,10 +24,7 @@ using namespace yas::playing;
 
 buffering_resource::buffering_resource(std::size_t const element_count, std::string const &root_path,
                                        make_channel_f &&make_channel_handler)
-    : _element_count(element_count),
-      _root_path(root_path),
-      _make_channel_handler(make_channel_handler),
-      _ch_mapping(channel_mapping::make_shared()) {
+    : _element_count(element_count), _root_path(root_path), _make_channel_handler(make_channel_handler), _ch_mapping() {
 }
 
 std::size_t buffering_resource::element_count() const {
@@ -173,7 +170,7 @@ void buffering_resource::write_all_elements_on_task() {
     channel_index_t ch_idx = 0;
     auto const ch_count = this->_channels.size();
     for (auto const &channel : this->_channels) {
-        path::channel const ch_path{*this->_tl_path, this->_ch_mapping->file_index(ch_idx, ch_count).value()};
+        path::channel const ch_path{*this->_tl_path, this->_ch_mapping.file_index(ch_idx, ch_count).value()};
         channel->write_all_elements_on_task(ch_path, top_frag_idx.value());
 
         ++ch_idx;
@@ -223,7 +220,7 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
 
     if (address.file_channel_index.has_value()) {
         if (auto const out_ch_idx =
-                this->_ch_mapping->out_index(address.file_channel_index.value(), this->_channels.size());
+                this->_ch_mapping.out_index(address.file_channel_index.value(), this->_channels.size());
             out_ch_idx.has_value()) {
             this->_channels.at(out_ch_idx.value())->overwrite_element_on_render(address.fragment_range);
         }
@@ -247,7 +244,7 @@ bool buffering_resource::needs_all_writing_on_render() const {
     return false;
 }
 
-void buffering_resource::set_channel_mapping_request_on_main(channel_mapping_ptr const &ch_mapping) {
+void buffering_resource::set_channel_mapping_request_on_main(channel_mapping const &ch_mapping) {
     std::lock_guard<std::mutex> lock(this->_request_mutex);
     this->_ch_mapping_request = ch_mapping;
 }
@@ -270,7 +267,7 @@ bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffe
     return this->_channels.at(ch_idx)->read_into_buffer_on_render(out_buffer, frame);
 }
 
-std::optional<channel_mapping_ptr> buffering_resource::_pull_ch_mapping_request_on_task() {
+std::optional<channel_mapping> buffering_resource::_pull_ch_mapping_request_on_task() {
     if (auto lock = std::unique_lock<std::mutex>(this->_request_mutex, std::try_to_lock); lock.owns_lock()) {
         auto ch_mapping = std::move(this->_ch_mapping_request);
         this->_ch_mapping_request = std::nullopt;
@@ -298,7 +295,7 @@ frame_index_t buffering_resource::all_writing_frame_for_test() const {
     return this->_all_writing_frame;
 }
 
-channel_mapping_ptr const &buffering_resource::ch_mapping_for_test() const {
+channel_mapping const &buffering_resource::ch_mapping_for_test() const {
     return this->_ch_mapping;
 }
 
