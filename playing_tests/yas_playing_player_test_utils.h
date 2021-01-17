@@ -282,7 +282,7 @@ struct cpp {
         this->buffering->rendering_state_handler = [] { return audio_buffering_rendering_state::advancing; };
     }
 
-    void skip_ch_mapping() {
+    void skip_pull() {
         this->skip_buffering_rendering();
 
         this->resource->pull_seek_frame_handler = [] { return std::nullopt; };
@@ -290,7 +290,7 @@ struct cpp {
     }
 
     void skip_playing() {
-        this->skip_ch_mapping();
+        this->skip_pull();
 
         this->reading_buffer = std::make_shared<audio::pcm_buffer>(this->make_format(), cpp::length);
 

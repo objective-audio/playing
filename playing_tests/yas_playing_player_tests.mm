@@ -182,4 +182,44 @@ using namespace yas::playing;
     XCTAssertEqual(player->current_frame(), 1);
 }
 
+- (void)test_identifier {
+    self->_cpp.setup_initial();
+
+    auto const &player = self->_cpp.player;
+
+    std::vector<std::string> called_set_identifier;
+
+    self->_cpp.buffering->set_identifier_request_handler = [&called_set_identifier](std::string identifier) {
+        called_set_identifier.emplace_back(identifier);
+    };
+
+    XCTAssertEqual(player->identifier(), "");
+
+    player->set_identifier("555");
+
+    XCTAssertEqual(player->identifier(), "555");
+    XCTAssertEqual(called_set_identifier.size(), 1);
+    XCTAssertEqual(called_set_identifier.at(0), "555");
+}
+
+- (void)test_ch_mapping {
+    self->_cpp.setup_initial();
+
+    auto const &player = self->_cpp.player;
+
+    std::vector<channel_mapping_ptr> called_ch_mapping;
+
+    self->_cpp.buffering->set_ch_mapping_request_handler = [&called_ch_mapping](channel_mapping_ptr ch_mapping) {
+        called_ch_mapping.emplace_back(ch_mapping);
+    };
+
+    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{}));
+
+    player->set_channel_mapping(channel_mapping::make_shared({1, 2, 3}));
+
+    XCTAssertEqual(player->channel_mapping()->indices, (std::vector<channel_index_t>{1, 2, 3}));
+    XCTAssertEqual(called_ch_mapping.size(), 1);
+    XCTAssertEqual(called_ch_mapping.at(0)->indices, (std::vector<channel_index_t>{1, 2, 3}));
+}
+
 @end

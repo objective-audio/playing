@@ -65,12 +65,14 @@ using namespace yas::playing;
 - (void)test_perform_overwrite_requests {
     audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
-    self->_cpp.skip_ch_mapping();
+    self->_cpp.skip_pull();
 
     auto const &resource = self->_cpp.resource;
+    auto const &buffering = self->_cpp.buffering;
 
     std::vector<player_test::resource::overwrite_requests_f> called_perform;
     std::size_t called_is_playing = 0;
+    std::vector<element_address> called_addresses;
 
     resource->perform_overwrite_requests_handler =
         [&called_perform](player_test::resource::overwrite_requests_f const &handler) {
@@ -82,16 +84,30 @@ using namespace yas::playing;
         return false;
     };
 
+    buffering->overwrite_element_handler = [&called_addresses](element_address const &address) {
+        called_addresses.emplace_back(address);
+    };
+
     self->_cpp.rendering_handler(&buffer);
 
     XCTAssertEqual(called_perform.size(), 1);
     XCTAssertEqual(called_is_playing, 1);
+
+    std::vector<element_address> const requests{{1, 2}, {3, 4}};
+
+    XCTAssertEqual(called_addresses.size(), 0);
+
+    called_perform.at(0)(requests);
+
+    XCTAssertEqual(called_addresses.size(), 2);
+    XCTAssertEqual(called_addresses.at(0), (element_address{1, 2}));
+    XCTAssertEqual(called_addresses.at(1), (element_address{3, 4}));
 }
 
 - (void)test_is_playing {
     audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
-    self->_cpp.skip_ch_mapping();
+    self->_cpp.skip_pull();
 
     auto const &resource = self->_cpp.resource;
     auto const &reading = self->_cpp.reading;

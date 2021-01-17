@@ -26,11 +26,27 @@ struct fragment_range {
     bool contains(fragment_index_t const idx) const {
         return this->index <= idx && idx < this->end_index();
     }
+
+    bool operator==(fragment_range const &rhs) const {
+        return this->index == rhs.index && this->length == rhs.length;
+    }
+
+    bool operator!=(fragment_range const &rhs) const {
+        return !(*this == rhs);
+    }
 };
 
 struct element_address {
     std::optional<channel_index_t> file_channel_index;  // nulloptは全ch
     fragment_range fragment_range;
+
+    bool operator==(element_address const &rhs) const {
+        return this->file_channel_index == rhs.file_channel_index && this->fragment_range == rhs.fragment_range;
+    }
+
+    bool operator!=(element_address const &rhs) const {
+        return !(*this == rhs);
+    }
 };
 
 enum class sample_store_type : char {

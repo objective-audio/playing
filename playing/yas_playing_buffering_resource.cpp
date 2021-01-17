@@ -151,13 +151,19 @@ void buffering_resource::write_all_elements_on_task() {
         this->_ch_mapping = std::move(ch_mapping.value());
     }
 
+    std::this_thread::yield();
+
     if (auto identifier = this->_pull_identifier_request_on_task(); identifier.has_value()) {
         this->_identifier = std::move(identifier.value());
     }
 
+    std::this_thread::yield();
+
     this->_tl_path = path::timeline{.root_path = this->_root_path,
                                     .identifier = this->_identifier,
                                     .sample_rate = static_cast<sample_rate_t>(this->_sample_rate)};
+
+    std::this_thread::yield();
 
     auto const top_frag_idx = player_utils::top_fragment_idx(this->_frag_length, this->_all_writing_frame);
     if (!top_frag_idx.has_value()) {
