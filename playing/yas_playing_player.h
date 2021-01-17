@@ -34,8 +34,8 @@ struct player final : playable {
     player_resource_protocol_ptr const _resource;
 
     chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
-    chaining::value::holder_ptr<channel_mapping_ptr> const _ch_mapping;
-    chaining::value::holder_ptr<std::string> _identifier;
+    channel_mapping_ptr _ch_mapping;
+    std::string _identifier;
     chaining::observer_pool _pool;
 
     player(std::string const &root_path, renderable_ptr const &, workable_ptr const &, task_priority_t const &,
