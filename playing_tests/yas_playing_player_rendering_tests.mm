@@ -65,7 +65,7 @@ using namespace yas::playing;
 - (void)test_perform_overwrite_requests {
     audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
-    self->_cpp.skip_ch_mapping();
+    self->_cpp.skip_pull();
 
     auto const &resource = self->_cpp.resource;
 
@@ -91,7 +91,7 @@ using namespace yas::playing;
 - (void)test_is_playing {
     audio::pcm_buffer buffer = player_test::cpp::make_out_buffer();
 
-    self->_cpp.skip_ch_mapping();
+    self->_cpp.skip_pull();
 
     auto const &resource = self->_cpp.resource;
     auto const &reading = self->_cpp.reading;
