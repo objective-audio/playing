@@ -62,7 +62,7 @@ struct view_controller_cpp {
     auto const &controller = self->_cpp.controller;
     auto &pool = self->_cpp.pool;
 
-    self.frequencySlider.floatValue = controller->frequency->raw();
+    self.frequencySlider.floatValue = controller->frequency->value();
 
     controller->coordinator->is_playing_chain().send_to(self->_cpp.is_playing).sync()->add_to(pool);
     controller->coordinator->configuration_chain().send_to(self->_cpp.config).sync()->add_to(pool);
@@ -167,12 +167,12 @@ struct view_controller_cpp {
 }
 
 - (void)_updateFrequencyLabel {
-    self.frequencyLabel.stringValue = [NSString stringWithFormat:@"%.1fHz", self->_cpp.controller->frequency->raw()];
+    self.frequencyLabel.stringValue = [NSString stringWithFormat:@"%.1fHz", self->_cpp.controller->frequency->value()];
 }
 
 - (void)_updateChMappingLabel {
     self.chMappingLabel.stringValue =
-        [NSString stringWithFormat:@"%@", @(self->_cpp.controller->ch_mapping_idx->raw())];
+        [NSString stringWithFormat:@"%@", @(self->_cpp.controller->ch_mapping_idx->value())];
 }
 
 @end

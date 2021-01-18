@@ -75,7 +75,7 @@ void sample::controller::_update_timeline() {
 }
 
 void sample::controller::_update_pi_track() {
-    auto const sample_rate = this->_sample_rate->raw();
+    auto const sample_rate = this->_sample_rate->value();
 
     if (sample_rate <= 0) {
         return;
@@ -90,7 +90,7 @@ void sample::controller::_update_pi_track() {
 
         if (auto pi_track = proc::track::make_shared(); true) {
             timeline->insert_track(track_idx, pi_track);
-            auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * this->frequency->raw());
+            auto pi_module = proc::make_signal_module<float>(2.0f * M_PI * this->frequency->value());
             pi_module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
             pi_track->push_back_module(std::move(pi_module), process_range);
         }
@@ -98,7 +98,7 @@ void sample::controller::_update_pi_track() {
 }
 
 proc::timeline_ptr sample::controller::make_timeline() {
-    auto const sample_rate = this->_sample_rate->raw();
+    auto const sample_rate = this->_sample_rate->value();
     auto const timeline = proc::timeline::make_shared();
 
     if (sample_rate <= 0) {

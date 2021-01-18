@@ -19,9 +19,9 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
         .merge(this->_pcm_format->chain().to_null())
         .merge(this->_channel_count->chain().to_null())
         .perform([this](auto const &) {
-            this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->raw(),
-                                                          .pcm_format = this->_pcm_format->raw(),
-                                                          .channel_count = this->_channel_count->raw()});
+            this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->value(),
+                                                          .pcm_format = this->_pcm_format->value(),
+                                                          .channel_count = this->_channel_count->value()});
         })
         .sync()
         ->add_to(this->_pool);
@@ -49,15 +49,15 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
 }
 
 sample_rate_t renderer::sample_rate() const {
-    return this->_sample_rate->raw();
+    return this->_sample_rate->value();
 }
 
 audio::pcm_format renderer::pcm_format() const {
-    return this->_pcm_format->raw();
+    return this->_pcm_format->value();
 }
 
 std::size_t renderer::channel_count() const {
-    return this->_channel_count->raw();
+    return this->_channel_count->value();
 }
 
 chaining::chain_sync_t<configuration> renderer::configuration_chain() const {
@@ -106,9 +106,9 @@ void renderer::_update_connection() {
         this->_connection = std::nullopt;
     }
 
-    sample_rate_t const &sample_rate = this->_sample_rate->raw();
-    std::size_t const ch_count = this->_channel_count->raw();
-    audio::pcm_format const pcm_format = this->_pcm_format->raw();
+    sample_rate_t const &sample_rate = this->_sample_rate->value();
+    std::size_t const ch_count = this->_channel_count->value();
+    audio::pcm_format const pcm_format = this->_pcm_format->value();
 
     if (sample_rate > 0.0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
         audio::format const format{{.sample_rate = static_cast<double>(sample_rate),

@@ -115,7 +115,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     this->_queue->cancel_all();
 
-    auto const &container = this->_container->raw();
+    auto const &container = this->_container->value();
 
     auto task = task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
