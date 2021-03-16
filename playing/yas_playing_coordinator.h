@@ -5,7 +5,6 @@
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
-#include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_worker.h>
 #include <playing/yas_playing_configulation.h>
 #include <playing/yas_playing_player.h>
@@ -13,6 +12,7 @@
 #include <playing/yas_playing_renderer.h>
 #include <playing/yas_playing_types.h>
 #include <processing/yas_processing_time.h>
+#include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
 struct coordinator final {
@@ -32,8 +32,9 @@ struct coordinator final {
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
 
-    [[nodiscard]] chaining::chain_sync_t<configuration> configuration_chain() const;
-    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const;
+    [[nodiscard]] observing::canceller_ptr observe_configuration(std::function<void(configuration const &)> &&,
+                                                                 bool const sync);
+    [[nodiscard]] observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&, bool const sync);
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, coordinator_renderable_ptr const &);
     [[nodiscard]] static coordinator_ptr make_shared(workable_ptr const &, coordinator_renderable_ptr const &,
@@ -47,7 +48,7 @@ struct coordinator final {
     std::string _identifier = "";
     std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
-    chaining::observer_pool _pool;
+    observing::canceller_pool _pool;
 
     coordinator(workable_ptr const &, coordinator_renderable_ptr const &, playable_ptr const &, exportable_ptr const &);
 

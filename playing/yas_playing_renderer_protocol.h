@@ -6,10 +6,10 @@
 
 #include <audio/yas_audio_pcm_buffer.h>
 #include <audio/yas_audio_ptr.h>
-#include <chaining/yas_chaining_umbrella.h>
+#include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_configulation.h>
 #include <playing/yas_playing_ptr.h>
-#include <processing/yas_processing_types.h>
+#include <processing/yas_processing_common_types.h>
 
 #include <functional>
 
@@ -28,6 +28,9 @@ struct coordinator_renderable : renderable {
     [[nodiscard]] virtual audio::pcm_format pcm_format() const = 0;
     [[nodiscard]] virtual std::size_t channel_count() const = 0;
 
-    [[nodiscard]] virtual chaining::chain_sync_t<configuration> configuration_chain() const = 0;
+    using configuration_observing_handler_f = std::function<void(configuration const &)>;
+
+    [[nodiscard]] virtual observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&,
+                                                                         bool const sync) = 0;
 };
 }  // namespace yas::playing

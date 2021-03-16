@@ -8,7 +8,7 @@
 #include <audio/yas_audio_graph_tap.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_renderer_protocol.h>
-#include <processing/yas_processing_types.h>
+#include <processing/yas_processing_common_types.h>
 
 namespace yas::playing {
 struct renderer final : coordinator_renderable {
@@ -21,31 +21,31 @@ struct renderer final : coordinator_renderable {
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<configuration> configuration_chain() const override;
+    [[nodiscard]] observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&,
+                                                                 bool const sync) override;
 
     static renderer_ptr make_shared(audio::io_device_ptr const &);
 
    private:
     audio::io_device_ptr const _device;
 
-    chaining::value::holder_ptr<sample_rate_t> const _sample_rate =
-        chaining::value::holder<sample_rate_t>::make_shared(sample_rate_t{0});
-    chaining::value::holder_ptr<audio::pcm_format> const _pcm_format =
-        chaining::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
-    chaining::value::holder_ptr<std::size_t> const _channel_count =
-        chaining::value::holder<std::size_t>::make_shared(std::size_t(0));
-    chaining::value::holder_ptr<configuration> const _configuration =
-        chaining::value::holder<configuration>::make_shared(
+    observing::value::holder_ptr<sample_rate_t> const _sample_rate =
+        observing::value::holder<sample_rate_t>::make_shared(sample_rate_t{0});
+    observing::value::holder_ptr<audio::pcm_format> const _pcm_format =
+        observing::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
+    observing::value::holder_ptr<std::size_t> const _channel_count =
+        observing::value::holder<std::size_t>::make_shared(std::size_t(0));
+    observing::value::holder_ptr<configuration> const _configuration =
+        observing::value::holder<configuration>::make_shared(
             {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
 
     audio::graph_io_ptr const _io = this->graph->add_io(this->_device);
     audio::graph_tap_ptr const _tap = audio::graph_tap::make_shared();
     std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
 
-    chaining::observer_pool _pool;
-    observing::canceller_pool _canceller_pool;
+    observing::canceller_pool _pool;
 
-    chaining::value::holder_ptr<bool> _is_rendering = chaining::value::holder<bool>::make_shared(false);
+    observing::value::holder_ptr<bool> _is_rendering = observing::value::holder<bool>::make_shared(false);
 
     renderer(audio::io_device_ptr const &);
 

@@ -64,32 +64,33 @@ void exporter_resource::erase_track_on_task(track_index_t const trk_idx) {
     this->_timeline->erase_track(trk_idx);
 }
 
-void exporter_resource::insert_modules_on_task(track_index_t const trk_idx, proc::time::range const &range,
-                                               std::vector<proc::module_ptr> &&modules) {
+void exporter_resource::insert_module_set_on_task(track_index_t const trk_idx, proc::time::range const &range,
+                                                  proc::module_set_ptr &&module_set) {
     auto const &track = this->_timeline->track(trk_idx);
-    assert(track->modules().count(range) == 0);
-    for (auto &module : modules) {
-        track->push_back_module(std::move(module), range);
+    assert(track->module_sets().count(range) == 0);
+
+    for (auto const &module : module_set->modules()) {
+        track->push_back_module(module, range);
     }
 }
 
-void exporter_resource::erase_modules_on_task(track_index_t const trk_idx, proc::time::range const &range) {
+void exporter_resource::erase_module_set_on_task(track_index_t const trk_idx, proc::time::range const &range) {
     auto const &track = this->_timeline->track(trk_idx);
-    assert(track->modules().count(range) > 0);
+    assert(track->module_sets().count(range) > 0);
     track->erase_modules_for_range(range);
 }
 
 void exporter_resource::insert_module(proc::module_ptr const &module, module_index_t const module_idx,
                                       track_index_t const trk_idx, proc::time::range const range) {
     auto const &track = this->_timeline->track(trk_idx);
-    assert(track->modules().count(range) > 0);
+    assert(track->module_sets().count(range) > 0);
     track->insert_module(std::move(module), module_idx, range);
 }
 
 void exporter_resource::erase_module(module_index_t const module_idx, track_index_t const trk_idx,
                                      proc::time::range const range) {
     auto const &track = this->_timeline->track(trk_idx);
-    assert(track->modules().count(range) > 0);
+    assert(track->module_sets().count(range) > 0);
     track->erase_module_at(module_idx, range);
 }
 

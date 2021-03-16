@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <processing/yas_processing_types.h>
+#include <processing/yas_processing_common_types.h>
 
 namespace yas::playing {
 using channel_index_t = proc::channel_index_t;

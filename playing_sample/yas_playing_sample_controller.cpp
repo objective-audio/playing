@@ -34,24 +34,21 @@ track_index_t to_track_index(sample::track const track) {
 sample::controller::controller(audio::io_device_ptr const &device) : device(device) {
     std::cout << "root_path:" << this->root_path << std::endl;
 
-    this->coordinator->configuration_chain()
-        .to([](configuration const &config) { return config.sample_rate; })
-        .send_to(this->_sample_rate)
-        .sync()
+    this->coordinator
+        ->observe_configuration(
+            [this](configuration const &config) { this->_sample_rate->set_value(config.sample_rate); }, true)
         ->add_to(this->_pool);
 
-    this->_sample_rate->chain()
-        .perform([this](sample_rate_t const &) { this->_update_timeline(); })
-        .sync()
-        ->add_to(this->_pool);
+    this->_sample_rate->observe([this](auto const &) { this->_update_timeline(); }, true)->add_to(this->_pool);
 
-    this->frequency->chain().perform([this](float const &) { this->_update_pi_track(); }).end()->add_to(this->_pool);
+    this->frequency->observe([this](float const &) { this->_update_pi_track(); }, false)->add_to(this->_pool);
 
-    this->ch_mapping_idx->chain()
-        .perform([this](channel_index_t const &idx) {
-            this->coordinator->set_channel_mapping(channel_mapping{.indices = {idx, idx + 1}});
-        })
-        .sync()
+    this->ch_mapping_idx
+        ->observe(
+            [this](channel_index_t const &idx) {
+                this->coordinator->set_channel_mapping(channel_mapping{.indices = {idx, idx + 1}});
+            },
+            true)
         ->add_to(this->_pool);
 }
 
