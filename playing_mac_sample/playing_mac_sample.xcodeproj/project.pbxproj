@@ -16,8 +16,6 @@
 		B6CA6DAD259E01DF0034B069 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B6CA6DAC259E01DF0034B069 /* main.m */; };
 		B6CA6DBF259E07ED0034B069 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DB9259E07ED0034B069 /* audio.framework */; };
 		B6CA6DC0259E07ED0034B069 /* audio.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DB9259E07ED0034B069 /* audio.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B6CA6DC1259E07ED0034B069 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DBA259E07ED0034B069 /* chaining.framework */; };
-		B6CA6DC2259E07ED0034B069 /* chaining.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DBA259E07ED0034B069 /* chaining.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6CA6DC3259E07ED0034B069 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DBB259E07ED0034B069 /* cpp_utils.framework */; };
 		B6CA6DC4259E07ED0034B069 /* cpp_utils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DBB259E07ED0034B069 /* cpp_utils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6CA6DC5259E07ED0034B069 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6CA6DBC259E07ED0034B069 /* objc_utils.framework */; };
@@ -42,7 +40,6 @@
 				B6CA6DC0259E07ED0034B069 /* audio.framework in Embed Frameworks */,
 				B6CA6DC6259E07ED0034B069 /* objc_utils.framework in Embed Frameworks */,
 				B6CA6DC8259E07ED0034B069 /* playing.framework in Embed Frameworks */,
-				B6CA6DC2259E07ED0034B069 /* chaining.framework in Embed Frameworks */,
 				B6A1F8D02600CF8900687652 /* observing.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -85,7 +82,6 @@
 				B6CA6DC5259E07ED0034B069 /* objc_utils.framework in Frameworks */,
 				B6CA6DC7259E07ED0034B069 /* playing.framework in Frameworks */,
 				B6A1F8CF2600CF8900687652 /* observing.framework in Frameworks */,
-				B6CA6DC1259E07ED0034B069 /* chaining.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

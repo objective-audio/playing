@@ -37,7 +37,6 @@
 		B6E06A16257A700F0018E91D /* yas_playing_buffering_channel_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E06A0F257A5B460018E91D /* yas_playing_buffering_channel_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FB00BD229B69D5000C22F5 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FB00BB229B69D5000C22F5 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FB00C3229B6A10000C22F5 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C2229B6A10000C22F5 /* audio.framework */; };
-		B6FB00C5229B6A10000C22F5 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C4229B6A10000C22F5 /* chaining.framework */; };
 		B6FB00C7229B6A10000C22F5 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C6229B6A10000C22F5 /* cpp_utils.framework */; };
 		B6FB00C9229B6A10000C22F5 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C8229B6A10000C22F5 /* objc_utils.framework */; };
 		B6FB00CB229B6A10000C22F5 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00CA229B6A10000C22F5 /* processing.framework */; };
@@ -140,7 +139,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				B6FB00C3229B6A10000C22F5 /* audio.framework in Frameworks */,
-				B6FB00C5229B6A10000C22F5 /* chaining.framework in Frameworks */,
 				B6A1F8C42600CED700687652 /* observing.framework in Frameworks */,
 				B6FB00C7229B6A10000C22F5 /* cpp_utils.framework in Frameworks */,
 				B6FB00C9229B6A10000C22F5 /* objc_utils.framework in Frameworks */,

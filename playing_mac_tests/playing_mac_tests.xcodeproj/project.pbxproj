@@ -25,7 +25,6 @@
 		B6F7997225AC3E190065127D /* yas_playing_player_resource_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F7997125AC3E190065127D /* yas_playing_player_resource_tests.mm */; };
 		B6F7998225ADD4BF0065127D /* yas_playing_fragment_range_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6F7998125ADD4BF0065127D /* yas_playing_fragment_range_tests.mm */; };
 		B6FB0129229B6B12000C22F5 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB0128229B6B12000C22F5 /* audio.framework */; };
-		B6FB012B229B6B12000C22F5 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB012A229B6B12000C22F5 /* chaining.framework */; };
 		B6FB012D229B6B12000C22F5 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB012C229B6B12000C22F5 /* cpp_utils.framework */; };
 		B6FB012F229B6B12000C22F5 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB012E229B6B12000C22F5 /* objc_utils.framework */; };
 		B6FB0131229B6B12000C22F5 /* playing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB0130229B6B12000C22F5 /* playing.framework */; };
@@ -92,7 +91,6 @@
 			files = (
 				B6A1F8C92600CF1200687652 /* observing.framework in Frameworks */,
 				B6FB0129229B6B12000C22F5 /* audio.framework in Frameworks */,
-				B6FB012B229B6B12000C22F5 /* chaining.framework in Frameworks */,
 				B6FB012D229B6B12000C22F5 /* cpp_utils.framework in Frameworks */,
 				B6FB012F229B6B12000C22F5 /* objc_utils.framework in Frameworks */,
 				B6FB0131229B6B12000C22F5 /* playing.framework in Frameworks */,
