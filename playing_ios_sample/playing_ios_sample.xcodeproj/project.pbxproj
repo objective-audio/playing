@@ -19,8 +19,6 @@
 		B6FB018C22A13B41000C22F5 /* playing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB018A22A13B41000C22F5 /* playing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6FB018E22A13B41000C22F5 /* audio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB018D22A13B41000C22F5 /* audio.framework */; };
 		B6FB018F22A13B41000C22F5 /* audio.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB018D22A13B41000C22F5 /* audio.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		B6FB019122A13B41000C22F5 /* chaining.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB019022A13B41000C22F5 /* chaining.framework */; };
-		B6FB019222A13B41000C22F5 /* chaining.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB019022A13B41000C22F5 /* chaining.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6FB019422A13B41000C22F5 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB019322A13B41000C22F5 /* cpp_utils.framework */; };
 		B6FB019522A13B41000C22F5 /* cpp_utils.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB019322A13B41000C22F5 /* cpp_utils.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6FB019722A13B41000C22F5 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB019622A13B41000C22F5 /* objc_utils.framework */; };
@@ -44,7 +42,6 @@
 				B6FB018C22A13B41000C22F5 /* playing.framework in Embed Frameworks */,
 				B6FB019B22A13B41000C22F5 /* processing.framework in Embed Frameworks */,
 				B6FB019822A13B41000C22F5 /* objc_utils.framework in Embed Frameworks */,
-				B6FB019222A13B41000C22F5 /* chaining.framework in Embed Frameworks */,
 				B6FB019522A13B41000C22F5 /* cpp_utils.framework in Embed Frameworks */,
 				B6FB018F22A13B41000C22F5 /* audio.framework in Embed Frameworks */,
 				B6A1F8D32600CFBF00687652 /* observing.framework in Embed Frameworks */,
@@ -93,7 +90,6 @@
 				B6FB019A22A13B41000C22F5 /* processing.framework in Frameworks */,
 				B6FB019722A13B41000C22F5 /* objc_utils.framework in Frameworks */,
 				B6A1F8D22600CFBF00687652 /* observing.framework in Frameworks */,
-				B6FB019122A13B41000C22F5 /* chaining.framework in Frameworks */,
 				B6FB019422A13B41000C22F5 /* cpp_utils.framework in Frameworks */,
 				B6FB018E22A13B41000C22F5 /* audio.framework in Frameworks */,
 			);
