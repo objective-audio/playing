@@ -26,10 +26,8 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
         .sync()
         ->add_to(this->_pool);
 
-    this->_device->io_device_chain()
-        .perform([this](auto const &) { this->_update_configuration(); })
-        .end()
-        ->add_to(this->_pool);
+    this->_device->observe_io_device([this](auto const &) { this->_update_configuration(); })
+        ->add_to(this->_canceller_pool);
 
     this->_configuration->chain()
         .perform([this](auto const &) { this->_update_connection(); })

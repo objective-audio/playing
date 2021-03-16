@@ -43,6 +43,7 @@ struct renderer final : coordinator_renderable {
     std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
 
     chaining::observer_pool _pool;
+    observing::canceller_pool _canceller_pool;
 
     chaining::value::holder_ptr<bool> _is_rendering = chaining::value::holder<bool>::make_shared(false);
 
