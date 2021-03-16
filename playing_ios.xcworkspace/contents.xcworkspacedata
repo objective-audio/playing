@@ -14,9 +14,6 @@
       location = "group:submodules/audio_engine/audio_ios/audio_ios.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:submodules/chaining/chaining_ios/chaining_ios.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:submodules/cpp_utils/cpp_utils_ios/cpp_utils_ios.xcodeproj">
    </FileRef>
    <FileRef
