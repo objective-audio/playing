@@ -28,7 +28,7 @@ struct io_core : audio::io_core {
 struct device : audio::io_device {
     std::function<std::optional<audio::format>(void)> input_format_handler;
     std::function<std::optional<audio::format>(void)> output_format_handler;
-    chaining::notifier_ptr<io_device::method> const notifier = chaining::notifier<io_device::method>::make_shared();
+    observing::notifier_ptr<io_device::method> const notifier = observing::notifier<io_device::method>::make_shared();
 
     std::optional<audio::format> input_format() const override {
         return this->input_format_handler();
@@ -47,8 +47,8 @@ struct device : audio::io_device {
         return _interruptor;
     }
 
-    chaining::chain_unsync_t<io_device::method> io_device_chain() override {
-        return this->notifier->chain();
+    observing::canceller_ptr observe_io_device(observing::caller<method>::handler_f &&handler) override {
+        return this->notifier->observe(std::move(handler));
     }
 };
 }

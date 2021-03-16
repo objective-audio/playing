@@ -5,7 +5,7 @@
 #pragma once
 
 #include <playing/yas_playing_types.h>
-#include <processing/yas_processing_types.h>
+#include <processing/yas_processing_common_types.h>
 
 namespace yas::playing {
 struct configuration final {

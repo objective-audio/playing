@@ -17,9 +17,9 @@ struct controller {
     std::string const identifier = "0";
     coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, renderer::make_shared(this->device));
 
-    chaining::value::holder_ptr<float> const frequency = chaining::value::holder<float>::make_shared(1000.0f);
-    chaining::value::holder_ptr<channel_index_t> const ch_mapping_idx =
-        chaining::value::holder<channel_index_t>::make_shared(0);
+    observing::value::holder_ptr<float> const frequency = observing::value::holder<float>::make_shared(1000.0f);
+    observing::value::holder_ptr<channel_index_t> const ch_mapping_idx =
+        observing::value::holder<channel_index_t>::make_shared(0);
 
     void seek_zero();
     void seek_plus_one_sec();
@@ -29,10 +29,10 @@ struct controller {
 
    private:
     proc::timeline_ptr _timeline = nullptr;
-    chaining::value::holder_ptr<sample_rate_t> const _sample_rate =
-        chaining::value::holder<sample_rate_t>::make_shared(0);
+    observing::value::holder_ptr<sample_rate_t> const _sample_rate =
+        observing::value::holder<sample_rate_t>::make_shared(0);
 
-    chaining::observer_pool _pool;
+    observing::canceller_pool _pool;
 
     controller(audio::io_device_ptr const &);
 

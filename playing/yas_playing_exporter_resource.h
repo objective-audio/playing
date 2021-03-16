@@ -7,18 +7,19 @@
 #include <playing/yas_playing_exporter_protocol.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_types.h>
+#include <processing/yas_processing_sync_source.h>
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
 struct exporter_resource final {
-    chaining::notifier_ptr<exporter_event> const event_notifier = chaining::notifier<exporter_event>::make_shared();
+    observing::notifier_ptr<exporter_event> const event_notifier = observing::notifier<exporter_event>::make_shared();
 
     void replace_timeline_on_task(proc::timeline::track_map_t &&, std::string const &identifier, sample_rate_t const &,
                                   yas::task const &);
     void insert_track_on_task(track_index_t const, proc::track_ptr &&);
     void erase_track_on_task(track_index_t const);
-    void insert_modules_on_task(track_index_t const, proc::time::range const &, std::vector<proc::module_ptr> &&);
-    void erase_modules_on_task(track_index_t const, proc::time::range const &);
+    void insert_module_set_on_task(track_index_t const, proc::time::range const &, proc::module_set_ptr &&);
+    void erase_module_set_on_task(track_index_t const, proc::time::range const &);
     void insert_module(proc::module_ptr const &, module_index_t const, track_index_t const, proc::time::range const);
     void erase_module(module_index_t const, track_index_t const, proc::time::range const);
 

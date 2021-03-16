@@ -25,4 +25,7 @@
    <FileRef
       location = "group:submodules/processing/processing_ios/processing_ios.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:submodules/observing/observing_ios/observing_ios.xcodeproj">
+   </FileRef>
 </Workspace>

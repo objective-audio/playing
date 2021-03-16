@@ -77,16 +77,16 @@ using namespace yas::playing;
 
     XCTAssertFalse(player->is_playing());
 
-    chaining::observer_pool pool;
-    std::vector<bool> called_chain;
+    observing::canceller_pool pool;
+    std::vector<bool> called_observing;
 
-    player->is_playing_chain()
-        .perform([&called_chain](bool const &is_playing) { called_chain.emplace_back(is_playing); })
-        .sync()
+    player
+        ->observe_is_playing([&called_observing](bool const &is_playing) { called_observing.emplace_back(is_playing); },
+                             true)
         ->add_to(pool);
 
-    XCTAssertEqual(called_chain.size(), 1);
-    XCTAssertFalse(called_chain.at(0));
+    XCTAssertEqual(called_observing.size(), 1);
+    XCTAssertFalse(called_observing.at(0));
 
     std::vector<bool> called_rendering;
 
@@ -99,8 +99,8 @@ using namespace yas::playing;
     player->set_playing(true);
 
     XCTAssertTrue(player->is_playing());
-    XCTAssertEqual(called_chain.size(), 2);
-    XCTAssertTrue(called_chain.at(1));
+    XCTAssertEqual(called_observing.size(), 2);
+    XCTAssertTrue(called_observing.at(1));
     XCTAssertEqual(called_rendering.size(), 1);
     XCTAssertTrue(called_rendering.at(0));
 
@@ -108,7 +108,7 @@ using namespace yas::playing;
 
     player->set_playing(true);
 
-    XCTAssertEqual(called_chain.size(), 2);
+    XCTAssertEqual(called_observing.size(), 2);
     XCTAssertEqual(called_rendering.size(), 1);
 
     // is_playingにfalseがセットされる
@@ -116,8 +116,8 @@ using namespace yas::playing;
     player->set_playing(false);
 
     XCTAssertFalse(player->is_playing());
-    XCTAssertEqual(called_chain.size(), 3);
-    XCTAssertFalse(called_chain.at(2));
+    XCTAssertEqual(called_observing.size(), 3);
+    XCTAssertFalse(called_observing.at(2));
     XCTAssertEqual(called_rendering.size(), 2);
     XCTAssertFalse(called_rendering.at(1));
 }

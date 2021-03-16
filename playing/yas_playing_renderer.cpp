@@ -14,37 +14,35 @@ using namespace yas::playing;
 renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::make_shared()), _device(device) {
     this->_update_configuration();
 
-    this->_sample_rate->chain()
-        .to_null()
-        .merge(this->_pcm_format->chain().to_null())
-        .merge(this->_channel_count->chain().to_null())
-        .perform([this](auto const &) {
-            this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->value(),
-                                                          .pcm_format = this->_pcm_format->value(),
-                                                          .channel_count = this->_channel_count->value()});
-        })
-        .sync()
+    auto set_config_handler = [this] {
+        this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->value(),
+                                                      .pcm_format = this->_pcm_format->value(),
+                                                      .channel_count = this->_channel_count->value()});
+    };
+
+    this->_sample_rate->observe([set_config_handler](auto const &) { set_config_handler(); }, false)
         ->add_to(this->_pool);
 
-    this->_device->io_device_chain()
-        .perform([this](auto const &) { this->_update_configuration(); })
-        .end()
+    this->_pcm_format->observe([set_config_handler](auto const &) { set_config_handler(); }, false)
         ->add_to(this->_pool);
 
-    this->_configuration->chain()
-        .perform([this](auto const &) { this->_update_connection(); })
-        .sync()
+    this->_channel_count->observe([set_config_handler](auto const &) { set_config_handler(); }, true)
         ->add_to(this->_pool);
 
-    this->_is_rendering->chain()
-        .perform([this](bool const &is_rendering) {
-            if (is_rendering) {
-                this->graph->start_render();
-            } else {
-                this->graph->stop();
-            }
-        })
-        .sync()
+    this->_device->observe_io_device([this](auto const &) { this->_update_configuration(); })->add_to(this->_pool);
+
+    this->_configuration->observe([this](auto const &) { this->_update_connection(); }, true)->add_to(this->_pool);
+
+    this->_is_rendering
+        ->observe(
+            [this](bool const &is_rendering) {
+                if (is_rendering) {
+                    this->graph->start_render();
+                } else {
+                    this->graph->stop();
+                }
+            },
+            true)
         ->add_to(this->_pool);
 }
 
@@ -60,8 +58,8 @@ std::size_t renderer::channel_count() const {
     return this->_channel_count->value();
 }
 
-chaining::chain_sync_t<configuration> renderer::configuration_chain() const {
-    return this->_configuration->chain();
+observing::canceller_ptr renderer::observe_configuration(configuration_observing_handler_f &&handler, bool const sync) {
+    return this->_configuration->observe(std::move(handler), sync);
 }
 
 void renderer::set_rendering_handler(renderable::rendering_f &&handler) {

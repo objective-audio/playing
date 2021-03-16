@@ -13,3 +13,6 @@
 [submodule "submodules/audio_engine"]
 	path = submodules/audio_engine
 	url = https://github.com/objective-audio/audio_engine.git
+[submodule "submodules/observing"]
+	path = submodules/observing
+	url = git@github.com:objective-audio/observing.git

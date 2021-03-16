@@ -33,7 +33,8 @@ struct renderer : coordinator_renderable {
     std::function<sample_rate_t(void)> sample_rate_handler;
     std::function<audio::pcm_format(void)> pcm_format_handler;
     std::function<std::size_t(void)> channel_count_handler;
-    std::function<chaining::chain_sync_t<configuration>(void)> configuration_chain_handler;
+    std::function<observing::canceller_ptr(configuration_observing_handler_f &&, bool const)>
+        observe_configuration_handler;
 
     void set_rendering_handler(rendering_f &&handler) override {
         this->set_rendering_handler_handler(std::move(handler));
@@ -55,12 +56,9 @@ struct renderer : coordinator_renderable {
         return this->channel_count_handler();
     }
 
-    chaining::chain_sync_t<configuration> configuration_chain() const override {
-        return this->configuration_chain_handler();
-    }
-
-    chaining::chain_sync_t<configuration> configuration_chain2() const {
-        return this->configuration_chain_handler();
+    observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&handler,
+                                                   bool const sync) override {
+        return this->observe_configuration_handler(std::move(handler), sync);
     }
 };
 
@@ -74,7 +72,8 @@ struct player : playable {
     std::function<playing::channel_mapping(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<frame_index_t(void)> current_frame_handler;
-    std::function<chaining::chain_sync_t<bool>(void)> is_playing_chain_handler;
+    std::function<observing::canceller_ptr(std::function<void(bool const &)> &&, bool const)>
+        observe_is_playing_handler;
 
     void set_identifier(std::string const &identifier) override {
         this->set_identifier_handler(identifier);
@@ -112,21 +111,21 @@ struct player : playable {
         return this->current_frame_handler();
     }
 
-    chaining::chain_sync_t<bool> is_playing_chain() const override {
-        return this->is_playing_chain_handler();
+    observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) override {
+        return this->observe_is_playing_handler(std::move(handler), sync);
     }
 };
 
 struct exporter : exportable {
     std::function<void(timeline_container_ptr)> set_timeline_container_handler;
-    std::function<chaining::chain_unsync_t<exporter_event>(void)> event_chain_handler;
+    std::function<observing::canceller_ptr(event_observing_handler_f &&)> observe_event_handler;
 
     void set_timeline_container(timeline_container_ptr const &container) override {
         this->set_timeline_container_handler(container);
     }
 
-    chaining::chain_unsync_t<exporter_event> event_chain() const override {
-        return this->event_chain_handler();
+    observing::canceller_ptr observe_event(event_observing_handler_f &&handler) override {
+        return this->observe_event_handler(std::move(handler));
     }
 };
 
@@ -136,8 +135,8 @@ struct cpp {
     std::shared_ptr<coordinator_test::player> player = nullptr;
     std::shared_ptr<coordinator_test::exporter> exporter = nullptr;
 
-    chaining::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
-    chaining::value::holder_ptr<configuration> configulation_holder = nullptr;
+    observing::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
+    observing::value::holder_ptr<configuration> configulation_holder = nullptr;
     coordinator_ptr coordinator = nullptr;
 
     coordinator_ptr setup_coordinator() {
@@ -146,11 +145,18 @@ struct cpp {
         this->player = std::make_shared<coordinator_test::player>();
         this->exporter = std::make_shared<coordinator_test::exporter>();
 
-        this->exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
-        this->exporter->event_chain_handler = [notifier = this->exporter_event_notifier] { return notifier->chain(); };
+        this->exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
+        this->exporter->observe_event_handler =
+            [notifier = this->exporter_event_notifier](exportable::event_observing_handler_f &&handler) {
+                return notifier->observe(std::move(handler));
+            };
 
-        this->configulation_holder = chaining::value::holder<configuration>::make_shared(configuration{});
-        this->renderer->configuration_chain_handler = [holder = this->configulation_holder] { return holder->chain(); };
+        this->configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
+        this->renderer->observe_configuration_handler =
+            [holder = this->configulation_holder](coordinator_renderable::configuration_observing_handler_f &&handler,
+                                                  bool const sync) {
+                return holder->observe(std::move(handler), sync);
+            };
 
         this->worker->start_handler = [] {};
 

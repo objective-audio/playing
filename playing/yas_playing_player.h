@@ -23,7 +23,8 @@ struct player final : playable {
     [[nodiscard]] bool is_playing() const override;
     [[nodiscard]] frame_index_t current_frame() const override;
 
-    [[nodiscard]] chaining::chain_sync_t<bool> is_playing_chain() const override;
+    [[nodiscard]] observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&,
+                                                              bool const sync) override;
 
     static player_ptr make_shared(std::string const &root_path, renderable_ptr const &, workable_ptr const &,
                                   task_priority_t const &, player_resource_protocol_ptr const &);
@@ -34,10 +35,10 @@ struct player final : playable {
     task_priority_t const _priority;
     player_resource_protocol_ptr const _resource;
 
-    chaining::value::holder_ptr<bool> _is_playing = chaining::value::holder<bool>::make_shared(false);
+    observing::value::holder_ptr<bool> _is_playing = observing::value::holder<bool>::make_shared(false);
     playing::channel_mapping _ch_mapping;
     std::string _identifier;
-    chaining::observer_pool _pool;
+    observing::canceller_pool _pool;
 
     player(std::string const &root_path, renderable_ptr const &, workable_ptr const &, task_priority_t const &,
            player_resource_protocol_ptr const &);

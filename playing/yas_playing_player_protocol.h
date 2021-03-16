@@ -30,6 +30,7 @@ struct playable {
     [[nodiscard]] virtual bool is_playing() const = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;
 
-    [[nodiscard]] virtual chaining::chain_sync_t<bool> is_playing_chain() const = 0;
+    [[nodiscard]] virtual observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&,
+                                                                      bool const sync) = 0;
 };
 }  // namespace yas::playing

@@ -32,16 +32,19 @@ using namespace yas::playing;
     bool configuration_chain_called = false;
     bool start_called = false;
 
-    auto const exporter_event_notifier = chaining::notifier<exporter_event>::make_shared();
-    exporter->event_chain_handler = [notifier = exporter_event_notifier, &exporter_event_called] {
+    auto const exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
+    exporter->observe_event_handler = [notifier = exporter_event_notifier,
+                                       &exporter_event_called](exportable::event_observing_handler_f &&handler) {
         exporter_event_called = true;
-        return notifier->chain();
+        return notifier->observe(std::move(handler));
     };
 
-    auto const configulation_holder = chaining::value::holder<configuration>::make_shared(configuration{});
-    renderer->configuration_chain_handler = [holder = configulation_holder, &configuration_chain_called] {
+    auto const configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
+    renderer->observe_configuration_handler = [holder = configulation_holder, &configuration_chain_called](
+                                                  coordinator_renderable::configuration_observing_handler_f &&handler,
+                                                  bool const sync) {
         configuration_chain_called = true;
-        return holder->chain();
+        return holder->observe(std::move(handler), sync);
     };
 
     worker->start_handler = [&start_called] { start_called = true; };
@@ -66,8 +69,6 @@ using namespace yas::playing;
     self->_cpp.player->set_identifier_handler = [&called_set_identifier](std::string const &identifier) {
         called_set_identifier.emplace_back(identifier);
     };
-
-    auto chain = self->_cpp.renderer->configuration_chain();
 
     XCTAssertFalse(coordinator->timeline().has_value());
 
@@ -281,9 +282,9 @@ using namespace yas::playing;
     XCTAssertEqual(coordinator->channel_count(), 2);
 }
 
-- (void)test_configuration_chain {
+- (void)test_observe_configuration {
     auto const coordinator = self->_cpp.setup_coordinator();
-    chaining::observer_pool pool;
+    observing::canceller_pool pool;
 
     std::vector<timeline_container_ptr> called_containers;
 
@@ -296,9 +297,9 @@ using namespace yas::playing;
 
     std::vector<configuration> called_configrations;
 
-    coordinator->configuration_chain()
-        .perform([&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
-        .sync()
+    coordinator
+        ->observe_configuration(
+            [&called_configrations](auto const &config) { called_configrations.emplace_back(config); }, true)
         ->add_to(pool);
 
     XCTAssertEqual(called_configrations.size(), 1);
@@ -317,17 +318,17 @@ using namespace yas::playing;
 
 - (void)test_is_playing_chain {
     auto const coordinator = self->_cpp.setup_coordinator();
-    chaining::observer_pool pool;
+    observing::canceller_pool pool;
 
-    auto const is_playing = chaining::value::holder<bool>::make_shared(false);
+    auto const is_playing = observing::value::holder<bool>::make_shared(false);
 
-    self->_cpp.player->is_playing_chain_handler = [&is_playing] { return is_playing->chain(); };
+    self->_cpp.player->observe_is_playing_handler = [&is_playing](auto &&handler, bool const sync) {
+        return is_playing->observe(std::move(handler), sync);
+    };
 
     std::vector<bool> called;
 
-    coordinator->is_playing_chain()
-        .perform([&called](bool const &is_playing) { called.emplace_back(is_playing); })
-        .sync()
+    coordinator->observe_is_playing([&called](bool const &is_playing) { called.emplace_back(is_playing); }, true)
         ->add_to(pool);
 
     XCTAssertEqual(called.size(), 1);

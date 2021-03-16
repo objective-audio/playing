@@ -50,12 +50,10 @@ struct cpp {
 
         auto expectation = [self expectationWithDescription:@"set timeline"];
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         exporter->set_timeline_container(timeline_container::make_shared(identifier, sample_rate, timeline));
 
@@ -73,12 +71,10 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert track"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         auto module = proc::make_number_module<int64_t>(100);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -101,12 +97,10 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module same range"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         auto module = proc::make_number_module<int64_t>(200);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -128,12 +122,10 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module diff range"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         auto module = proc::make_number_module<Float64>(1.0);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
@@ -157,12 +149,10 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase module"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         track->erase_modules_for_range({0, 1});
 
@@ -182,12 +172,10 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase track"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto observer = exporter->event_chain()
-                            .perform([&received, &expectation](auto const &event) {
-                                received.push_back(event);
-                                [expectation fulfill];
-                            })
-                            .end();
+        auto observer = exporter->observe_event([&received, &expectation](auto const &event) {
+            received.push_back(event);
+            [expectation fulfill];
+        });
 
         timeline->erase_track(0);
 

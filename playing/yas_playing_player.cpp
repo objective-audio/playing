@@ -4,6 +4,7 @@
 
 #include "yas_playing_player.h"
 
+#include <cpp_utils/yas_fast_each.h>
 #include <playing/yas_playing_channel_mapping.h>
 
 #include <thread>
@@ -233,11 +234,10 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
     this->_resource->buffering()->set_identifier_request_on_main(this->_identifier);
     this->_resource->buffering()->set_channel_mapping_request_on_main(this->_ch_mapping);
 
-    // setup chaining
+    // setup observing
 
-    this->_is_playing->chain()
-        .perform([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
-        .sync()
+    this->_is_playing
+        ->observe([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); }, true)
         ->add_to(this->_pool);
 
     // begin rendering
@@ -283,8 +283,8 @@ frame_index_t player::current_frame() const {
     return this->_resource->current_frame();
 }
 
-chaining::chain_sync_t<bool> player::is_playing_chain() const {
-    return this->_is_playing->chain();
+observing::canceller_ptr player::observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) {
+    return this->_is_playing->observe(std::move(handler), sync);
 }
 
 player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,

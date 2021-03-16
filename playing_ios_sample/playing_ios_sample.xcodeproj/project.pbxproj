@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6A1F8D22600CFBF00687652 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6A1F8D12600CFBF00687652 /* observing.framework */; };
+		B6A1F8D32600CFBF00687652 /* observing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6A1F8D12600CFBF00687652 /* observing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6FB017622A0B6D2000C22F5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB017522A0B6D2000C22F5 /* AppDelegate.mm */; };
 		B6FB017922A0B6D2000C22F5 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB017822A0B6D2000C22F5 /* ViewController.mm */; };
 		B6FB017C22A0B6D2000C22F5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6FB017A22A0B6D2000C22F5 /* Main.storyboard */; };
@@ -45,6 +47,7 @@
 				B6FB019222A13B41000C22F5 /* chaining.framework in Embed Frameworks */,
 				B6FB019522A13B41000C22F5 /* cpp_utils.framework in Embed Frameworks */,
 				B6FB018F22A13B41000C22F5 /* audio.framework in Embed Frameworks */,
+				B6A1F8D32600CFBF00687652 /* observing.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -52,6 +55,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B6A1F8D12600CFBF00687652 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6FB017122A0B6D2000C22F5 /* playing_ios_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = playing_ios_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6FB017422A0B6D2000C22F5 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B6FB017522A0B6D2000C22F5 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -88,6 +92,7 @@
 				B6FB018B22A13B41000C22F5 /* playing.framework in Frameworks */,
 				B6FB019A22A13B41000C22F5 /* processing.framework in Frameworks */,
 				B6FB019722A13B41000C22F5 /* objc_utils.framework in Frameworks */,
+				B6A1F8D22600CFBF00687652 /* observing.framework in Frameworks */,
 				B6FB019122A13B41000C22F5 /* chaining.framework in Frameworks */,
 				B6FB019422A13B41000C22F5 /* cpp_utils.framework in Frameworks */,
 				B6FB018E22A13B41000C22F5 /* audio.framework in Frameworks */,
@@ -141,6 +146,7 @@
 		B6FB019E22A242A7000C22F5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6A1F8D12600CFBF00687652 /* observing.framework */,
 				B6FB01A522A242D3000C22F5 /* UIKit.framework */,
 				B6FB01A322A242CA000C22F5 /* AVFoundation.framework */,
 				B6FB01A122A242C3000C22F5 /* AudioToolbox.framework */,

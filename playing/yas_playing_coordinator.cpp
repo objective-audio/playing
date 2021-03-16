@@ -4,7 +4,6 @@
 
 #include "yas_playing_coordinator.h"
 
-#include <chaining/yas_chaining_umbrella.h>
 #include <cpp_utils/yas_fast_each.h>
 
 #include <thread>
@@ -25,8 +24,8 @@ using namespace yas::playing;
 coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr const &renderer,
                          playable_ptr const &player, exportable_ptr const &exporter)
     : _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
-    this->_exporter->event_chain()
-        .perform([this](exporter_event const &event) {
+    this->_exporter
+        ->observe_event([this](exporter_event const &event) {
             if (event.result.is_success()) {
                 if (event.result.value() == exporter_method::export_ended) {
                     if (event.range.has_value()) {
@@ -35,12 +34,9 @@ coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr 
                 }
             }
         })
-        .end()
         ->add_to(this->_pool);
 
-    this->_renderer->configuration_chain()
-        .perform([this](auto const &) { this->_update_exporter(); })
-        .end()
+    this->_renderer->observe_configuration([this](auto const &) { this->_update_exporter(); }, false)
         ->add_to(this->_pool);
 
     this->_worker->start();
@@ -111,12 +107,13 @@ std::size_t coordinator::channel_count() const {
     return this->_renderer->channel_count();
 }
 
-chaining::chain_sync_t<configuration> coordinator::configuration_chain() const {
-    return this->_renderer->configuration_chain();
+observing::canceller_ptr coordinator::observe_configuration(std::function<void(configuration const &)> &&handler,
+                                                            bool const sync) {
+    return this->_renderer->observe_configuration(std::move(handler), sync);
 }
 
-chaining::chain_sync_t<bool> coordinator::is_playing_chain() const {
-    return this->_player->is_playing_chain();
+observing::canceller_ptr coordinator::observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) {
+    return this->_player->observe_is_playing(std::move(handler), sync);
 }
 
 void coordinator::_update_exporter() {

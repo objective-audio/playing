@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_result.h>
 #include <cpp_utils/yas_task.h>
+#include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_ptr.h>
 #include <processing/yas_processing_timeline.h>
 
@@ -41,6 +42,7 @@ struct exportable {
 
     virtual void set_timeline_container(timeline_container_ptr const &) = 0;
 
-    [[nodiscard]] virtual chaining::chain_unsync_t<exporter_event> event_chain() const = 0;
+    using event_observing_handler_f = std::function<void(exporter_event const &)>;
+    [[nodiscard]] virtual observing::canceller_ptr observe_event(event_observing_handler_f &&) = 0;
 };
 }  // namespace yas::playing
