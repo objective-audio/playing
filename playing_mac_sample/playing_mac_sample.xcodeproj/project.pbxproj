@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B6A1F8CF2600CF8900687652 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6A1F8CE2600CF8900687652 /* observing.framework */; };
+		B6A1F8D02600CF8900687652 /* observing.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = B6A1F8CE2600CF8900687652 /* observing.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B6CA6DA2259E01DE0034B069 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6CA6DA1259E01DE0034B069 /* AppDelegate.mm */; };
 		B6CA6DA5259E01DE0034B069 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6CA6DA4259E01DE0034B069 /* ViewController.mm */; };
 		B6CA6DA7259E01DF0034B069 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6CA6DA6259E01DF0034B069 /* Assets.xcassets */; };
@@ -41,6 +43,7 @@
 				B6CA6DC6259E07ED0034B069 /* objc_utils.framework in Embed Frameworks */,
 				B6CA6DC8259E07ED0034B069 /* playing.framework in Embed Frameworks */,
 				B6CA6DC2259E07ED0034B069 /* chaining.framework in Embed Frameworks */,
+				B6A1F8D02600CF8900687652 /* observing.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -48,6 +51,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		B6A1F8CE2600CF8900687652 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CA6D9D259E01DE0034B069 /* playing_mac_sample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = playing_mac_sample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CA6DA0259E01DE0034B069 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B6CA6DA1259E01DE0034B069 /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
@@ -80,6 +84,7 @@
 				B6CA6DBF259E07ED0034B069 /* audio.framework in Frameworks */,
 				B6CA6DC5259E07ED0034B069 /* objc_utils.framework in Frameworks */,
 				B6CA6DC7259E07ED0034B069 /* playing.framework in Frameworks */,
+				B6A1F8CF2600CF8900687652 /* observing.framework in Frameworks */,
 				B6CA6DC1259E07ED0034B069 /* chaining.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -125,6 +130,7 @@
 		B6CA6DB8259E07ED0034B069 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B6A1F8CE2600CF8900687652 /* observing.framework */,
 				B6CA6DCC259E08000034B069 /* Accelerate.framework */,
 				B6CA6DB9259E07ED0034B069 /* audio.framework */,
 				B6CA6DBA259E07ED0034B069 /* chaining.framework */,
