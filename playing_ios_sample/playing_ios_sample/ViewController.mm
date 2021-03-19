@@ -73,11 +73,21 @@ struct view_controller_cpp {
     self.frequencySlider.value = controller->frequency->value();
 
     controller->coordinator
-        ->observe_is_playing([self](auto const &is_playing) { self->_cpp.is_playing->set_value(is_playing); }, true)
+        ->observe_is_playing(
+            [unowned_self](auto const &is_playing) {
+                ViewController *viewController = [unowned_self.object() object];
+                viewController->_cpp.is_playing->set_value(is_playing);
+            },
+            true)
         ->add_to(pool);
 
     controller->coordinator
-        ->observe_configuration([self](auto const &config) { self->_cpp.config->set_value(config); }, true)
+        ->observe_configuration(
+            [unowned_self](auto const &config) {
+                ViewController *viewController = [unowned_self.object() object];
+                viewController->_cpp.config->set_value(config);
+            },
+            true)
         ->add_to(pool);
 
     controller->frequency
