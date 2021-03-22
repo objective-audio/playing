@@ -249,9 +249,7 @@ void exporter_resource::_send_event_on_task(exporter_event event) {
         }
     };
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        lambda();
-    });
+    thread::perform_async_on_main(std::move(lambda));
 }
 
 exporter_resource_ptr exporter_resource::make_shared(std::string const &root_path) {
