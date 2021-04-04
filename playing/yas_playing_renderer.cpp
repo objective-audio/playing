@@ -20,29 +20,31 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
                                                       .channel_count = this->_channel_count->value()});
     };
 
-    this->_sample_rate->observe([set_config_handler](auto const &) { set_config_handler(); }, false)
+    this->_sample_rate->observe([set_config_handler](auto const &) { set_config_handler(); })
+        .end()
         ->add_to(this->_pool);
 
-    this->_pcm_format->observe([set_config_handler](auto const &) { set_config_handler(); }, false)
+    this->_pcm_format->observe([set_config_handler](auto const &) { set_config_handler(); }).end()->add_to(this->_pool);
+
+    this->_channel_count->observe([set_config_handler](auto const &) { set_config_handler(); })
+        .sync()
         ->add_to(this->_pool);
 
-    this->_channel_count->observe([set_config_handler](auto const &) { set_config_handler(); }, true)
+    this->_device->observe_io_device([this](auto const &) { this->_update_configuration(); })
+        .end()
         ->add_to(this->_pool);
 
-    this->_device->observe_io_device([this](auto const &) { this->_update_configuration(); })->add_to(this->_pool);
-
-    this->_configuration->observe([this](auto const &) { this->_update_connection(); }, true)->add_to(this->_pool);
+    this->_configuration->observe([this](auto const &) { this->_update_connection(); }).sync()->add_to(this->_pool);
 
     this->_is_rendering
-        ->observe(
-            [this](bool const &is_rendering) {
-                if (is_rendering) {
-                    this->graph->start_render();
-                } else {
-                    this->graph->stop();
-                }
-            },
-            true)
+        ->observe([this](bool const &is_rendering) {
+            if (is_rendering) {
+                this->graph->start_render();
+            } else {
+                this->graph->stop();
+            }
+        })
+        .sync()
         ->add_to(this->_pool);
 }
 
@@ -58,8 +60,8 @@ std::size_t renderer::channel_count() const {
     return this->_channel_count->value();
 }
 
-observing::canceller_ptr renderer::observe_configuration(configuration_observing_handler_f &&handler, bool const sync) {
-    return this->_configuration->observe(std::move(handler), sync);
+observing::syncable renderer::observe_configuration(configuration_observing_handler_f &&handler) {
+    return this->_configuration->observe(std::move(handler));
 }
 
 void renderer::set_rendering_handler(renderable::rendering_f &&handler) {

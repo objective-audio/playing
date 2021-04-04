@@ -43,6 +43,6 @@ struct exportable {
     virtual void set_timeline_container(timeline_container_ptr const &) = 0;
 
     using event_observing_handler_f = std::function<void(exporter_event const &)>;
-    [[nodiscard]] virtual observing::canceller_ptr observe_event(event_observing_handler_f &&) = 0;
+    [[nodiscard]] virtual observing::endable observe_event(event_observing_handler_f &&) = 0;
 };
 }  // namespace yas::playing

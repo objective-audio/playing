@@ -236,8 +236,8 @@ player::player(std::string const &root_path, renderable_ptr const &renderer, wor
 
     // setup observing
 
-    this->_is_playing
-        ->observe([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); }, true)
+    this->_is_playing->observe([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
+        .sync()
         ->add_to(this->_pool);
 
     // begin rendering
@@ -283,8 +283,8 @@ frame_index_t player::current_frame() const {
     return this->_resource->current_frame();
 }
 
-observing::canceller_ptr player::observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) {
-    return this->_is_playing->observe(std::move(handler), sync);
+observing::syncable player::observe_is_playing(std::function<void(bool const &)> &&handler) {
+    return this->_is_playing->observe(std::move(handler));
 }
 
 player_ptr player::make_shared(std::string const &root_path, renderable_ptr const &renderer, workable_ptr const &worker,

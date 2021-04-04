@@ -47,7 +47,7 @@ struct device : audio::io_device {
         return _interruptor;
     }
 
-    observing::canceller_ptr observe_io_device(observing::caller<method>::handler_f &&handler) override {
+    observing::endable observe_io_device(observing::caller<method>::handler_f &&handler) override {
         return this->notifier->observe(std::move(handler));
     }
 };

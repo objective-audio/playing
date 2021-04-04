@@ -17,7 +17,7 @@ struct exporter final : exportable {
 
     void set_timeline_container(timeline_container_ptr const &) override;
 
-    [[nodiscard]] observing::canceller_ptr observe_event(event_observing_handler_f &&) override;
+    [[nodiscard]] observing::endable observe_event(event_observing_handler_f &&) override;
 
     [[nodiscard]] static exporter_ptr make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &,
                                                   task_priority_t const &);

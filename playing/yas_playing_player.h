@@ -23,8 +23,7 @@ struct player final : playable {
     [[nodiscard]] bool is_playing() const override;
     [[nodiscard]] frame_index_t current_frame() const override;
 
-    [[nodiscard]] observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&,
-                                                              bool const sync) override;
+    [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&) override;
 
     static player_ptr make_shared(std::string const &root_path, renderable_ptr const &, workable_ptr const &,
                                   task_priority_t const &, player_resource_protocol_ptr const &);

@@ -21,8 +21,7 @@ struct renderer final : coordinator_renderable {
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
 
-    [[nodiscard]] observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&,
-                                                                 bool const sync) override;
+    [[nodiscard]] observing::syncable observe_configuration(configuration_observing_handler_f &&) override;
 
     static renderer_ptr make_shared(audio::io_device_ptr const &);
 
