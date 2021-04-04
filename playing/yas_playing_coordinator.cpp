@@ -34,9 +34,11 @@ coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr 
                 }
             }
         })
+        .end()
         ->add_to(this->_pool);
 
-    this->_renderer->observe_configuration([this](auto const &) { this->_update_exporter(); }, false)
+    this->_renderer->observe_configuration([this](auto const &) { this->_update_exporter(); })
+        .end()
         ->add_to(this->_pool);
 
     this->_worker->start();
@@ -107,13 +109,12 @@ std::size_t coordinator::channel_count() const {
     return this->_renderer->channel_count();
 }
 
-observing::canceller_ptr coordinator::observe_configuration(std::function<void(configuration const &)> &&handler,
-                                                            bool const sync) {
-    return this->_renderer->observe_configuration(std::move(handler), sync);
+observing::syncable coordinator::observe_configuration(std::function<void(configuration const &)> &&handler) {
+    return this->_renderer->observe_configuration(std::move(handler));
 }
 
-observing::canceller_ptr coordinator::observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) {
-    return this->_player->observe_is_playing(std::move(handler), sync);
+observing::syncable coordinator::observe_is_playing(std::function<void(bool const &)> &&handler) {
+    return this->_player->observe_is_playing(std::move(handler));
 }
 
 void coordinator::_update_exporter() {

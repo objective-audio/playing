@@ -30,7 +30,6 @@ struct coordinator_renderable : renderable {
 
     using configuration_observing_handler_f = std::function<void(configuration const &)>;
 
-    [[nodiscard]] virtual observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&,
-                                                                         bool const sync) = 0;
+    [[nodiscard]] virtual observing::syncable observe_configuration(configuration_observing_handler_f &&) = 0;
 };
 }  // namespace yas::playing

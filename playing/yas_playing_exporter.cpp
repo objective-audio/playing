@@ -42,12 +42,12 @@ exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> con
                 if (container->is_available()) {
                     container->timeline()
                         ->get()
-                        ->observe([this](proc::timeline_event const &event) { this->_receive_timeline_event(event); },
-                                  true)
+                        ->observe([this](proc::timeline_event const &event) { this->_receive_timeline_event(event); })
+                        .sync()
                         ->set_to(canceller);
                 }
-            },
-            false)
+            })
+        .end()
         ->add_to(this->_pool);
 }
 
@@ -57,7 +57,7 @@ void exporter::set_timeline_container(timeline_container_ptr const &container) {
     this->_container->set_value(container);
 }
 
-observing::canceller_ptr exporter::observe_event(event_observing_handler_f &&handler) {
+observing::endable exporter::observe_event(event_observing_handler_f &&handler) {
     return this->_resource->event_notifier->observe(std::move(handler));
 }
 

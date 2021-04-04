@@ -41,10 +41,9 @@ using namespace yas::playing;
 
     auto const configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
     renderer->observe_configuration_handler = [holder = configulation_holder, &configuration_chain_called](
-                                                  coordinator_renderable::configuration_observing_handler_f &&handler,
-                                                  bool const sync) {
+                                                  coordinator_renderable::configuration_observing_handler_f &&handler) {
         configuration_chain_called = true;
-        return holder->observe(std::move(handler), sync);
+        return holder->observe(std::move(handler));
     };
 
     worker->start_handler = [&start_called] { start_called = true; };
@@ -299,7 +298,8 @@ using namespace yas::playing;
 
     coordinator
         ->observe_configuration(
-            [&called_configrations](auto const &config) { called_configrations.emplace_back(config); }, true)
+            [&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
+        .sync()
         ->add_to(pool);
 
     XCTAssertEqual(called_configrations.size(), 1);
@@ -322,13 +322,14 @@ using namespace yas::playing;
 
     auto const is_playing = observing::value::holder<bool>::make_shared(false);
 
-    self->_cpp.player->observe_is_playing_handler = [&is_playing](auto &&handler, bool const sync) {
-        return is_playing->observe(std::move(handler), sync);
+    self->_cpp.player->observe_is_playing_handler = [&is_playing](auto &&handler) {
+        return is_playing->observe(std::move(handler));
     };
 
     std::vector<bool> called;
 
-    coordinator->observe_is_playing([&called](bool const &is_playing) { called.emplace_back(is_playing); }, true)
+    coordinator->observe_is_playing([&called](bool const &is_playing) { called.emplace_back(is_playing); })
+        .sync()
         ->add_to(pool);
 
     XCTAssertEqual(called.size(), 1);

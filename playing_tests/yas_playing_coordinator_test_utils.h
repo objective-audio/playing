@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_umbrella.h>
 
 namespace yas::playing::coordinator_test {
@@ -33,8 +34,7 @@ struct renderer : coordinator_renderable {
     std::function<sample_rate_t(void)> sample_rate_handler;
     std::function<audio::pcm_format(void)> pcm_format_handler;
     std::function<std::size_t(void)> channel_count_handler;
-    std::function<observing::canceller_ptr(configuration_observing_handler_f &&, bool const)>
-        observe_configuration_handler;
+    std::function<observing::syncable(configuration_observing_handler_f &&)> observe_configuration_handler;
 
     void set_rendering_handler(rendering_f &&handler) override {
         this->set_rendering_handler_handler(std::move(handler));
@@ -56,9 +56,8 @@ struct renderer : coordinator_renderable {
         return this->channel_count_handler();
     }
 
-    observing::canceller_ptr observe_configuration(configuration_observing_handler_f &&handler,
-                                                   bool const sync) override {
-        return this->observe_configuration_handler(std::move(handler), sync);
+    observing::syncable observe_configuration(configuration_observing_handler_f &&handler) override {
+        return this->observe_configuration_handler(std::move(handler));
     }
 };
 
@@ -72,8 +71,7 @@ struct player : playable {
     std::function<playing::channel_mapping(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<frame_index_t(void)> current_frame_handler;
-    std::function<observing::canceller_ptr(std::function<void(bool const &)> &&, bool const)>
-        observe_is_playing_handler;
+    std::function<observing::syncable(std::function<void(bool const &)> &&)> observe_is_playing_handler;
 
     void set_identifier(std::string const &identifier) override {
         this->set_identifier_handler(identifier);
@@ -111,20 +109,20 @@ struct player : playable {
         return this->current_frame_handler();
     }
 
-    observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&handler, bool const sync) override {
-        return this->observe_is_playing_handler(std::move(handler), sync);
+    observing::syncable observe_is_playing(std::function<void(bool const &)> &&handler) override {
+        return this->observe_is_playing_handler(std::move(handler));
     }
 };
 
 struct exporter : exportable {
     std::function<void(timeline_container_ptr)> set_timeline_container_handler;
-    std::function<observing::canceller_ptr(event_observing_handler_f &&)> observe_event_handler;
+    std::function<observing::endable(event_observing_handler_f &&)> observe_event_handler;
 
     void set_timeline_container(timeline_container_ptr const &container) override {
         this->set_timeline_container_handler(container);
     }
 
-    observing::canceller_ptr observe_event(event_observing_handler_f &&handler) override {
+    observing::endable observe_event(exportable::event_observing_handler_f &&handler) override {
         return this->observe_event_handler(std::move(handler));
     }
 };
@@ -153,9 +151,8 @@ struct cpp {
 
         this->configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
         this->renderer->observe_configuration_handler =
-            [holder = this->configulation_holder](coordinator_renderable::configuration_observing_handler_f &&handler,
-                                                  bool const sync) {
-                return holder->observe(std::move(handler), sync);
+            [holder = this->configulation_holder](coordinator_renderable::configuration_observing_handler_f &&handler) {
+                return holder->observe(std::move(handler));
             };
 
         this->worker->start_handler = [] {};

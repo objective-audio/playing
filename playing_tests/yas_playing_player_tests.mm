@@ -81,8 +81,8 @@ using namespace yas::playing;
     std::vector<bool> called_observing;
 
     player
-        ->observe_is_playing([&called_observing](bool const &is_playing) { called_observing.emplace_back(is_playing); },
-                             true)
+        ->observe_is_playing([&called_observing](bool const &is_playing) { called_observing.emplace_back(is_playing); })
+        .sync()
         ->add_to(pool);
 
     XCTAssertEqual(called_observing.size(), 1);

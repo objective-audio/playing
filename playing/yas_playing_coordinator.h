@@ -32,9 +32,8 @@ struct coordinator final {
     [[nodiscard]] audio::pcm_format pcm_format() const;
     [[nodiscard]] std::size_t channel_count() const;
 
-    [[nodiscard]] observing::canceller_ptr observe_configuration(std::function<void(configuration const &)> &&,
-                                                                 bool const sync);
-    [[nodiscard]] observing::canceller_ptr observe_is_playing(std::function<void(bool const &)> &&, bool const sync);
+    [[nodiscard]] observing::syncable observe_configuration(std::function<void(configuration const &)> &&);
+    [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&);
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, coordinator_renderable_ptr const &);
     [[nodiscard]] static coordinator_ptr make_shared(workable_ptr const &, coordinator_renderable_ptr const &,
