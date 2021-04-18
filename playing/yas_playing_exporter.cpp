@@ -129,7 +129,7 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 void exporter::_insert_track(proc::timeline_event const &event) {
     assert(thread::is_main());
 
-    auto copied_track = (*event.track)->copy();
+    auto copied_track = (*event.inserted)->copy();
     std::optional<proc::time::range> const total_range = copied_track->total_range();
 
     auto const insert_task =
@@ -146,7 +146,7 @@ void exporter::_insert_track(proc::timeline_event const &event) {
 void exporter::_erase_track(proc::timeline_event const &event) {
     assert(thread::is_main());
 
-    std::optional<proc::time::range> const total_range = (*event.track)->total_range();
+    std::optional<proc::time::range> const total_range = (*event.erased)->total_range();
 
     auto const erase_task = task::make_shared(
         [resource = this->_resource, trk_idx = *event.index](auto const &) { resource->erase_track_on_task(trk_idx); },
@@ -161,7 +161,7 @@ void exporter::_erase_track(proc::timeline_event const &event) {
 void exporter::_insert_module_set(track_index_t const trk_idx, proc::track_event const &event) {
     assert(thread::is_main());
 
-    auto const copied_module_set = (*event.module_set)->copy();
+    auto const copied_module_set = (*event.inserted)->copy();
     auto const &range = *event.range;
 
     auto task = task::make_shared(
@@ -177,7 +177,7 @@ void exporter::_insert_module_set(track_index_t const trk_idx, proc::track_event
 void exporter::_erase_module_set(track_index_t const trk_idx, proc::track_event const &event) {
     assert(thread::is_main());
 
-    auto const copied_module_set = (*event.module_set)->copy();
+    auto const copied_module_set = (*event.erased)->copy();
 
     auto const &range = *event.range;
     auto task = task::make_shared([resource = this->_resource, trk_idx,
@@ -193,7 +193,7 @@ void exporter::_insert_module(track_index_t const trk_idx, proc::time::range con
     assert(thread::is_main());
 
     auto task = task::make_shared(
-        [resource = this->_resource, trk_idx, range, module_idx = *event.index, module = (*event.module)->copy()](
+        [resource = this->_resource, trk_idx, range, module_idx = *event.index, module = (*event.inserted)->copy()](
             auto const &) { resource->insert_module(module, module_idx, trk_idx, range); },
         {.priority = this->_priority.timeline});
 
