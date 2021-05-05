@@ -52,6 +52,14 @@ void coordinator::set_timeline(proc::timeline_ptr const &timeline, std::string c
     this->_player->set_identifier(identifier);
 }
 
+void coordinator::reset_timeline() {
+    this->_timeline = std::nullopt;
+    this->_identifier = "";
+
+    this->_update_exporter();
+    this->_player->set_identifier("");
+}
+
 void coordinator::set_channel_mapping(playing::channel_mapping const &ch_mapping) {
     this->_player->set_channel_mapping(ch_mapping);
 }
