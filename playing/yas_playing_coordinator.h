@@ -17,6 +17,7 @@
 namespace yas::playing {
 struct coordinator final {
     void set_timeline(proc::timeline_ptr const &, std::string const &identifier);
+    void reset_timeline();
     void set_channel_mapping(channel_mapping const &);
     void set_playing(bool const);
     void seek(frame_index_t const);
