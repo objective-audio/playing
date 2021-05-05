@@ -55,7 +55,7 @@ using namespace yas::playing;
     XCTAssertTrue(start_called);
 }
 
-- (void)test_set_timeline {
+- (void)test_set_and_reset_timeline {
     auto const coordinator = self->_cpp.setup_coordinator();
 
     std::vector<timeline_container_ptr> called_set_container;
@@ -70,21 +70,32 @@ using namespace yas::playing;
     };
 
     XCTAssertFalse(coordinator->timeline().has_value());
+    XCTAssertEqual(coordinator->identifier(), "");
 
     auto const timeline = proc::timeline::make_shared();
 
     coordinator->set_timeline(timeline, "1");
 
     XCTAssertEqual(coordinator->timeline(), timeline);
-    XCTAssertEqual(called_set_container.size(), 1);
+    XCTAssertEqual(coordinator->identifier(), "1");
 
-    auto const &container = called_set_container.at(0);
-    XCTAssertEqual(container->identifier(), "1");
-    XCTAssertEqual(container->timeline(), timeline);
-    XCTAssertEqual(container->sample_rate(), 44100);
+    XCTAssertEqual(called_set_container.size(), 1);
+    XCTAssertEqual(called_set_container.at(0)->identifier(), "1");
+    XCTAssertEqual(called_set_container.at(0)->timeline(), timeline);
+    XCTAssertEqual(called_set_container.at(0)->sample_rate(), 44100);
 
     XCTAssertEqual(called_set_identifier.size(), 1);
     XCTAssertEqual(called_set_identifier.at(0), "1");
+
+    coordinator->reset_timeline();
+
+    XCTAssertEqual(called_set_container.size(), 2);
+    XCTAssertEqual(called_set_container.at(1)->identifier(), "");
+    XCTAssertEqual(called_set_container.at(1)->timeline(), std::nullopt);
+    XCTAssertEqual(called_set_container.at(1)->sample_rate(), 44100);
+
+    XCTAssertEqual(called_set_identifier.size(), 2);
+    XCTAssertEqual(called_set_identifier.at(1), "");
 }
 
 - (void)test_set_channel_mapping {
