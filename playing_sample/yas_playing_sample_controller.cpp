@@ -36,19 +36,19 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
 
     this->coordinator
         ->observe_configuration(
-            [this](configuration const &config) { this->_sample_rate->set_value(config.sample_rate); }, true)
+            [this](configuration const &config) { this->_sample_rate->set_value(config.sample_rate); })
+        .sync()
         ->add_to(this->_pool);
 
-    this->_sample_rate->observe([this](auto const &) { this->_update_timeline(); }, true)->add_to(this->_pool);
+    this->_sample_rate->observe([this](auto const &) { this->_update_timeline(); }).sync()->add_to(this->_pool);
 
-    this->frequency->observe([this](float const &) { this->_update_pi_track(); }, false)->add_to(this->_pool);
+    this->frequency->observe([this](float const &) { this->_update_pi_track(); }).end()->add_to(this->_pool);
 
     this->ch_mapping_idx
-        ->observe(
-            [this](channel_index_t const &idx) {
-                this->coordinator->set_channel_mapping(channel_mapping{.indices = {idx, idx + 1}});
-            },
-            true)
+        ->observe([this](channel_index_t const &idx) {
+            this->coordinator->set_channel_mapping(channel_mapping{.indices = {idx, idx + 1}});
+        })
+        .sync()
         ->add_to(this->_pool);
 }
 
