@@ -106,15 +106,15 @@ frame_index_t coordinator::current_frame() const {
 }
 
 sample_rate_t coordinator::sample_rate() const {
-    return this->_renderer->sample_rate();
+    return this->_renderer->configuration().sample_rate;
 }
 
 audio::pcm_format coordinator::pcm_format() const {
-    return this->_renderer->pcm_format();
+    return this->_renderer->configuration().pcm_format;
 }
 
 std::size_t coordinator::channel_count() const {
-    return this->_renderer->channel_count();
+    return this->_renderer->configuration().channel_count;
 }
 
 observing::syncable coordinator::observe_configuration(std::function<void(configuration const &)> &&handler) {
@@ -126,8 +126,8 @@ observing::syncable coordinator::observe_is_playing(std::function<void(bool cons
 }
 
 void coordinator::_update_exporter() {
-    this->_exporter->set_timeline_container(
-        timeline_container::make_shared(this->_identifier, this->_renderer->sample_rate(), this->_timeline));
+    this->_exporter->set_timeline_container(timeline_container::make_shared(
+        this->_identifier, this->_renderer->configuration().sample_rate, this->_timeline));
 }
 
 coordinator_ptr coordinator::make_shared(std::string const &root_path, coordinator_renderable_ptr const &renderer) {

@@ -18,9 +18,6 @@ struct renderer final : coordinator_renderable {
     void set_is_rendering(bool const) override;
 
     [[nodiscard]] playing::configuration const &configuration() const override;
-    [[nodiscard]] sample_rate_t sample_rate() const override;
-    [[nodiscard]] audio::pcm_format pcm_format() const override;
-    [[nodiscard]] std::size_t channel_count() const override;
 
     [[nodiscard]] observing::syncable observe_configuration(configuration_observing_handler_f &&) override;
 

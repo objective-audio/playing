@@ -32,9 +32,6 @@ struct renderer : coordinator_renderable {
     std::function<void(rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
     std::function<playing::configuration const &(void)> configuration_handler;
-    std::function<sample_rate_t(void)> sample_rate_handler;
-    std::function<audio::pcm_format(void)> pcm_format_handler;
-    std::function<std::size_t(void)> channel_count_handler;
     std::function<observing::syncable(configuration_observing_handler_f &&)> observe_configuration_handler;
 
     void set_rendering_handler(rendering_f &&handler) override {
@@ -47,18 +44,6 @@ struct renderer : coordinator_renderable {
 
     playing::configuration const &configuration() const override {
         return this->configuration_handler();
-    }
-
-    sample_rate_t sample_rate() const override {
-        return this->sample_rate_handler();
-    }
-
-    audio::pcm_format pcm_format() const override {
-        return this->pcm_format_handler();
-    }
-
-    std::size_t channel_count() const override {
-        return this->channel_count_handler();
     }
 
     observing::syncable observe_configuration(configuration_observing_handler_f &&handler) override {

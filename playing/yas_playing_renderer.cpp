@@ -52,18 +52,6 @@ configuration const &renderer::configuration() const {
     return this->_configuration->value();
 }
 
-sample_rate_t renderer::sample_rate() const {
-    return this->_sample_rate->value();
-}
-
-audio::pcm_format renderer::pcm_format() const {
-    return this->_pcm_format->value();
-}
-
-std::size_t renderer::channel_count() const {
-    return this->_channel_count->value();
-}
-
 observing::syncable renderer::observe_configuration(configuration_observing_handler_f &&handler) {
     return this->_configuration->observe(std::move(handler));
 }
