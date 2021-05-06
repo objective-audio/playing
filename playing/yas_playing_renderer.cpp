@@ -87,17 +87,15 @@ void renderer::set_is_rendering(bool const is_rendering) {
 }
 
 void renderer::_update_configuration() {
-    if (auto const &device = this->_io->raw_io()->device()) {
-        if (auto const &output_format = device.value()->output_format()) {
-            this->_sample_rate->set_value(output_format->sample_rate());
-            this->_channel_count->set_value(output_format->channel_count());
-            this->_pcm_format->set_value(output_format->pcm_format());
-            return;
-        }
+    if (auto const &output_format = this->_device->output_format()) {
+        this->_sample_rate->set_value(output_format->sample_rate());
+        this->_channel_count->set_value(output_format->channel_count());
+        this->_pcm_format->set_value(output_format->pcm_format());
+    } else {
+        this->_sample_rate->set_value(0);
+        this->_channel_count->set_value(0);
+        this->_pcm_format->set_value(audio::pcm_format::other);
     }
-    this->_sample_rate->set_value(0);
-    this->_channel_count->set_value(0);
-    this->_pcm_format->set_value(audio::pcm_format::other);
 }
 
 void renderer::_update_connection() {
