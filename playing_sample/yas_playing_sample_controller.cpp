@@ -57,11 +57,11 @@ void sample::controller::seek_zero() {
 }
 
 void sample::controller::seek_plus_one_sec() {
-    this->coordinator->seek(this->coordinator->current_frame() + this->coordinator->sample_rate());
+    this->coordinator->seek(this->coordinator->current_frame() + this->coordinator->configuration().sample_rate);
 }
 
 void sample::controller::seek_minus_one_sec() {
-    this->coordinator->seek(this->coordinator->current_frame() - this->coordinator->sample_rate());
+    this->coordinator->seek(this->coordinator->current_frame() - this->coordinator->configuration().sample_rate);
 }
 
 void sample::controller::_update_timeline() {

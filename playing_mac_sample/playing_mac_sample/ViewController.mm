@@ -160,10 +160,10 @@ struct view_controller_cpp {
 - (void)_updateConfigurationLabel {
     std::vector<std::string> texts;
 
-    auto const &coordinator = self->_cpp.controller->coordinator;
-    texts.emplace_back("sample rate : " + std::to_string(coordinator->sample_rate()));
-    texts.emplace_back("channel count : " + std::to_string(coordinator->channel_count()));
-    texts.emplace_back("pcm format : " + to_string(coordinator->pcm_format()));
+    auto const &configuration = self->_cpp.controller->coordinator->configuration();
+    texts.emplace_back("sample rate : " + std::to_string(configuration.sample_rate));
+    texts.emplace_back("channel count : " + std::to_string(configuration.channel_count));
+    texts.emplace_back("pcm format : " + to_string(configuration.pcm_format));
 
     std::string text = joined(texts, "\n");
 
