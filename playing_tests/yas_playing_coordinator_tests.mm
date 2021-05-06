@@ -253,43 +253,24 @@ using namespace yas::playing;
     XCTAssertEqual(coordinator->current_frame(), 2);
 }
 
-- (void)test_sample_rate {
+- (void)test_configuration {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    playing::configuration configuration{.sample_rate = 1000};
+    playing::configuration configuration{
+        .sample_rate = 1000, .pcm_format = audio::pcm_format::int16, .channel_count = 1};
     self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
 
-    XCTAssertEqual(coordinator->sample_rate(), 1000);
+    XCTAssertEqual(coordinator->configuration().sample_rate, 1000);
+    XCTAssertEqual(coordinator->configuration().pcm_format, audio::pcm_format::int16);
+    XCTAssertEqual(coordinator->configuration().channel_count, 1);
 
     configuration.sample_rate = 2000;
-
-    XCTAssertEqual(coordinator->sample_rate(), 2000);
-}
-
-- (void)test_pcm_format {
-    auto const coordinator = self->_cpp.setup_coordinator();
-
-    playing::configuration configuration{.pcm_format = audio::pcm_format::int16};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
-
-    XCTAssertEqual(coordinator->pcm_format(), audio::pcm_format::int16);
-
     configuration.pcm_format = audio::pcm_format::float32;
-
-    XCTAssertEqual(coordinator->pcm_format(), audio::pcm_format::float32);
-}
-
-- (void)test_channel_count {
-    auto const coordinator = self->_cpp.setup_coordinator();
-
-    playing::configuration configuration{.channel_count = 1};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
-
-    XCTAssertEqual(coordinator->channel_count(), 1);
-
     configuration.channel_count = 2;
 
-    XCTAssertEqual(coordinator->channel_count(), 2);
+    XCTAssertEqual(coordinator->configuration().sample_rate, 2000);
+    XCTAssertEqual(coordinator->configuration().pcm_format, audio::pcm_format::float32);
+    XCTAssertEqual(coordinator->configuration().channel_count, 2);
 }
 
 - (void)test_observe_configuration {

@@ -29,11 +29,9 @@ struct coordinator final {
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t current_frame() const;
 
-    [[nodiscard]] sample_rate_t sample_rate() const;
-    [[nodiscard]] audio::pcm_format pcm_format() const;
-    [[nodiscard]] std::size_t channel_count() const;
+    [[nodiscard]] playing::configuration const &configuration() const;
 
-    [[nodiscard]] observing::syncable observe_configuration(std::function<void(configuration const &)> &&);
+    [[nodiscard]] observing::syncable observe_configuration(std::function<void(playing::configuration const &)> &&);
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&);
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, coordinator_renderable_ptr const &);

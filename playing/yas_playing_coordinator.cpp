@@ -74,7 +74,7 @@ void coordinator::seek(frame_index_t const frame) {
 
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
-    auto const sample_rate = this->sample_rate();
+    auto const sample_rate = this->configuration().sample_rate;
 
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
 
@@ -105,19 +105,11 @@ frame_index_t coordinator::current_frame() const {
     return this->_player->current_frame();
 }
 
-sample_rate_t coordinator::sample_rate() const {
-    return this->_renderer->configuration().sample_rate;
+playing::configuration const &coordinator::configuration() const {
+    return this->_renderer->configuration();
 }
 
-audio::pcm_format coordinator::pcm_format() const {
-    return this->_renderer->configuration().pcm_format;
-}
-
-std::size_t coordinator::channel_count() const {
-    return this->_renderer->configuration().channel_count;
-}
-
-observing::syncable coordinator::observe_configuration(std::function<void(configuration const &)> &&handler) {
+observing::syncable coordinator::observe_configuration(std::function<void(playing::configuration const &)> &&handler) {
     return this->_renderer->observe_configuration(std::move(handler));
 }
 
