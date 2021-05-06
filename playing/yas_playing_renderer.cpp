@@ -15,9 +15,9 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
     this->_update_configuration();
 
     auto set_config_handler = [this] {
-        this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->value(),
-                                                      .pcm_format = this->_pcm_format->value(),
-                                                      .channel_count = this->_channel_count->value()});
+        this->_configuration->set_value(playing::configuration{.sample_rate = this->_sample_rate->value(),
+                                                               .pcm_format = this->_pcm_format->value(),
+                                                               .channel_count = this->_channel_count->value()});
     };
 
     this->_sample_rate->observe([set_config_handler](auto const &) { set_config_handler(); })
@@ -48,16 +48,8 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
         ->add_to(this->_pool);
 }
 
-sample_rate_t renderer::sample_rate() const {
-    return this->_sample_rate->value();
-}
-
-audio::pcm_format renderer::pcm_format() const {
-    return this->_pcm_format->value();
-}
-
-std::size_t renderer::channel_count() const {
-    return this->_channel_count->value();
+configuration const &renderer::configuration() const {
+    return this->_configuration->value();
 }
 
 observing::syncable renderer::observe_configuration(configuration_observing_handler_f &&handler) {
@@ -87,17 +79,15 @@ void renderer::set_is_rendering(bool const is_rendering) {
 }
 
 void renderer::_update_configuration() {
-    if (auto const &device = this->_io->raw_io()->device()) {
-        if (auto const &output_format = device.value()->output_format()) {
-            this->_sample_rate->set_value(output_format->sample_rate());
-            this->_channel_count->set_value(output_format->channel_count());
-            this->_pcm_format->set_value(output_format->pcm_format());
-            return;
-        }
+    if (auto const &output_format = this->_device->output_format()) {
+        this->_sample_rate->set_value(output_format->sample_rate());
+        this->_channel_count->set_value(output_format->channel_count());
+        this->_pcm_format->set_value(output_format->pcm_format());
+    } else {
+        this->_sample_rate->set_value(0);
+        this->_channel_count->set_value(0);
+        this->_pcm_format->set_value(audio::pcm_format::other);
     }
-    this->_sample_rate->set_value(0);
-    this->_channel_count->set_value(0);
-    this->_pcm_format->set_value(audio::pcm_format::other);
 }
 
 void renderer::_update_connection() {
@@ -110,7 +100,7 @@ void renderer::_update_connection() {
     std::size_t const ch_count = this->_channel_count->value();
     audio::pcm_format const pcm_format = this->_pcm_format->value();
 
-    if (sample_rate > 0.0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
+    if (sample_rate > 0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
         audio::format const format{{.sample_rate = static_cast<double>(sample_rate),
                                     .channel_count = static_cast<uint32_t>(ch_count),
                                     .pcm_format = pcm_format}};

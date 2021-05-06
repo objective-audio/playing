@@ -70,9 +70,10 @@ struct device : audio::io_device {
 
     auto const renderer = playing::renderer::make_shared(device);
 
-    XCTAssertEqual(renderer->sample_rate(), 1000);
-    XCTAssertEqual(renderer->channel_count(), 2);
-    XCTAssertEqual(renderer->pcm_format(), audio::pcm_format::float32);
+    auto const &configuration = renderer->configuration();
+    XCTAssertEqual(configuration.sample_rate, 1000);
+    XCTAssertEqual(configuration.channel_count, 2);
+    XCTAssertEqual(configuration.pcm_format, audio::pcm_format::float32);
 }
 
 - (void)test_constructor_null_format {
@@ -84,9 +85,10 @@ struct device : audio::io_device {
 
     auto const renderer = playing::renderer::make_shared(device);
 
-    XCTAssertEqual(renderer->sample_rate(), 0);
-    XCTAssertEqual(renderer->channel_count(), 0);
-    XCTAssertEqual(renderer->pcm_format(), audio::pcm_format::other);
+    auto const &configuration = renderer->configuration();
+    XCTAssertEqual(configuration.sample_rate, 0);
+    XCTAssertEqual(configuration.channel_count, 0);
+    XCTAssertEqual(configuration.pcm_format, audio::pcm_format::other);
 }
 
 @end

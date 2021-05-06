@@ -65,58 +65,52 @@ struct view_controller_cpp {
     self.frequencySlider.floatValue = controller->frequency->value();
 
     controller->coordinator
-        ->observe_is_playing(
-            [unowned_self](auto const &is_playing) {
-                auto *viewController = [unowned_self.object() object];
-                viewController->_cpp.is_playing->set_value(is_playing);
-            },
-            true)
+        ->observe_is_playing([unowned_self](auto const &is_playing) {
+            auto *viewController = [unowned_self.object() object];
+            viewController->_cpp.is_playing->set_value(is_playing);
+        })
+        .sync()
         ->add_to(pool);
 
     controller->coordinator
-        ->observe_configuration(
-            [unowned_self](auto const &config) {
-                auto *viewController = [unowned_self.object() object];
-                viewController->_cpp.config->set_value(config);
-            },
-            true)
+        ->observe_configuration([unowned_self](auto const &config) {
+            auto *viewController = [unowned_self.object() object];
+            viewController->_cpp.config->set_value(config);
+        })
+        .sync()
         ->add_to(pool);
 
     controller->frequency
-        ->observe(
-            [unowned_self](float const &frequency) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateFrequencyLabel];
-            },
-            true)
+        ->observe([unowned_self](float const &frequency) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateFrequencyLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     controller->ch_mapping_idx
-        ->observe(
-            [unowned_self](auto const &) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateChMappingLabel];
-            },
-            true)
+        ->observe([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateChMappingLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     self->_cpp.is_playing
-        ->observe(
-            [unowned_self](bool const &is_playing) {
-                NSString *title = is_playing ? @"Stop" : @"Play";
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController.playButton setTitle:title];
-            },
-            true)
+        ->observe([unowned_self](bool const &is_playing) {
+            NSString *title = is_playing ? @"Stop" : @"Play";
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController.playButton setTitle:title];
+        })
+        .sync()
         ->add_to(pool);
 
     self->_cpp.config
-        ->observe(
-            [unowned_self](auto const &) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateConfigurationLabel];
-            },
-            true)
+        ->observe([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateConfigurationLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     self.frameTimer = [NSTimer timerWithTimeInterval:1.0 / 30.0
@@ -166,10 +160,10 @@ struct view_controller_cpp {
 - (void)_updateConfigurationLabel {
     std::vector<std::string> texts;
 
-    auto const &coordinator = self->_cpp.controller->coordinator;
-    texts.emplace_back("sample rate : " + std::to_string(coordinator->sample_rate()));
-    texts.emplace_back("channel count : " + std::to_string(coordinator->channel_count()));
-    texts.emplace_back("pcm format : " + to_string(coordinator->pcm_format()));
+    auto const &configuration = self->_cpp.controller->coordinator->configuration();
+    texts.emplace_back("sample rate : " + std::to_string(configuration.sample_rate));
+    texts.emplace_back("channel count : " + std::to_string(configuration.channel_count));
+    texts.emplace_back("pcm format : " + to_string(configuration.pcm_format));
 
     std::string text = joined(texts, "\n");
 
