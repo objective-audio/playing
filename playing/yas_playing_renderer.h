@@ -17,6 +17,7 @@ struct renderer final : coordinator_renderable {
     void set_rendering_handler(renderable::rendering_f &&) override;
     void set_is_rendering(bool const) override;
 
+    [[nodiscard]] playing::configuration const &configuration() const override;
     [[nodiscard]] sample_rate_t sample_rate() const override;
     [[nodiscard]] audio::pcm_format pcm_format() const override;
     [[nodiscard]] std::size_t channel_count() const override;
@@ -34,8 +35,8 @@ struct renderer final : coordinator_renderable {
         observing::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
     observing::value::holder_ptr<std::size_t> const _channel_count =
         observing::value::holder<std::size_t>::make_shared(std::size_t(0));
-    observing::value::holder_ptr<configuration> const _configuration =
-        observing::value::holder<configuration>::make_shared(
+    observing::value::holder_ptr<playing::configuration> const _configuration =
+        observing::value::holder<playing::configuration>::make_shared(
             {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
 
     audio::graph_io_ptr const _io = this->graph->add_io(this->_device);

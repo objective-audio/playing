@@ -15,9 +15,9 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
     this->_update_configuration();
 
     auto set_config_handler = [this] {
-        this->_configuration->set_value(configuration{.sample_rate = this->_sample_rate->value(),
-                                                      .pcm_format = this->_pcm_format->value(),
-                                                      .channel_count = this->_channel_count->value()});
+        this->_configuration->set_value(playing::configuration{.sample_rate = this->_sample_rate->value(),
+                                                               .pcm_format = this->_pcm_format->value(),
+                                                               .channel_count = this->_channel_count->value()});
     };
 
     this->_sample_rate->observe([set_config_handler](auto const &) { set_config_handler(); })
@@ -46,6 +46,10 @@ renderer::renderer(audio::io_device_ptr const &device) : graph(audio::graph::mak
         })
         .sync()
         ->add_to(this->_pool);
+}
+
+configuration const &renderer::configuration() const {
+    return this->_configuration->value();
 }
 
 sample_rate_t renderer::sample_rate() const {

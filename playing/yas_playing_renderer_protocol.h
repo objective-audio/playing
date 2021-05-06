@@ -24,11 +24,12 @@ struct renderable {
 };
 
 struct coordinator_renderable : renderable {
+    [[nodiscard]] virtual playing::configuration const &configuration() const = 0;
     [[nodiscard]] virtual sample_rate_t sample_rate() const = 0;
     [[nodiscard]] virtual audio::pcm_format pcm_format() const = 0;
     [[nodiscard]] virtual std::size_t channel_count() const = 0;
 
-    using configuration_observing_handler_f = std::function<void(configuration const &)>;
+    using configuration_observing_handler_f = std::function<void(playing::configuration const &)>;
 
     [[nodiscard]] virtual observing::syncable observe_configuration(configuration_observing_handler_f &&) = 0;
 };

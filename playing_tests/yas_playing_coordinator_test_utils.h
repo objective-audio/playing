@@ -31,6 +31,7 @@ struct worker : workable {
 struct renderer : coordinator_renderable {
     std::function<void(rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
+    std::function<playing::configuration const &(void)> configuration_handler;
     std::function<sample_rate_t(void)> sample_rate_handler;
     std::function<audio::pcm_format(void)> pcm_format_handler;
     std::function<std::size_t(void)> channel_count_handler;
@@ -42,6 +43,10 @@ struct renderer : coordinator_renderable {
 
     void set_is_rendering(bool const is_rendering) override {
         this->set_is_rendering_handler(is_rendering);
+    }
+
+    playing::configuration const &configuration() const override {
+        return this->configuration_handler();
     }
 
     sample_rate_t sample_rate() const override {
