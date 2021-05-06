@@ -110,7 +110,7 @@ void renderer::_update_connection() {
     std::size_t const ch_count = this->_channel_count->value();
     audio::pcm_format const pcm_format = this->_pcm_format->value();
 
-    if (sample_rate > 0.0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
+    if (sample_rate > 0 && ch_count > 0 && pcm_format != audio::pcm_format::other) {
         audio::format const format{{.sample_rate = static_cast<double>(sample_rate),
                                     .channel_count = static_cast<uint32_t>(ch_count),
                                     .pcm_format = pcm_format}};
