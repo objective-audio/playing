@@ -29,10 +29,20 @@ struct worker : workable {
 };
 
 struct renderer : coordinator_renderable {
+    std::function<void(sample_rate_t)> set_rendering_sample_rate_handler;
+    std::function<void(audio::pcm_format)> set_rendering_pcm_format_handler;
     std::function<void(rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
     std::function<playing::configuration const &(void)> configuration_handler;
     std::function<observing::syncable(configuration_observing_handler_f &&)> observe_configuration_handler;
+
+    void set_rendering_sample_rate(sample_rate_t const sample_rate) override {
+        this->set_rendering_sample_rate_handler(sample_rate);
+    }
+
+    void set_rendering_pcm_format(audio::pcm_format const pcm_format) override {
+        this->set_rendering_pcm_format_handler(pcm_format);
+    }
 
     void set_rendering_handler(rendering_f &&handler) override {
         this->set_rendering_handler_handler(std::move(handler));

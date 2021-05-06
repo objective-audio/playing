@@ -24,6 +24,9 @@ struct renderable {
 };
 
 struct coordinator_renderable : renderable {
+    virtual void set_rendering_sample_rate(sample_rate_t const) = 0;
+    virtual void set_rendering_pcm_format(audio::pcm_format const) = 0;
+
     [[nodiscard]] virtual playing::configuration const &configuration() const = 0;
 
     using configuration_observing_handler_f = std::function<void(playing::configuration const &)>;
