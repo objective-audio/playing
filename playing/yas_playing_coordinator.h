@@ -6,10 +6,10 @@
 
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_worker.h>
-#include <playing/yas_playing_configulation.h>
 #include <playing/yas_playing_player.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_renderer.h>
+#include <playing/yas_playing_renderer_types.h>
 #include <playing/yas_playing_types.h>
 #include <processing/yas_processing_time.h>
 #include <processing/yas_processing_timeline.h>
@@ -30,9 +30,9 @@ struct coordinator final {
     [[nodiscard]] bool is_playing() const;
     [[nodiscard]] frame_index_t current_frame() const;
 
-    [[nodiscard]] playing::configuration const &configuration() const;
+    [[nodiscard]] renderer_format const &format() const;
 
-    [[nodiscard]] observing::syncable observe_configuration(std::function<void(playing::configuration const &)> &&);
+    [[nodiscard]] observing::syncable observe_format(std::function<void(renderer_format const &)> &&);
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&);
 
     [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, coordinator_renderable_ptr const &);

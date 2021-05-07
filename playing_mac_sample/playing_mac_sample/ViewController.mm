@@ -15,8 +15,8 @@ struct view_controller_cpp {
         sample::controller::make_shared(audio::mac_device::renewable_default_output_device());
 
     observing::value::holder_ptr<bool> const is_playing = observing::value::holder<bool>::make_shared(false);
-    observing::value::holder_ptr<configuration> const config = observing::value::holder<configuration>::make_shared(
-        configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
+    observing::value::holder_ptr<renderer_format> const config = observing::value::holder<renderer_format>::make_shared(
+        renderer_format{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
 
     observing::canceller_pool pool;
 };
@@ -32,7 +32,7 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet NSTextField *chMappingLabel;
 @property (nonatomic, weak) IBOutlet NSSlider *frequencySlider;
 @property (nonatomic, weak) IBOutlet NSTextField *playFrameLabel;
-@property (nonatomic, weak) IBOutlet NSTextField *configurationLabel;
+@property (nonatomic, weak) IBOutlet NSTextField *formatLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *stateLabel;
 @property (nonatomic, weak) IBOutlet NSTextField *frequencyLabel;
 
@@ -73,7 +73,7 @@ struct view_controller_cpp {
         ->add_to(pool);
 
     controller->coordinator
-        ->observe_configuration([unowned_self](auto const &config) {
+        ->observe_format([unowned_self](auto const &config) {
             auto *viewController = [unowned_self.object() object];
             viewController->_cpp.config->set_value(config);
         })
@@ -108,7 +108,7 @@ struct view_controller_cpp {
     self->_cpp.config
         ->observe([unowned_self](auto const &) {
             ViewController *viewController = [unowned_self.object() object];
-            [viewController _updateConfigurationLabel];
+            [viewController _updateFormatLabel];
         })
         .sync()
         ->add_to(pool);
@@ -157,17 +157,17 @@ struct view_controller_cpp {
     self->_cpp.controller->ch_mapping_idx->set_value(sender.integerValue);
 }
 
-- (void)_updateConfigurationLabel {
+- (void)_updateFormatLabel {
     std::vector<std::string> texts;
 
-    auto const &configuration = self->_cpp.controller->coordinator->configuration();
-    texts.emplace_back("sample rate : " + std::to_string(configuration.sample_rate));
-    texts.emplace_back("channel count : " + std::to_string(configuration.channel_count));
-    texts.emplace_back("pcm format : " + to_string(configuration.pcm_format));
+    auto const &format = self->_cpp.controller->coordinator->format();
+    texts.emplace_back("sample rate : " + std::to_string(format.sample_rate));
+    texts.emplace_back("channel count : " + std::to_string(format.channel_count));
+    texts.emplace_back("pcm format : " + to_string(format.pcm_format));
 
     std::string text = joined(texts, "\n");
 
-    self.configurationLabel.stringValue = (__bridge NSString *)to_cf_object(text);
+    self.formatLabel.stringValue = (__bridge NSString *)to_cf_object(text);
 }
 
 - (void)_updateStateLabel:(NSTimer *)timer {

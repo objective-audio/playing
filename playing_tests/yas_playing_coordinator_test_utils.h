@@ -33,8 +33,8 @@ struct renderer : coordinator_renderable {
     std::function<void(audio::pcm_format)> set_rendering_pcm_format_handler;
     std::function<void(rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
-    std::function<playing::configuration const &(void)> configuration_handler;
-    std::function<observing::syncable(configuration_observing_handler_f &&)> observe_configuration_handler;
+    std::function<renderer_format const &(void)> format_handler;
+    std::function<observing::syncable(renderer_format_observing_handler_f &&)> observe_format_handler;
 
     void set_rendering_sample_rate(sample_rate_t const sample_rate) override {
         this->set_rendering_sample_rate_handler(sample_rate);
@@ -52,12 +52,12 @@ struct renderer : coordinator_renderable {
         this->set_is_rendering_handler(is_rendering);
     }
 
-    playing::configuration const &configuration() const override {
-        return this->configuration_handler();
+    renderer_format const &format() const override {
+        return this->format_handler();
     }
 
-    observing::syncable observe_configuration(configuration_observing_handler_f &&handler) override {
-        return this->observe_configuration_handler(std::move(handler));
+    observing::syncable observe_format(renderer_format_observing_handler_f &&handler) override {
+        return this->observe_format_handler(std::move(handler));
     }
 };
 
@@ -134,7 +134,7 @@ struct cpp {
     std::shared_ptr<coordinator_test::exporter> exporter = nullptr;
 
     observing::notifier_ptr<exporter_event> exporter_event_notifier = nullptr;
-    observing::value::holder_ptr<configuration> configulation_holder = nullptr;
+    observing::value::holder_ptr<renderer_format> configulation_holder = nullptr;
     coordinator_ptr coordinator = nullptr;
 
     coordinator_ptr setup_coordinator() {
@@ -149,9 +149,10 @@ struct cpp {
                 return notifier->observe(std::move(handler));
             };
 
-        this->configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
-        this->renderer->observe_configuration_handler =
-            [holder = this->configulation_holder](coordinator_renderable::configuration_observing_handler_f &&handler) {
+        this->configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
+        this->renderer->observe_format_handler =
+            [holder =
+                 this->configulation_holder](coordinator_renderable::renderer_format_observing_handler_f &&handler) {
                 return holder->observe(std::move(handler));
             };
 
