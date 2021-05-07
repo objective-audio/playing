@@ -5,6 +5,7 @@
 #pragma once
 
 #include <audio/yas_audio_graph.h>
+#include <audio/yas_audio_graph_avf_au.h>
 #include <audio/yas_audio_graph_tap.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_renderer_protocol.h>
@@ -14,6 +15,8 @@ namespace yas::playing {
 struct renderer final : coordinator_renderable {
     audio::graph_ptr const graph;
 
+    void set_rendering_sample_rate(sample_rate_t const) override;
+    void set_rendering_pcm_format(audio::pcm_format const) override;
     void set_rendering_handler(renderable::rendering_f &&) override;
     void set_is_rendering(bool const) override;
 
@@ -26,19 +29,22 @@ struct renderer final : coordinator_renderable {
    private:
     audio::io_device_ptr const _device;
 
-    observing::value::holder_ptr<sample_rate_t> const _sample_rate =
-        observing::value::holder<sample_rate_t>::make_shared(sample_rate_t{0});
-    observing::value::holder_ptr<audio::pcm_format> const _pcm_format =
-        observing::value::holder<audio::pcm_format>::make_shared(audio::pcm_format::float32);
-    observing::value::holder_ptr<std::size_t> const _channel_count =
-        observing::value::holder<std::size_t>::make_shared(std::size_t(0));
-    observing::value::holder_ptr<playing::configuration> const _configuration =
-        observing::value::holder<playing::configuration>::make_shared(
-            {.sample_rate = 0, .pcm_format = audio::pcm_format::float32, .channel_count = 0});
+    observing::value::holder_ptr<sample_rate_t> const _rendering_sample_rate;
+    observing::value::holder_ptr<audio::pcm_format> const _rendering_pcm_format;
 
-    audio::graph_io_ptr const _io = this->graph->add_io(this->_device);
-    audio::graph_tap_ptr const _tap = audio::graph_tap::make_shared();
-    std::optional<audio::graph_connection_ptr> _connection = std::nullopt;
+    observing::value::holder_ptr<sample_rate_t> const _output_sample_rate;
+    observing::value::holder_ptr<audio::pcm_format> const _output_pcm_format;
+
+    observing::value::holder_ptr<sample_rate_t> const _config_sample_rate;
+    observing::value::holder_ptr<audio::pcm_format> const _config_pcm_format;
+    observing::value::holder_ptr<std::size_t> const _config_channel_count;
+    observing::value::holder_ptr<playing::configuration> const _configuration;
+
+    audio::graph_io_ptr const _io;
+    audio::graph_avf_au_ptr const _converter;
+    audio::graph_tap_ptr const _tap;
+    std::optional<audio::graph_connection_ptr> _connection{std::nullopt};
+    std::optional<audio::graph_connection_ptr> _converter_connection{std::nullopt};
 
     observing::canceller_pool _pool;
 

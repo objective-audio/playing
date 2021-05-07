@@ -60,6 +60,11 @@ void coordinator::reset_timeline() {
     this->_player->set_identifier("");
 }
 
+void coordinator::set_timeline_format(sample_rate_t const sample_rate, audio::pcm_format const pcm_format) {
+    this->_renderer->set_rendering_sample_rate(sample_rate);
+    this->_renderer->set_rendering_pcm_format(pcm_format);
+}
+
 void coordinator::set_channel_mapping(playing::channel_mapping const &ch_mapping) {
     this->_player->set_channel_mapping(ch_mapping);
 }
