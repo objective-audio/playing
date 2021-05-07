@@ -29,7 +29,7 @@ using namespace yas::playing;
     auto const exporter = std::make_shared<coordinator_test::exporter>();
 
     bool exporter_event_called = false;
-    bool configuration_chain_called = false;
+    bool fomat_called = false;
     bool start_called = false;
 
     auto const exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
@@ -39,10 +39,10 @@ using namespace yas::playing;
         return notifier->observe(std::move(handler));
     };
 
-    auto const configulation_holder = observing::value::holder<configuration>::make_shared(configuration{});
-    renderer->observe_configuration_handler = [holder = configulation_holder, &configuration_chain_called](
-                                                  coordinator_renderable::configuration_observing_handler_f &&handler) {
-        configuration_chain_called = true;
+    auto const configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
+    renderer->observe_format_handler = [holder = configulation_holder, &fomat_called](
+                                           coordinator_renderable::renderer_format_observing_handler_f &&handler) {
+        fomat_called = true;
         return holder->observe(std::move(handler));
     };
 
@@ -51,7 +51,7 @@ using namespace yas::playing;
     auto const coordinator = coordinator::make_shared(worker, renderer, player, exporter);
 
     XCTAssertTrue(exporter_event_called);
-    XCTAssertTrue(configuration_chain_called);
+    XCTAssertTrue(fomat_called);
     XCTAssertTrue(start_called);
 }
 
@@ -64,8 +64,8 @@ using namespace yas::playing;
     self->_cpp.exporter->set_timeline_container_handler = [&called_set_container](auto const &container) {
         called_set_container.emplace_back(container);
     };
-    playing::configuration configuration{.sample_rate = 44100};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    renderer_format format{.sample_rate = 44100};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
     self->_cpp.player->set_identifier_handler = [&called_set_identifier](std::string const &identifier) {
         called_set_identifier.emplace_back(identifier);
     };
@@ -157,8 +157,8 @@ using namespace yas::playing;
         called.emplace_back(file_ch_idx, frag_range);
     };
 
-    playing::configuration configuration{.sample_rate = 4};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    renderer_format format{.sample_rate = 4};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
 
     coordinator->overwrite(proc::time::range{0, 4});
 
@@ -192,8 +192,8 @@ using namespace yas::playing;
     std::vector<std::string> called_exporter_identifier;
     std::vector<std::string> called_player_identifier;
 
-    playing::configuration configuration{.sample_rate = 4};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    renderer_format format{.sample_rate = 4};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
     self->_cpp.exporter->set_timeline_container_handler =
         [&called_exporter_identifier](timeline_container_ptr container) {
             called_exporter_identifier.emplace_back(container->identifier());
@@ -253,27 +253,26 @@ using namespace yas::playing;
     XCTAssertEqual(coordinator->current_frame(), 2);
 }
 
-- (void)test_configuration {
+- (void)test_format {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    playing::configuration configuration{
-        .sample_rate = 1000, .pcm_format = audio::pcm_format::int16, .channel_count = 1};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    renderer_format format{.sample_rate = 1000, .pcm_format = audio::pcm_format::int16, .channel_count = 1};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
 
-    XCTAssertEqual(coordinator->configuration().sample_rate, 1000);
-    XCTAssertEqual(coordinator->configuration().pcm_format, audio::pcm_format::int16);
-    XCTAssertEqual(coordinator->configuration().channel_count, 1);
+    XCTAssertEqual(coordinator->format().sample_rate, 1000);
+    XCTAssertEqual(coordinator->format().pcm_format, audio::pcm_format::int16);
+    XCTAssertEqual(coordinator->format().channel_count, 1);
 
-    configuration.sample_rate = 2000;
-    configuration.pcm_format = audio::pcm_format::float32;
-    configuration.channel_count = 2;
+    format.sample_rate = 2000;
+    format.pcm_format = audio::pcm_format::float32;
+    format.channel_count = 2;
 
-    XCTAssertEqual(coordinator->configuration().sample_rate, 2000);
-    XCTAssertEqual(coordinator->configuration().pcm_format, audio::pcm_format::float32);
-    XCTAssertEqual(coordinator->configuration().channel_count, 2);
+    XCTAssertEqual(coordinator->format().sample_rate, 2000);
+    XCTAssertEqual(coordinator->format().pcm_format, audio::pcm_format::float32);
+    XCTAssertEqual(coordinator->format().channel_count, 2);
 }
 
-- (void)test_observe_configuration {
+- (void)test_observe_format {
     auto const coordinator = self->_cpp.setup_coordinator();
     observing::canceller_pool pool;
 
@@ -283,29 +282,27 @@ using namespace yas::playing;
         called_containers.emplace_back(container);
     };
 
-    // configuration_chainとは別で返す（実際は同じ値になる）
-    playing::configuration configuration{.sample_rate = 5};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    // observer_formatとは別で返す（実際は同じ値になる）
+    renderer_format format{.sample_rate = 5};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
 
-    std::vector<playing::configuration> called_configrations;
+    std::vector<renderer_format> called_configrations;
 
     coordinator
-        ->observe_configuration(
-            [&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
+        ->observe_format([&called_configrations](auto const &config) { called_configrations.emplace_back(config); })
         .sync()
         ->add_to(pool);
 
     XCTAssertEqual(called_configrations.size(), 1);
-    XCTAssertEqual(called_configrations.at(0), (playing::configuration{}));
+    XCTAssertEqual(called_configrations.at(0), (renderer_format{}));
     XCTAssertEqual(called_containers.size(), 0);
 
     self->_cpp.configulation_holder->set_value(
         {.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1});
 
     XCTAssertEqual(called_configrations.size(), 2);
-    XCTAssertEqual(
-        called_configrations.at(1),
-        (playing::configuration{.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1}));
+    XCTAssertEqual(called_configrations.at(1),
+                   (renderer_format{.sample_rate = 4, .pcm_format = audio::pcm_format::float32, .channel_count = 1}));
     XCTAssertEqual(called_containers.size(), 1);
     XCTAssertEqual(called_containers.at(0)->sample_rate(), 5);
 }
@@ -338,8 +335,8 @@ using namespace yas::playing;
 - (void)test_export {
     auto const coordinator = self->_cpp.setup_coordinator();
 
-    playing::configuration configuration{.sample_rate = 4};
-    self->_cpp.renderer->configuration_handler = [&configuration] { return configuration; };
+    renderer_format format{.sample_rate = 4};
+    self->_cpp.renderer->format_handler = [&format] { return format; };
 
     std::vector<std::pair<std::optional<channel_index_t>, fragment_range>> called;
 

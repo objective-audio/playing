@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17505"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17703"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="Stack View standard spacing" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -15,11 +13,11 @@
             <objects>
                 <viewController id="BYZ-38-t0r" customClass="ViewController" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="6XW-dw-ZSo">
-                                <rect key="frame" x="20" y="44" width="374" height="222"/>
+                                <rect key="frame" x="20" y="0.0" width="560" height="222"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" spacingType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="hty-pn-a8n">
                                         <rect key="frame" x="0.0" y="0.0" width="208" height="30"/>
@@ -90,7 +88,7 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="500" minValue="500" maxValue="2000" translatesAutoresizingMaskIntoConstraints="NO" id="byH-dW-Egy">
-                                        <rect key="frame" x="-2" y="163.5" width="378" height="31"/>
+                                        <rect key="frame" x="-2" y="163.5" width="564" height="31"/>
                                         <connections>
                                             <action selector="frequencyChanged:" destination="BYZ-38-t0r" eventType="valueChanged" id="PcF-5a-59u"/>
                                         </connections>
@@ -120,7 +118,7 @@
                     <connections>
                         <outlet property="chMappingLabel" destination="L7O-Ii-CUf" id="24W-Ik-ttC"/>
                         <outlet property="chMappingStepper" destination="ZmP-j0-xIL" id="V4g-Ds-pyq"/>
-                        <outlet property="configurationLabel" destination="een-XW-XNf" id="Hqj-iM-npD"/>
+                        <outlet property="formatLabel" destination="een-XW-XNf" id="Hqj-iM-npD"/>
                         <outlet property="frequencyLabel" destination="ONi-Dw-lKP" id="x7E-Ig-P1a"/>
                         <outlet property="frequencySlider" destination="byH-dW-Egy" id="sUd-fl-l5r"/>
                         <outlet property="minusButton" destination="86l-Hm-fAR" id="did-Mx-qAv"/>

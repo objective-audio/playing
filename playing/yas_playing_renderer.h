@@ -20,9 +20,9 @@ struct renderer final : coordinator_renderable {
     void set_rendering_handler(renderable::rendering_f &&) override;
     void set_is_rendering(bool const) override;
 
-    [[nodiscard]] playing::configuration const &configuration() const override;
+    [[nodiscard]] renderer_format const &format() const override;
 
-    [[nodiscard]] observing::syncable observe_configuration(configuration_observing_handler_f &&) override;
+    [[nodiscard]] observing::syncable observe_format(renderer_format_observing_handler_f &&) override;
 
     static renderer_ptr make_shared(audio::io_device_ptr const &);
 
@@ -35,10 +35,10 @@ struct renderer final : coordinator_renderable {
     observing::value::holder_ptr<sample_rate_t> const _output_sample_rate;
     observing::value::holder_ptr<audio::pcm_format> const _output_pcm_format;
 
-    observing::value::holder_ptr<sample_rate_t> const _config_sample_rate;
-    observing::value::holder_ptr<audio::pcm_format> const _config_pcm_format;
-    observing::value::holder_ptr<std::size_t> const _config_channel_count;
-    observing::value::holder_ptr<playing::configuration> const _configuration;
+    observing::value::holder_ptr<sample_rate_t> const _sample_rate;
+    observing::value::holder_ptr<audio::pcm_format> const _pcm_format;
+    observing::value::holder_ptr<std::size_t> const _channel_count;
+    observing::value::holder_ptr<renderer_format> const _format;
 
     audio::graph_io_ptr const _io;
     audio::graph_avf_au_ptr const _converter;
@@ -52,7 +52,7 @@ struct renderer final : coordinator_renderable {
 
     renderer(audio::io_device_ptr const &);
 
-    void _update_configuration();
+    void _update_format();
     void _update_connection();
 };
 }  // namespace yas::playing

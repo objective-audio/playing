@@ -35,8 +35,7 @@ sample::controller::controller(audio::io_device_ptr const &device) : device(devi
     std::cout << "root_path:" << this->root_path << std::endl;
 
     this->coordinator
-        ->observe_configuration(
-            [this](configuration const &config) { this->_sample_rate->set_value(config.sample_rate); })
+        ->observe_format([this](renderer_format const &config) { this->_sample_rate->set_value(config.sample_rate); })
         .sync()
         ->add_to(this->_pool);
 
@@ -57,11 +56,11 @@ void sample::controller::seek_zero() {
 }
 
 void sample::controller::seek_plus_one_sec() {
-    this->coordinator->seek(this->coordinator->current_frame() + this->coordinator->configuration().sample_rate);
+    this->coordinator->seek(this->coordinator->current_frame() + this->coordinator->format().sample_rate);
 }
 
 void sample::controller::seek_minus_one_sec() {
-    this->coordinator->seek(this->coordinator->current_frame() - this->coordinator->configuration().sample_rate);
+    this->coordinator->seek(this->coordinator->current_frame() - this->coordinator->format().sample_rate);
 }
 
 void sample::controller::_update_timeline() {

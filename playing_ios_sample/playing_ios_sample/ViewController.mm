@@ -16,8 +16,8 @@ struct view_controller_cpp {
     std::shared_ptr<sample::controller> controller{nullptr};
 
     observing::value::holder_ptr<bool> const is_playing = observing::value::holder<bool>::make_shared(false);
-    observing::value::holder_ptr<configuration> const config = observing::value::holder<configuration>::make_shared(
-        configuration{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
+    observing::value::holder_ptr<renderer_format> const config = observing::value::holder<renderer_format>::make_shared(
+        renderer_format{.sample_rate = 0, .pcm_format = audio::pcm_format::other, .channel_count = 0});
 
     observing::canceller_pool pool;
 
@@ -40,7 +40,7 @@ struct view_controller_cpp {
 @property (nonatomic, weak) IBOutlet UILabel *chMappingLabel;
 @property (nonatomic, weak) IBOutlet UISlider *frequencySlider;
 @property (nonatomic, weak) IBOutlet UILabel *playFrameLabel;
-@property (nonatomic, weak) IBOutlet UILabel *configurationLabel;
+@property (nonatomic, weak) IBOutlet UILabel *formatLabel;
 @property (nonatomic, weak) IBOutlet UILabel *stateLabel;
 @property (nonatomic, weak) IBOutlet UILabel *frequencyLabel;
 
@@ -73,58 +73,52 @@ struct view_controller_cpp {
     self.frequencySlider.value = controller->frequency->value();
 
     controller->coordinator
-        ->observe_is_playing(
-            [unowned_self](auto const &is_playing) {
-                ViewController *viewController = [unowned_self.object() object];
-                viewController->_cpp.is_playing->set_value(is_playing);
-            },
-            true)
+        ->observe_is_playing([unowned_self](auto const &is_playing) {
+            ViewController *viewController = [unowned_self.object() object];
+            viewController->_cpp.is_playing->set_value(is_playing);
+        })
+        .sync()
         ->add_to(pool);
 
     controller->coordinator
-        ->observe_configuration(
-            [unowned_self](auto const &config) {
-                ViewController *viewController = [unowned_self.object() object];
-                viewController->_cpp.config->set_value(config);
-            },
-            true)
+        ->observe_format([unowned_self](auto const &config) {
+            ViewController *viewController = [unowned_self.object() object];
+            viewController->_cpp.config->set_value(config);
+        })
+        .sync()
         ->add_to(pool);
 
     controller->frequency
-        ->observe(
-            [unowned_self](float const &) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateFrequencyLabel];
-            },
-            true)
+        ->observe([unowned_self](float const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateFrequencyLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     controller->ch_mapping_idx
-        ->observe(
-            [unowned_self](channel_index_t const &) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateChMappingLabel];
-            },
-            true)
+        ->observe([unowned_self](channel_index_t const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateChMappingLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     self->_cpp.is_playing
-        ->observe(
-            [unowned_self](bool const &is_playing) {
-                NSString *title = is_playing ? @"Stop" : @"Play";
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController.playButton setTitle:title forState:UIControlStateNormal];
-            },
-            true)
+        ->observe([unowned_self](bool const &is_playing) {
+            NSString *title = is_playing ? @"Stop" : @"Play";
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController.playButton setTitle:title forState:UIControlStateNormal];
+        })
+        .sync()
         ->add_to(pool);
 
     self->_cpp.config
-        ->observe(
-            [unowned_self](auto const &) {
-                ViewController *viewController = [unowned_self.object() object];
-                [viewController _updateConfigurationLabel];
-            },
-            true)
+        ->observe([unowned_self](auto const &) {
+            ViewController *viewController = [unowned_self.object() object];
+            [viewController _updateFormatLabel];
+        })
+        .sync()
         ->add_to(pool);
 
     self.frameDisplayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(_updatePlayFrame:)];
@@ -161,17 +155,17 @@ struct view_controller_cpp {
     self->_cpp.controller->ch_mapping_idx->set_value(static_cast<channel_index_t>(sender.value));
 }
 
-- (void)_updateConfigurationLabel {
+- (void)_updateFormatLabel {
     std::vector<std::string> texts;
 
     auto const &coordinator = self->_cpp.controller->coordinator;
-    texts.emplace_back("sample rate : " + std::to_string(coordinator->sample_rate()));
-    texts.emplace_back("channel count : " + std::to_string(coordinator->channel_count()));
-    texts.emplace_back("pcm format : " + to_string(coordinator->pcm_format()));
+    texts.emplace_back("sample rate : " + std::to_string(coordinator->format().sample_rate));
+    texts.emplace_back("channel count : " + std::to_string(coordinator->format().channel_count));
+    texts.emplace_back("pcm format : " + to_string(coordinator->format().pcm_format));
 
     std::string text = joined(texts, "\n");
 
-    self.configurationLabel.text = (__bridge NSString *)to_cf_object(text);
+    self.formatLabel.text = (__bridge NSString *)to_cf_object(text);
 }
 
 - (void)_updateStateLabel:(CADisplayLink *)displayLink {

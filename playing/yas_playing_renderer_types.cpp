@@ -2,8 +2,6 @@
 //  yas_playing_coordinator.cpp
 //
 
-#include "yas_playing_coordinator.h"
-
 #include <cpp_utils/yas_fast_each.h>
 
 #include <thread>
@@ -12,6 +10,7 @@
 #include "yas_playing_buffering_element.h"
 #include "yas_playing_buffering_resource.h"
 #include "yas_playing_channel_mapping.h"
+#include "yas_playing_coordinator.h"
 #include "yas_playing_exporter.h"
 #include "yas_playing_player_resource.h"
 #include "yas_playing_reading_resource.h"
@@ -37,9 +36,7 @@ coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr 
         .end()
         ->add_to(this->_pool);
 
-    this->_renderer->observe_configuration([this](auto const &) { this->_update_exporter(); })
-        .end()
-        ->add_to(this->_pool);
+    this->_renderer->observe_format([this](auto const &) { this->_update_exporter(); }).end()->add_to(this->_pool);
 
     this->_worker->start();
 }
@@ -79,7 +76,7 @@ void coordinator::seek(frame_index_t const frame) {
 
 void coordinator::overwrite(proc::time::range const &range) {
     auto &player = this->_player;
-    auto const sample_rate = this->configuration().sample_rate;
+    auto const sample_rate = this->format().sample_rate;
 
     proc::time::range const frags_range = timeline_utils::fragments_range(range, sample_rate);
 
@@ -110,12 +107,12 @@ frame_index_t coordinator::current_frame() const {
     return this->_player->current_frame();
 }
 
-playing::configuration const &coordinator::configuration() const {
-    return this->_renderer->configuration();
+renderer_format const &coordinator::format() const {
+    return this->_renderer->format();
 }
 
-observing::syncable coordinator::observe_configuration(std::function<void(playing::configuration const &)> &&handler) {
-    return this->_renderer->observe_configuration(std::move(handler));
+observing::syncable coordinator::observe_format(std::function<void(renderer_format const &)> &&handler) {
+    return this->_renderer->observe_format(std::move(handler));
 }
 
 observing::syncable coordinator::observe_is_playing(std::function<void(bool const &)> &&handler) {
@@ -123,8 +120,8 @@ observing::syncable coordinator::observe_is_playing(std::function<void(bool cons
 }
 
 void coordinator::_update_exporter() {
-    this->_exporter->set_timeline_container(timeline_container::make_shared(
-        this->_identifier, this->_renderer->configuration().sample_rate, this->_timeline));
+    this->_exporter->set_timeline_container(
+        timeline_container::make_shared(this->_identifier, this->_renderer->format().sample_rate, this->_timeline));
 }
 
 coordinator_ptr coordinator::make_shared(std::string const &root_path, coordinator_renderable_ptr const &renderer) {
