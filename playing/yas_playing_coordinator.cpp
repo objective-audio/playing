@@ -2,6 +2,8 @@
 //  yas_playing_coordinator.cpp
 //
 
+#include "yas_playing_coordinator.h"
+
 #include <cpp_utils/yas_fast_each.h>
 
 #include <thread>
@@ -10,7 +12,6 @@
 #include "yas_playing_buffering_element.h"
 #include "yas_playing_buffering_resource.h"
 #include "yas_playing_channel_mapping.h"
-#include "yas_playing_coordinator.h"
 #include "yas_playing_exporter.h"
 #include "yas_playing_player_resource.h"
 #include "yas_playing_reading_resource.h"
@@ -20,7 +21,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-coordinator::coordinator(workable_ptr const &worker, coordinator_renderable_ptr const &renderer,
+coordinator::coordinator(workable_ptr const &worker, std::shared_ptr<coordinator_renderer_interface> const &renderer,
                          playable_ptr const &player, exportable_ptr const &exporter)
     : _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
     this->_exporter
@@ -124,7 +125,7 @@ void coordinator::_update_exporter() {
         timeline_container::make_shared(this->_identifier, this->_renderer->format().sample_rate, this->_timeline));
 }
 
-coordinator_ptr coordinator::make_shared(std::string const &root_path, coordinator_renderable_ptr const &renderer) {
+coordinator_ptr coordinator::make_shared(std::string const &root_path, std::shared_ptr<renderer> const &renderer) {
     auto const worker = worker::make_shared();
 
     auto const player = player::make_shared(
@@ -138,7 +139,8 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, coordinat
     return make_shared(worker, renderer, player, exporter);
 }
 
-coordinator_ptr coordinator::make_shared(workable_ptr const &worker, coordinator_renderable_ptr const &renderer,
+coordinator_ptr coordinator::make_shared(workable_ptr const &worker,
+                                         std::shared_ptr<coordinator_renderer_interface> const &renderer,
                                          playable_ptr const &player, exportable_ptr const &exporter) {
     return coordinator_ptr(new coordinator{worker, renderer, player, exporter});
 }

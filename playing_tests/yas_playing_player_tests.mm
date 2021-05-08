@@ -32,7 +32,7 @@ using namespace yas::playing;
     std::vector<std::string> called_set_identifier;
     std::vector<channel_mapping> called_set_ch_mapping;
     std::vector<bool> called_set_is_playing;
-    std::vector<renderable::rendering_f> called_set_rendering_handler;
+    std::vector<renderer_rendering_f> called_set_rendering_handler;
     std::vector<bool> called_set_is_rendering;
     std::vector<std::string> called_set_identifier_request_handler;
     std::vector<channel_mapping> called_set_ch_mapping_request_handler;
@@ -41,7 +41,7 @@ using namespace yas::playing;
         called_set_is_playing.emplace_back(is_playing);
     };
 
-    renderer->set_rendering_handler_handler = [&called_set_rendering_handler](renderable::rendering_f &&handler) {
+    renderer->set_rendering_handler_handler = [&called_set_rendering_handler](renderer_rendering_f &&handler) {
         called_set_rendering_handler.emplace_back(std::move(handler));
     };
 

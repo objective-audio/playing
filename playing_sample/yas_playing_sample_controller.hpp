@@ -12,10 +12,11 @@
 namespace yas::playing::sample {
 struct controller {
     audio::io_device_ptr const device;
+    renderer_ptr const renderer = renderer::make_shared(this->device);
     std::string const root_path =
         file_path{system_path_utils::directory_path(system_path_utils::dir::document)}.appending("sample").string();
     std::string const identifier = "0";
-    coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, renderer::make_shared(this->device));
+    coordinator_ptr const coordinator = coordinator::make_shared(this->root_path, renderer);
 
     observing::value::holder_ptr<float> const frequency = observing::value::holder<float>::make_shared(1000.0f);
     observing::value::holder_ptr<channel_index_t> const ch_mapping_idx =

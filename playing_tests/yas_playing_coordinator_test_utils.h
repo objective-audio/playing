@@ -28,11 +28,9 @@ struct worker : workable {
     }
 };
 
-struct renderer : coordinator_renderable {
+struct renderer : coordinator_renderer_interface {
     std::function<void(sample_rate_t)> set_rendering_sample_rate_handler;
     std::function<void(audio::pcm_format)> set_rendering_pcm_format_handler;
-    std::function<void(rendering_f &&)> set_rendering_handler_handler;
-    std::function<void(bool)> set_is_rendering_handler;
     std::function<renderer_format const &(void)> format_handler;
     std::function<observing::syncable(renderer_format_observing_handler_f &&)> observe_format_handler;
 
@@ -42,14 +40,6 @@ struct renderer : coordinator_renderable {
 
     void set_rendering_pcm_format(audio::pcm_format const pcm_format) override {
         this->set_rendering_pcm_format_handler(pcm_format);
-    }
-
-    void set_rendering_handler(rendering_f &&handler) override {
-        this->set_rendering_handler_handler(std::move(handler));
-    }
-
-    void set_is_rendering(bool const is_rendering) override {
-        this->set_is_rendering_handler(is_rendering);
     }
 
     renderer_format const &format() const override {
@@ -151,8 +141,8 @@ struct cpp {
 
         this->configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
         this->renderer->observe_format_handler =
-            [holder =
-                 this->configulation_holder](coordinator_renderable::renderer_format_observing_handler_f &&handler) {
+            [holder = this->configulation_holder](
+                coordinator_renderer_interface::renderer_format_observing_handler_f &&handler) {
                 return holder->observe(std::move(handler));
             };
 

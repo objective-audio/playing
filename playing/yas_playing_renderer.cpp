@@ -78,7 +78,7 @@ void renderer::set_rendering_pcm_format(audio::pcm_format const pcm_format) {
     this->_rendering_pcm_format->set_value(pcm_format);
 }
 
-void renderer::set_rendering_handler(renderable::rendering_f &&handler) {
+void renderer::set_rendering_handler(renderer_rendering_f &&handler) {
     this->_tap->set_render_handler([handler = std::move(handler)](audio::node_render_args const &args) {
         if (args.bus_idx != 0) {
             return;
