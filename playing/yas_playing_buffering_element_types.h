@@ -1,5 +1,5 @@
 //
-//  yas_playing_buffering_element_protocol.h
+//  yas_playing_buffering_element_types.h
 //
 
 #pragma once

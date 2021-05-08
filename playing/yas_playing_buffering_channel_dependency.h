@@ -5,7 +5,7 @@
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
-#include <playing/yas_playing_buffering_element_protocol.h>
+#include <playing/yas_playing_buffering_element_types.h>
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
