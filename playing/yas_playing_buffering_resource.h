@@ -35,8 +35,8 @@ struct buffering_resource final : buffering_resource_interface {
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,
                                                   frame_index_t const) override;
 
-    using make_channel_f =
-        std::function<buffering_channel_protocol_ptr(std::size_t const, audio::format const &, sample_rate_t const)>;
+    using make_channel_f = std::function<std::shared_ptr<buffering_channel_interface>(
+        std::size_t const, audio::format const &, sample_rate_t const)>;
 
     static buffering_resource_ptr make_shared(std::size_t const element_count, std::string const &root_path,
                                               make_channel_f &&);
@@ -63,7 +63,7 @@ struct buffering_resource final : buffering_resource_interface {
     channel_mapping _ch_mapping;
     std::string _identifier = "";
 
-    std::vector<buffering_channel_protocol_ptr> _channels;
+    std::vector<std::shared_ptr<buffering_channel_interface>> _channels;
 
     mutable std::mutex _request_mutex;
     std::optional<channel_mapping> _ch_mapping_request = std::nullopt;
