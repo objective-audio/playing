@@ -1,5 +1,5 @@
 //
-//  yas_playing_exporter_protocol.h
+//  yas_playing_exporter_types.h
 //
 
 #pragma once
