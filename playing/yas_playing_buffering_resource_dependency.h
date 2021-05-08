@@ -1,5 +1,5 @@
 //
-//  yas_playing_buffering_channel_protocol.h
+//  yas_playing_buffering_resource_dependency.h
 //
 
 #pragma once

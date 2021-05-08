@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <playing/yas_playing_buffering_channel_protocol.h>
+#include <playing/yas_playing_buffering_resource_dependency.h>
 #include <playing/yas_playing_ptr.h>
 
 namespace yas::playing {
