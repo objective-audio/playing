@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <playing/yas_playing_player_resource_protocol.h>
+#include <playing/yas_playing_player_dependency.h>
 #include <playing/yas_playing_ptr.h>
 
 #include <mutex>
