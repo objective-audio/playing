@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_worker.h>
 #include <playing/yas_playing_channel_mapping.h>
+#include <playing/yas_playing_coordinator_dependency.h>
 #include <playing/yas_playing_player_dependency.h>
 #include <playing/yas_playing_player_protocol.h>
 #include <playing/yas_playing_ptr.h>
@@ -27,12 +28,13 @@ struct player final : coordinator_player_interface {
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&) override;
 
     static player_ptr make_shared(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &,
-                                  workable_ptr const &, task_priority_t const &, player_resource_protocol_ptr const &);
+                                  workable_ptr const &, player_task_priority const &,
+                                  player_resource_protocol_ptr const &);
 
    private:
     std::shared_ptr<player_renderer_interface> const _renderer;
     workable_ptr const _worker;
-    task_priority_t const _priority;
+    player_task_priority const _priority;
     player_resource_protocol_ptr const _resource;
 
     observing::value::holder_ptr<bool> _is_playing = observing::value::holder<bool>::make_shared(false);
@@ -41,6 +43,6 @@ struct player final : coordinator_player_interface {
     observing::canceller_pool _pool;
 
     player(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &, workable_ptr const &,
-           task_priority_t const &, player_resource_protocol_ptr const &);
+           player_task_priority const &, player_resource_protocol_ptr const &);
 };
 }  // namespace yas::playing
