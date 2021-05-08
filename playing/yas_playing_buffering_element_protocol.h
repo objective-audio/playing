@@ -17,10 +17,10 @@ enum class audio_buffering_element_state {
     readable,
 };
 
-struct buffering_element_protocol {
+struct buffering_element_interface {
     using state_t = audio_buffering_element_state;
 
-    virtual ~buffering_element_protocol() = default;
+    virtual ~buffering_element_interface() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual fragment_index_t fragment_index_on_render() const = 0;

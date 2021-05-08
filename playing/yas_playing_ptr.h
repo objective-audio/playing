@@ -24,7 +24,7 @@ class player_resource;
 
 class coordinator_player_interface;
 class coordinator_renderer_interface;
-class buffering_element_protocol;
+class buffering_element_interface;
 class buffering_channel_interface;
 class buffering_resource_protocol;
 class reading_resource_interface;
@@ -46,7 +46,7 @@ using buffering_element_ptr = std::shared_ptr<buffering_element>;
 using reading_resource_ptr = std::shared_ptr<reading_resource>;
 using player_resource_ptr = std::shared_ptr<player_resource>;
 
-using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_protocol>;
+using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_interface>;
 using buffering_channel_protocol_ptr = std::shared_ptr<buffering_channel_interface>;
 using buffering_resource_protocol_ptr = std::shared_ptr<buffering_resource_protocol>;
 using reading_resource_protocol_ptr = std::shared_ptr<reading_resource_interface>;

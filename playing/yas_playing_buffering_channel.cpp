@@ -68,7 +68,7 @@ bool buffering_channel::read_into_buffer_on_render(audio::pcm_buffer *out_buffer
     return false;
 }
 
-std::vector<std::shared_ptr<buffering_element_protocol>> const &buffering_channel::elements_for_test() const {
+std::vector<std::shared_ptr<buffering_element_interface>> const &buffering_channel::elements_for_test() const {
     return this->_elements;
 }
 

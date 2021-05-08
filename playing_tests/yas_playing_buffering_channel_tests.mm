@@ -25,7 +25,7 @@ static path::channel channel_path() {
     return channel_path(sample_rate);
 }
 
-struct element : buffering_element_protocol {
+struct element : buffering_element_interface {
     std::function<state_t(void)> state_handler;
     std::function<frame_index_t(void)> begin_frame_handler;
     std::function<fragment_index_t(void)> fragment_index_handler;
