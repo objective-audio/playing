@@ -144,9 +144,9 @@ struct cpp {
 - (void)test_overwrite_request {
     auto const resource = self->_cpp.make_resource();
 
-    std::vector<player_resource_protocol::overwrite_requests_t> called;
+    std::vector<player_resource_interface::overwrite_requests_t> called;
 
-    auto requests = [&called](player_resource_protocol::overwrite_requests_t const &requests) {
+    auto requests = [&called](player_resource_interface::overwrite_requests_t const &requests) {
         called.emplace_back(requests);
     };
 

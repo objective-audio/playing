@@ -23,7 +23,7 @@ struct renderer : player_renderer_interface {
     }
 };
 
-struct resource : player_resource_protocol {
+struct resource : player_resource_interface {
     std::function<void(bool)> set_playing_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;

@@ -11,11 +11,11 @@
 #include <vector>
 
 namespace yas::playing {
-struct player_resource_protocol {
+struct player_resource_interface {
     using overwrite_requests_t = std::vector<element_address>;
     using overwrite_requests_f = std::function<void(overwrite_requests_t const &)>;
 
-    virtual ~player_resource_protocol() = default;
+    virtual ~player_resource_interface() = default;
 
     virtual reading_resource_protocol_ptr const &reading() const = 0;
     virtual buffering_resource_protocol_ptr const &buffering() const = 0;

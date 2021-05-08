@@ -10,7 +10,7 @@
 #include <mutex>
 
 namespace yas::playing {
-struct player_resource final : player_resource_protocol {
+struct player_resource final : player_resource_interface {
     reading_resource_protocol_ptr const &reading() const override;
     buffering_resource_protocol_ptr const &buffering() const override;
 
