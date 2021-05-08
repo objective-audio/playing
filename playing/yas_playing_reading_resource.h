@@ -6,6 +6,7 @@
 
 #include <audio/yas_audio_format.h>
 #include <audio/yas_audio_pcm_buffer.h>
+#include <playing/yas_playing_player_resource_dependency.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_reading_resource_protocol.h>
 
