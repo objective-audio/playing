@@ -39,20 +39,21 @@ struct coordinator final {
     [[nodiscard]] static coordinator_ptr make_shared(workable_ptr const &,
                                                      std::shared_ptr<coordinator_renderer_interface> const &,
                                                      std::shared_ptr<coordinator_player_interface> const &,
-                                                     exportable_ptr const &);
+                                                     std::shared_ptr<coordinator_exporter_interface> const &);
 
    private:
     workable_ptr const _worker;
     std::shared_ptr<coordinator_renderer_interface> const _renderer;
     std::shared_ptr<coordinator_player_interface> const _player;
-    exportable_ptr const _exporter;
+    std::shared_ptr<coordinator_exporter_interface> const _exporter;
     std::string _identifier = "";
     std::optional<proc::timeline_ptr> _timeline = std::nullopt;
 
     observing::canceller_pool _pool;
 
     coordinator(workable_ptr const &, std::shared_ptr<coordinator_renderer_interface> const &,
-                std::shared_ptr<coordinator_player_interface> const &, exportable_ptr const &);
+                std::shared_ptr<coordinator_player_interface> const &,
+                std::shared_ptr<coordinator_exporter_interface> const &);
 
     void _update_exporter();
 };

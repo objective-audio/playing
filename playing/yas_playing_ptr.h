@@ -48,5 +48,4 @@ using player_resource_ptr = std::shared_ptr<player_resource>;
 
 using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_interface>;
 using buffering_channel_protocol_ptr = std::shared_ptr<buffering_channel_interface>;
-using exportable_ptr = std::shared_ptr<coordinator_exporter_interface>;
 }  // namespace yas::playing
