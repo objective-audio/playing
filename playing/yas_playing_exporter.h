@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <playing/yas_playing_coordinator_dependency.h>
 #include <playing/yas_playing_exporter_resource.h>
 #include <playing/yas_playing_timeline_container.h>
 

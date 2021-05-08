@@ -6,6 +6,7 @@
 
 #include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_channel_mapping.h>
+#include <playing/yas_playing_exporter_protocol.h>
 #include <playing/yas_playing_renderer_types.h>
 
 namespace yas::playing {
@@ -37,5 +38,14 @@ struct coordinator_player_interface {
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;
 
     [[nodiscard]] virtual observing::syncable observe_is_playing(std::function<void(bool const &)> &&) = 0;
+};
+
+struct coordinator_exporter_interface {
+    virtual ~coordinator_exporter_interface() = default;
+
+    virtual void set_timeline_container(timeline_container_ptr const &) = 0;
+
+    using event_observing_handler_f = std::function<void(exporter_event const &)>;
+    [[nodiscard]] virtual observing::endable observe_event(event_observing_handler_f &&) = 0;
 };
 }  // namespace yas::playing
