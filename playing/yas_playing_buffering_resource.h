@@ -8,7 +8,7 @@
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-struct buffering_resource final : buffering_resource_protocol {
+struct buffering_resource final : buffering_resource_interface {
     [[nodiscard]] setup_state_t setup_state() const override;
     [[nodiscard]] rendering_state_t rendering_state() const override;
     [[nodiscard]] std::size_t element_count() const override;

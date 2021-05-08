@@ -116,7 +116,7 @@ struct reading : reading_resource_interface {
     }
 };
 
-struct buffering : buffering_resource_protocol {
+struct buffering : buffering_resource_interface {
     std::function<setup_state_t(void)> setup_state_handler;
     std::function<rendering_state_t(void)> rendering_state_handler;
     std::function<std::size_t(void)> element_count_handler;

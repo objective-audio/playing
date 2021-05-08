@@ -48,11 +48,11 @@ enum class audio_buffering_rendering_state {
     advancing,
 };
 
-struct buffering_resource_protocol {
+struct buffering_resource_interface {
     using setup_state_t = audio_buffering_setup_state;
     using rendering_state_t = audio_buffering_rendering_state;
 
-    virtual ~buffering_resource_protocol() = default;
+    virtual ~buffering_resource_interface() = default;
 
     [[nodiscard]] virtual setup_state_t setup_state() const = 0;
     [[nodiscard]] virtual rendering_state_t rendering_state() const = 0;
