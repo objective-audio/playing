@@ -31,7 +31,7 @@ struct reading_resource : reading_resource_interface {
     }
 };
 
-struct buffering_resource : buffering_resource_protocol {
+struct buffering_resource : buffering_resource_interface {
     setup_state_t setup_state() const override {
         return setup_state_t::initial;
     }
