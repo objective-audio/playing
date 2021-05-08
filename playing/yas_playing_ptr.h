@@ -46,7 +46,6 @@ using buffering_element_ptr = std::shared_ptr<buffering_element>;
 using reading_resource_ptr = std::shared_ptr<reading_resource>;
 using player_resource_ptr = std::shared_ptr<player_resource>;
 
-using playable_ptr = std::shared_ptr<playable>;
 using buffering_element_protocol_ptr = std::shared_ptr<buffering_element_protocol>;
 using buffering_channel_protocol_ptr = std::shared_ptr<buffering_channel_protocol>;
 using buffering_resource_protocol_ptr = std::shared_ptr<buffering_resource_protocol>;
