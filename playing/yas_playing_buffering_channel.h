@@ -8,7 +8,7 @@
 #include <playing/yas_playing_ptr.h>
 
 namespace yas::playing {
-struct buffering_channel final : buffering_channel_protocol {
+struct buffering_channel final : buffering_channel_interface {
     void write_all_elements_on_task(path::channel const &, fragment_index_t const top_frag_idx) override;
     [[nodiscard]] bool write_elements_if_needed_on_task() override;
 
