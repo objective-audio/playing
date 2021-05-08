@@ -8,7 +8,7 @@
 #include <playing/yas_playing_channel_mapping.h>
 #include <playing/yas_playing_coordinator_dependency.h>
 #include <playing/yas_playing_player_dependency.h>
-#include <playing/yas_playing_player_protocol.h>
+#include <playing/yas_playing_player_types.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_types.h>
 

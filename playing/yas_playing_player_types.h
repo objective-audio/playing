@@ -1,5 +1,5 @@
 //
-//  yas_playing_player_protocol.h
+//  yas_playing_player_types.h
 //
 
 #pragma once
