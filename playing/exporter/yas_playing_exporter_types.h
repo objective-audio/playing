@@ -1,13 +1,11 @@
 //
-//  yas_playing_exporter_protocol.h
+//  yas_playing_exporter_types.h
 //
 
 #pragma once
 
 #include <cpp_utils/yas_result.h>
 #include <cpp_utils/yas_task.h>
-#include <observing/yas_observing_umbrella.h>
-#include <playing/yas_playing_ptr.h>
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
@@ -35,14 +33,5 @@ struct exporter_event final {
 struct exporter_task_priority final {
     task_priority_t const timeline;
     task_priority_t const fragment;
-};
-
-struct exportable {
-    virtual ~exportable() = default;
-
-    virtual void set_timeline_container(timeline_container_ptr const &) = 0;
-
-    using event_observing_handler_f = std::function<void(exporter_event const &)>;
-    [[nodiscard]] virtual observing::endable observe_event(event_observing_handler_f &&) = 0;
 };
 }  // namespace yas::playing

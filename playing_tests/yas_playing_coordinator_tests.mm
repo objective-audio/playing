@@ -33,8 +33,8 @@ using namespace yas::playing;
     bool start_called = false;
 
     auto const exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
-    exporter->observe_event_handler = [notifier = exporter_event_notifier,
-                                       &exporter_event_called](exportable::event_observing_handler_f &&handler) {
+    exporter->observe_event_handler = [notifier = exporter_event_notifier, &exporter_event_called](
+                                          coordinator_exporter_interface::event_observing_handler_f &&handler) {
         exporter_event_called = true;
         return notifier->observe(std::move(handler));
     };

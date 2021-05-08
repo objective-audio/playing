@@ -51,7 +51,7 @@ struct renderer : coordinator_renderer_interface {
     }
 };
 
-struct player : playable {
+struct player : coordinator_player_interface {
     std::function<void(std::string)> set_identifier_handler;
     std::function<void(playing::channel_mapping)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;
@@ -104,7 +104,7 @@ struct player : playable {
     }
 };
 
-struct exporter : exportable {
+struct exporter : coordinator_exporter_interface {
     std::function<void(timeline_container_ptr)> set_timeline_container_handler;
     std::function<observing::endable(event_observing_handler_f &&)> observe_event_handler;
 
@@ -112,7 +112,7 @@ struct exporter : exportable {
         this->set_timeline_container_handler(container);
     }
 
-    observing::endable observe_event(exportable::event_observing_handler_f &&handler) override {
+    observing::endable observe_event(coordinator_exporter_interface::event_observing_handler_f &&handler) override {
         return this->observe_event_handler(std::move(handler));
     }
 };
@@ -135,7 +135,8 @@ struct cpp {
 
         this->exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
         this->exporter->observe_event_handler =
-            [notifier = this->exporter_event_notifier](exportable::event_observing_handler_f &&handler) {
+            [notifier =
+                 this->exporter_event_notifier](coordinator_exporter_interface::event_observing_handler_f &&handler) {
                 return notifier->observe(std::move(handler));
             };
 

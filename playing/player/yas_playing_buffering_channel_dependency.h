@@ -1,26 +1,18 @@
 //
-//  yas_playing_buffering_element_protocol.h
+//  yas_playing_buffering_channel_dependency.h
 //
 
 #pragma once
-//
+
 #include <audio/yas_audio_pcm_buffer.h>
+#include <playing/yas_playing_buffering_element_types.h>
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-enum class audio_buffering_element_state {
-    /// 新規作成後の待機状態。初回の書き込み中もここ
-    initial,
-    /// ファイルからバッファに書き込み中
-    writable,
-    /// バッファにデータが準備され読み込み中
-    readable,
-};
-
-struct buffering_element_protocol {
+struct buffering_element_interface {
     using state_t = audio_buffering_element_state;
 
-    virtual ~buffering_element_protocol() = default;
+    virtual ~buffering_element_interface() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual fragment_index_t fragment_index_on_render() const = 0;
@@ -34,7 +26,3 @@ struct buffering_element_protocol {
     virtual void overwrite_on_render() = 0;
 };
 }  // namespace yas::playing
-
-namespace yas {
-std::string to_string(playing::audio_buffering_element_state const &);
-}

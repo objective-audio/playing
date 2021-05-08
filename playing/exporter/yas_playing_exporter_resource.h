@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <playing/yas_playing_exporter_protocol.h>
+#include <playing/yas_playing_exporter_types.h>
 #include <playing/yas_playing_ptr.h>
 #include <playing/yas_playing_types.h>
 #include <processing/yas_processing_sync_source.h>

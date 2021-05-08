@@ -1,8 +1,8 @@
 //
-//  yas_playing_buffering_element_protocol.cpp
+//  yas_playing_buffering_element_types.cpp
 //
 
-#include "yas_playing_buffering_element_protocol.h"
+#include "yas_playing_buffering_element_types.h"
 
 std::string yas::to_string(playing::audio_buffering_element_state const &state) {
     switch (state) {

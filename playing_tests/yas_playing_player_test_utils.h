@@ -23,7 +23,7 @@ struct renderer : player_renderer_interface {
     }
 };
 
-struct resource : player_resource_protocol {
+struct resource : player_resource_interface {
     std::function<void(bool)> set_playing_handler;
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
@@ -34,18 +34,19 @@ struct resource : player_resource_protocol {
     std::function<void(overwrite_requests_f const &)> perform_overwrite_requests_handler;
     std::function<void(void)> reset_overwrite_requests_handler;
 
-    reading_resource_protocol_ptr const _reading;
-    buffering_resource_protocol_ptr const _buffering;
+    std::shared_ptr<reading_resource_interface> const _reading;
+    std::shared_ptr<buffering_resource_interface> const _buffering;
 
-    resource(reading_resource_protocol_ptr const &reading, buffering_resource_protocol_ptr const &buffering)
+    resource(std::shared_ptr<reading_resource_interface> const &reading,
+             std::shared_ptr<buffering_resource_interface> const &buffering)
         : _reading(reading), _buffering(buffering) {
     }
 
-    reading_resource_protocol_ptr const &reading() const override {
+    std::shared_ptr<reading_resource_interface> const &reading() const override {
         return this->_reading;
     }
 
-    buffering_resource_protocol_ptr const &buffering() const override {
+    std::shared_ptr<buffering_resource_interface> const &buffering() const override {
         return this->_buffering;
     }
 
@@ -86,7 +87,7 @@ struct resource : player_resource_protocol {
     }
 };
 
-struct reading : reading_resource_protocol {
+struct reading : reading_resource_interface {
     std::function<state_t(void)> state_handler;
     std::function<audio::pcm_buffer *(void)> buffer_handler;
     std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;
@@ -116,7 +117,7 @@ struct reading : reading_resource_protocol {
     }
 };
 
-struct buffering : buffering_resource_protocol {
+struct buffering : buffering_resource_interface {
     std::function<setup_state_t(void)> setup_state_handler;
     std::function<rendering_state_t(void)> rendering_state_handler;
     std::function<std::size_t(void)> element_count_handler;

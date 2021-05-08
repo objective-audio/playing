@@ -1,58 +1,36 @@
 //
-//  yas_playing_buffering_resource_protocol.h
+//  yas_playing_player_resource_dependency.h
 //
 
 #pragma once
 
 #include <audio/yas_audio_pcm_buffer.h>
+#include <audio/yas_audio_types.h>
+#include <playing/yas_playing_buffering_resource_types.h>
 #include <playing/yas_playing_channel_mapping.h>
-#include <playing/yas_playing_ptr.h>
-#include <playing/yas_playing_types.h>
+#include <playing/yas_playing_reading_resource_types.h>
 
 namespace yas::playing {
-enum class audio_buffering_setup_state {
-    /// 新規生成後の待機状態
-    /// render側: 無条件でcreatingにする
-    /// task側: 何もしない
-    initial,
+struct reading_resource_interface {
+    using state_t = reading_resource_state;
 
-    /// bufferを作る状態
-    /// render側: 何もしない
-    /// task側: bufferを作って終わったらrendering_stateをwaitingにし、renderingにする
-    creating,
+    virtual ~reading_resource_interface() = default;
 
-    /// bufferがある状態
-    /// render側: 読み込みに使う。フォーマットが合わなければcreatingにする
-    /// task側: 何もしない
-    rendering,
+    [[nodiscard]] virtual state_t state() const = 0;
+    [[nodiscard]] virtual audio::pcm_buffer *buffer_on_render() = 0;
+
+    [[nodiscard]] virtual bool needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const,
+                                                      uint32_t const length) const = 0;
+    virtual void set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const,
+                                        uint32_t const length) = 0;
+    virtual void create_buffer_on_task() = 0;
 };
 
-enum class audio_buffering_rendering_state {
-    /// 待機。初期状態
-    /// render側: 無条件でall_writingにする。
-    /// task側: 何もしない
-    waiting,
-
-    /// 全てのバッファに書き込む状態
-    /// render側: 何もしない。
-    /// task側: 全体を書き込み終わったらadvancingにする
-    all_writing,
-
-    /// 再生して進む状態。主に個別のバッファを扱う
-    /// render側:
-    /// seekされたりch_mappingが変更されたらall_writingにする。
-    /// 読み込んでバッファの最後まで行ったら個別にwritableにする。
-    /// task側:
-    /// buffering的には何もしない
-    /// 個別のバッファがwritableならファイルから読み込んで、終わったらreadableにする
-    advancing,
-};
-
-struct buffering_resource_protocol {
+struct buffering_resource_interface {
     using setup_state_t = audio_buffering_setup_state;
     using rendering_state_t = audio_buffering_rendering_state;
 
-    virtual ~buffering_resource_protocol() = default;
+    virtual ~buffering_resource_interface() = default;
 
     [[nodiscard]] virtual setup_state_t setup_state() const = 0;
     [[nodiscard]] virtual rendering_state_t rendering_state() const = 0;

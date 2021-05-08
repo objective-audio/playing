@@ -1,5 +1,5 @@
 //
-//  yas_playing_buffering_channel_protocol.h
+//  yas_playing_buffering_resource_dependency.h
 //
 
 #pragma once
@@ -8,8 +8,8 @@
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-struct buffering_channel_protocol {
-    virtual ~buffering_channel_protocol() = default;
+struct buffering_channel_interface {
+    virtual ~buffering_channel_interface() = default;
 
     virtual void write_all_elements_on_task(path::channel const &, fragment_index_t const top_frag_idx) = 0;
     [[nodiscard]] virtual bool write_elements_if_needed_on_task() = 0;

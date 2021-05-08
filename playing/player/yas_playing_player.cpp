@@ -22,8 +22,8 @@ using namespace yas;
 using namespace yas::playing;
 
 player::player(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &renderer,
-               workable_ptr const &worker, task_priority_t const &priority,
-               player_resource_protocol_ptr const &resource)
+               workable_ptr const &worker, player_task_priority const &priority,
+               std::shared_ptr<player_resource_interface> const &resource)
     : _renderer(renderer), _worker(worker), _priority(priority), _resource(resource), _ch_mapping(), _identifier("") {
     using reading_state_t = reading_resource::state_t;
     using rendering_state_t = buffering_resource::rendering_state_t;
@@ -289,7 +289,7 @@ observing::syncable player::observe_is_playing(std::function<void(bool const &)>
 }
 
 player_ptr player::make_shared(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &renderer,
-                               workable_ptr const &worker, task_priority_t const &priority,
-                               player_resource_protocol_ptr const &resource) {
+                               workable_ptr const &worker, player_task_priority const &priority,
+                               std::shared_ptr<player_resource_interface> const &resource) {
     return player_ptr(new player{root_path, renderer, worker, priority, resource});
 }

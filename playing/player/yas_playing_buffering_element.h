@@ -4,11 +4,12 @@
 
 #pragma once
 
-#include <playing/yas_playing_buffering_element_protocol.h>
+#include <playing/yas_playing_buffering_channel_dependency.h>
+#include <playing/yas_playing_buffering_element_types.h>
 #include <playing/yas_playing_ptr.h>
 
 namespace yas::playing {
-struct buffering_element final : buffering_element_protocol {
+struct buffering_element final : buffering_element_interface {
     [[nodiscard]] state_t state() const override;
     [[nodiscard]] frame_index_t begin_frame_on_render() const;
     [[nodiscard]] fragment_index_t fragment_index_on_render() const override;
