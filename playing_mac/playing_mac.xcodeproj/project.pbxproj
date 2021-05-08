@@ -34,6 +34,7 @@
 		B6CF842E2646220E001E2C3A /* yas_playing_player_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6CF842D2646220E001E2C3A /* yas_playing_player_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6CF845426466A51001E2C3A /* yas_playing_player_resource_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6CF845326466A51001E2C3A /* yas_playing_player_resource_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6CF846026466ECC001E2C3A /* yas_playing_buffering_resource_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6CF845F26466ECC001E2C3A /* yas_playing_buffering_resource_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6CF846A26466F79001E2C3A /* yas_playing_buffering_channel_dependency.h in Headers */ = {isa = PBXBuildFile; fileRef = B6CF846926466F79001E2C3A /* yas_playing_buffering_channel_dependency.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E06A0C257A55F10018E91D /* yas_playing_buffering_element_protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E06A0A257A55AA0018E91D /* yas_playing_buffering_element_protocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6E06A13257A6E1F0018E91D /* yas_playing_buffering_resource_types.h in Headers */ = {isa = PBXBuildFile; fileRef = B6E06A11257A6DFA0018E91D /* yas_playing_buffering_resource_types.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B6FB00BD229B69D5000C22F5 /* playing.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FB00BB229B69D5000C22F5 /* playing.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -97,6 +98,7 @@
 		B6CF842D2646220E001E2C3A /* yas_playing_player_dependency.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_dependency.h; sourceTree = "<group>"; };
 		B6CF845326466A51001E2C3A /* yas_playing_player_resource_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_player_resource_dependency.h; sourceTree = "<group>"; };
 		B6CF845F26466ECC001E2C3A /* yas_playing_buffering_resource_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_resource_dependency.h; sourceTree = "<group>"; };
+		B6CF846926466F79001E2C3A /* yas_playing_buffering_channel_dependency.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_channel_dependency.h; sourceTree = "<group>"; };
 		B6E06A0A257A55AA0018E91D /* yas_playing_buffering_element_protocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_element_protocol.h; sourceTree = "<group>"; };
 		B6E06A11257A6DFA0018E91D /* yas_playing_buffering_resource_types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = yas_playing_buffering_resource_types.h; sourceTree = "<group>"; };
 		B6FB00B8229B69D4000C22F5 /* playing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = playing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -194,6 +196,7 @@
 		B6FB00CC229B6A19000C22F5 /* playing */ = {
 			isa = PBXGroup;
 			children = (
+				B6CF846926466F79001E2C3A /* yas_playing_buffering_channel_dependency.h */,
 				B6B30F7E25595FCF0022D37A /* yas_playing_buffering_channel.cpp */,
 				B6B30F7F25595FCF0022D37A /* yas_playing_buffering_channel.h */,
 				B69AF321258BA01700856455 /* yas_playing_buffering_element_protocol.cpp */,
@@ -280,6 +283,7 @@
 				B6FB010B229B6A1A000C22F5 /* yas_playing_numbers_file.h in Headers */,
 				B6CF846026466ECC001E2C3A /* yas_playing_buffering_resource_dependency.h in Headers */,
 				B66827F8254E6A4D00306B0D /* yas_playing_coordinator_dependency.h in Headers */,
+				B6CF846A26466F79001E2C3A /* yas_playing_buffering_channel_dependency.h in Headers */,
 				B608127D259CAA6000BB580C /* yas_playing_exporter_types.h in Headers */,
 				B6FB0110229B6A1A000C22F5 /* yas_playing_path.h in Headers */,
 				B6081264259C8F0C00BB580C /* yas_playing_exporter_resource.h in Headers */,
