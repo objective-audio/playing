@@ -4,8 +4,8 @@
 
 #pragma once
 
+#include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_channel_mapping.h>
-#include <playing/yas_playing_renderer_protocol.h>
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {

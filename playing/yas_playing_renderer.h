@@ -7,17 +7,18 @@
 #include <audio/yas_audio_graph.h>
 #include <audio/yas_audio_graph_avf_au.h>
 #include <audio/yas_audio_graph_tap.h>
+#include <playing/yas_playing_coordinator_dependency.h>
+#include <playing/yas_playing_player_dependency.h>
 #include <playing/yas_playing_ptr.h>
-#include <playing/yas_playing_renderer_protocol.h>
 #include <processing/yas_processing_common_types.h>
 
 namespace yas::playing {
-struct renderer final : coordinator_renderable {
+struct renderer final : coordinator_renderer_interface, player_renderer_interface {
     audio::graph_ptr const graph;
 
     void set_rendering_sample_rate(sample_rate_t const) override;
     void set_rendering_pcm_format(audio::pcm_format const) override;
-    void set_rendering_handler(renderable::rendering_f &&) override;
+    void set_rendering_handler(renderer_rendering_f &&) override;
     void set_is_rendering(bool const) override;
 
     [[nodiscard]] renderer_format const &format() const override;

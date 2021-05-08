@@ -40,11 +40,12 @@ using namespace yas::playing;
     };
 
     auto const configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
-    renderer->observe_format_handler = [holder = configulation_holder, &fomat_called](
-                                           coordinator_renderable::renderer_format_observing_handler_f &&handler) {
-        fomat_called = true;
-        return holder->observe(std::move(handler));
-    };
+    renderer->observe_format_handler =
+        [holder = configulation_holder,
+         &fomat_called](coordinator_renderer_interface::renderer_format_observing_handler_f &&handler) {
+            fomat_called = true;
+            return holder->observe(std::move(handler));
+        };
 
     worker->start_handler = [&start_called] { start_called = true; };
 

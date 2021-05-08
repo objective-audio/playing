@@ -10,11 +10,11 @@
 #include "yas_playing_test_utils.h"
 
 namespace yas::playing::player_test {
-struct renderer : renderable {
-    std::function<void(rendering_f &&)> set_rendering_handler_handler;
+struct renderer : player_renderer_interface {
+    std::function<void(renderer_rendering_f &&)> set_rendering_handler_handler;
     std::function<void(bool)> set_is_rendering_handler;
 
-    void set_rendering_handler(rendering_f &&handler) override {
+    void set_rendering_handler(renderer_rendering_f &&handler) override {
         this->set_rendering_handler_handler(std::move(handler));
     }
 
@@ -220,7 +220,7 @@ struct cpp {
     std::shared_ptr<player_test::resource> const resource = std::make_shared<player_test::resource>(reading, buffering);
 
     player_ptr player = nullptr;
-    renderable::rendering_f rendering_handler = nullptr;
+    renderer_rendering_f rendering_handler = nullptr;
     audio::pcm_buffer_ptr reading_buffer = nullptr;
 
     static audio::format make_format() {
@@ -243,7 +243,7 @@ struct cpp {
 
     void setup_initial() {
         this->resource->set_playing_handler = [](bool) {};
-        this->renderer->set_rendering_handler_handler = [this](renderable::rendering_f &&handler) {
+        this->renderer->set_rendering_handler_handler = [this](renderer_rendering_f &&handler) {
             this->rendering_handler = std::move(handler);
         };
         this->renderer->set_is_rendering_handler = [](bool is_rendering) {};

@@ -35,13 +35,14 @@ struct coordinator final {
     [[nodiscard]] observing::syncable observe_format(std::function<void(renderer_format const &)> &&);
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&);
 
-    [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, coordinator_renderable_ptr const &);
-    [[nodiscard]] static coordinator_ptr make_shared(workable_ptr const &, coordinator_renderable_ptr const &,
+    [[nodiscard]] static coordinator_ptr make_shared(std::string const &root_path, std::shared_ptr<renderer> const &);
+    [[nodiscard]] static coordinator_ptr make_shared(workable_ptr const &,
+                                                     std::shared_ptr<coordinator_renderer_interface> const &,
                                                      playable_ptr const &, exportable_ptr const &);
 
    private:
-    workable_ptr const _worker = worker::make_shared();
-    coordinator_renderable_ptr const _renderer;
+    workable_ptr const _worker;
+    std::shared_ptr<coordinator_renderer_interface> const _renderer;
     playable_ptr const _player;
     exportable_ptr const _exporter;
     std::string _identifier = "";
@@ -49,7 +50,8 @@ struct coordinator final {
 
     observing::canceller_pool _pool;
 
-    coordinator(workable_ptr const &, coordinator_renderable_ptr const &, playable_ptr const &, exportable_ptr const &);
+    coordinator(workable_ptr const &, std::shared_ptr<coordinator_renderer_interface> const &, playable_ptr const &,
+                exportable_ptr const &);
 
     void _update_exporter();
 };
