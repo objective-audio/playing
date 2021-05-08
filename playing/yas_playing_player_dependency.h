@@ -22,7 +22,7 @@ struct player_resource_interface {
     virtual ~player_resource_interface() = default;
 
     virtual reading_resource_protocol_ptr const &reading() const = 0;
-    virtual buffering_resource_protocol_ptr const &buffering() const = 0;
+    virtual std::shared_ptr<buffering_resource_interface> const &buffering() const = 0;
 
     virtual void set_playing_on_main(bool const) = 0;
     [[nodiscard]] virtual bool is_playing_on_render() const = 0;

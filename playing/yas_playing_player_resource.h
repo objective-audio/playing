@@ -13,7 +13,7 @@
 namespace yas::playing {
 struct player_resource final : player_resource_interface {
     reading_resource_protocol_ptr const &reading() const override;
-    buffering_resource_protocol_ptr const &buffering() const override;
+    std::shared_ptr<buffering_resource_interface> const &buffering() const override;
 
     void set_playing_on_main(bool const) override;
     [[nodiscard]] bool is_playing_on_render() const override;
@@ -29,11 +29,11 @@ struct player_resource final : player_resource_interface {
     void reset_overwrite_requests_on_render() override;
 
     static player_resource_ptr make_shared(reading_resource_protocol_ptr const &,
-                                           buffering_resource_protocol_ptr const &);
+                                           std::shared_ptr<buffering_resource_interface> const &);
 
    private:
     reading_resource_protocol_ptr const _reading;
-    buffering_resource_protocol_ptr const _buffering;
+    std::shared_ptr<buffering_resource_interface> const _buffering;
 
     std::atomic<bool> _is_playing{false};
     std::atomic<frame_index_t> _current_frame{0};
@@ -45,6 +45,6 @@ struct player_resource final : player_resource_interface {
     overwrite_requests_t _overwrite_requests;
     bool _is_overwritten = false;
 
-    player_resource(reading_resource_protocol_ptr const &, buffering_resource_protocol_ptr const &);
+    player_resource(reading_resource_protocol_ptr const &, std::shared_ptr<buffering_resource_interface> const &);
 };
 }  // namespace yas::playing

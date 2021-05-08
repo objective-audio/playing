@@ -35,9 +35,10 @@ struct resource : player_resource_interface {
     std::function<void(void)> reset_overwrite_requests_handler;
 
     reading_resource_protocol_ptr const _reading;
-    buffering_resource_protocol_ptr const _buffering;
+    std::shared_ptr<buffering_resource_interface> const _buffering;
 
-    resource(reading_resource_protocol_ptr const &reading, buffering_resource_protocol_ptr const &buffering)
+    resource(reading_resource_protocol_ptr const &reading,
+             std::shared_ptr<buffering_resource_interface> const &buffering)
         : _reading(reading), _buffering(buffering) {
     }
 
@@ -45,7 +46,7 @@ struct resource : player_resource_interface {
         return this->_reading;
     }
 
-    buffering_resource_protocol_ptr const &buffering() const override {
+    std::shared_ptr<buffering_resource_interface> const &buffering() const override {
         return this->_buffering;
     }
 

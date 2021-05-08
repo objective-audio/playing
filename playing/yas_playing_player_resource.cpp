@@ -13,7 +13,7 @@ using namespace yas;
 using namespace yas::playing;
 
 player_resource::player_resource(reading_resource_protocol_ptr const &reading,
-                                 buffering_resource_protocol_ptr const &buffering)
+                                 std::shared_ptr<buffering_resource_interface> const &buffering)
     : _reading(reading), _buffering(buffering) {
 }
 
@@ -21,7 +21,7 @@ reading_resource_protocol_ptr const &player_resource::reading() const {
     return this->_reading;
 }
 
-buffering_resource_protocol_ptr const &player_resource::buffering() const {
+std::shared_ptr<buffering_resource_interface> const &player_resource::buffering() const {
     return this->_buffering;
 }
 
@@ -82,6 +82,6 @@ void player_resource::reset_overwrite_requests_on_render() {
 }
 
 player_resource_ptr player_resource::make_shared(reading_resource_protocol_ptr const &reading,
-                                                 buffering_resource_protocol_ptr const &buffering) {
+                                                 std::shared_ptr<buffering_resource_interface> const &buffering) {
     return player_resource_ptr{new player_resource{reading, buffering}};
 }
