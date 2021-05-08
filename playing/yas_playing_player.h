@@ -12,7 +12,7 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-struct player final : playable {
+struct player final : coordinator_player_interface {
     void set_identifier(std::string const &) override;
     void set_channel_mapping(playing::channel_mapping const &) override;
     void set_playing(bool const) override;

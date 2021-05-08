@@ -22,7 +22,7 @@ class buffering_element;
 class reading_resource;
 class player_resource;
 
-class playable;
+class coordinator_player_interface;
 class coordinator_renderer_interface;
 class buffering_element_protocol;
 class buffering_channel_protocol;

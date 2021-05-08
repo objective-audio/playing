@@ -51,7 +51,7 @@ struct renderer : coordinator_renderer_interface {
     }
 };
 
-struct player : playable {
+struct player : coordinator_player_interface {
     std::function<void(std::string)> set_identifier_handler;
     std::function<void(playing::channel_mapping)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;

@@ -14,10 +14,10 @@ struct player_task_priority final {
     uint32_t rendering = 1;
 };
 
-struct playable {
+struct coordinator_player_interface {
     using task_priority_t = player_task_priority;
 
-    virtual ~playable() = default;
+    virtual ~coordinator_player_interface() = default;
 
     virtual void set_identifier(std::string const &) = 0;
     virtual void set_channel_mapping(playing::channel_mapping const &) = 0;
