@@ -6,6 +6,7 @@
 
 #include <playing/yas_playing_buffering_resource_protocol.h>
 #include <playing/yas_playing_path.h>
+#include <playing/yas_playing_player_resource_dependency.h>
 
 namespace yas::playing {
 struct buffering_resource final : buffering_resource_interface {
