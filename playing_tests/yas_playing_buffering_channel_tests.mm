@@ -73,11 +73,11 @@ struct element : buffering_element_interface {
     }
 };
 
-static std::shared_ptr<element> cast_to_test_element(buffering_element_protocol_ptr const &protocol) {
+static std::shared_ptr<element> cast_to_test_element(std::shared_ptr<buffering_element_interface> const &protocol) {
     return std::dynamic_pointer_cast<element>(protocol);
 }
 
-static buffering_element_ptr cast_to_buffering_element(buffering_element_protocol_ptr const &protocol) {
+static buffering_element_ptr cast_to_buffering_element(std::shared_ptr<buffering_element_interface> const &protocol) {
     return std::dynamic_pointer_cast<buffering_element>(protocol);
 }
 }

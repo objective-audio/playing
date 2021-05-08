@@ -13,7 +13,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-buffering_channel::buffering_channel(std::vector<buffering_element_protocol_ptr> &&elements)
+buffering_channel::buffering_channel(std::vector<std::shared_ptr<buffering_element_interface>> &&elements)
     : _elements(std::move(elements)) {
 }
 
@@ -72,13 +72,14 @@ std::vector<std::shared_ptr<buffering_element_interface>> const &buffering_chann
     return this->_elements;
 }
 
-buffering_channel_ptr buffering_channel::make_shared(std::vector<buffering_element_protocol_ptr> &&elements) {
+buffering_channel_ptr buffering_channel::make_shared(
+    std::vector<std::shared_ptr<buffering_element_interface>> &&elements) {
     return buffering_channel_ptr{new buffering_channel{std::move(elements)}};
 }
 
 buffering_channel_ptr playing::make_buffering_channel(std::size_t const element_count, audio::format const &format,
                                                       sample_rate_t const frag_length) {
-    std::vector<buffering_element_protocol_ptr> elements;
+    std::vector<std::shared_ptr<buffering_element_interface>> elements;
     elements.reserve(element_count);
 
     auto element_each = make_fast_each(element_count);

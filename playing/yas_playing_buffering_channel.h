@@ -16,15 +16,16 @@ struct buffering_channel final : buffering_channel_interface {
     void overwrite_element_on_render(fragment_range const) override;
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, frame_index_t const) override;
 
-    [[nodiscard]] std::vector<buffering_element_protocol_ptr> const &elements_for_test() const;
+    [[nodiscard]] std::vector<std::shared_ptr<buffering_element_interface>> const &elements_for_test() const;
 
-    [[nodiscard]] static buffering_channel_ptr make_shared(std::vector<buffering_element_protocol_ptr> &&);
+    [[nodiscard]] static buffering_channel_ptr make_shared(
+        std::vector<std::shared_ptr<buffering_element_interface>> &&);
 
    private:
-    std::vector<buffering_element_protocol_ptr> const _elements;
+    std::vector<std::shared_ptr<buffering_element_interface>> const _elements;
     std::optional<path::channel> _ch_path = std::nullopt;
 
-    explicit buffering_channel(std::vector<buffering_element_protocol_ptr> &&);
+    explicit buffering_channel(std::vector<std::shared_ptr<buffering_element_interface>> &&);
 };
 
 [[nodiscard]] buffering_channel_ptr make_buffering_channel(std::size_t const element_count, audio::format const &format,
