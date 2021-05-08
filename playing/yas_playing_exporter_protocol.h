@@ -37,8 +37,8 @@ struct exporter_task_priority final {
     task_priority_t const fragment;
 };
 
-struct exportable {
-    virtual ~exportable() = default;
+struct coordinator_exporter_interface {
+    virtual ~coordinator_exporter_interface() = default;
 
     virtual void set_timeline_container(timeline_container_ptr const &) = 0;
 

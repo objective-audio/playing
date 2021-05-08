@@ -8,7 +8,7 @@
 #include <playing/yas_playing_timeline_container.h>
 
 namespace yas::playing {
-struct exporter final : exportable {
+struct exporter final : coordinator_exporter_interface {
     using method_t = exporter_method;
     using error_t = exporter_error;
     using result_t = exporter_result_t;
