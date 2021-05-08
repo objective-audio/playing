@@ -24,10 +24,10 @@ enum class reading_resource_state {
     rendering,
 };
 
-struct reading_resource_protocol {
+struct reading_resource_interface {
     using state_t = reading_resource_state;
 
-    virtual ~reading_resource_protocol() = default;
+    virtual ~reading_resource_interface() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual audio::pcm_buffer *buffer_on_render() = 0;

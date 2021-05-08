@@ -10,7 +10,7 @@
 #include <playing/yas_playing_reading_resource_protocol.h>
 
 namespace yas::playing {
-struct reading_resource final : reading_resource_protocol {
+struct reading_resource final : reading_resource_interface {
     [[nodiscard]] state_t state() const override;
     [[nodiscard]] audio::pcm_buffer *buffer_on_render() override;
 

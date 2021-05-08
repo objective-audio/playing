@@ -86,7 +86,7 @@ struct resource : player_resource_interface {
     }
 };
 
-struct reading : reading_resource_protocol {
+struct reading : reading_resource_interface {
     std::function<state_t(void)> state_handler;
     std::function<audio::pcm_buffer *(void)> buffer_handler;
     std::function<bool(sample_rate_t, audio::pcm_format, uint32_t)> needs_create_handler;

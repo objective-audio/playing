@@ -9,7 +9,7 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::player_resource_test {
-struct reading_resource : reading_resource_protocol {
+struct reading_resource : reading_resource_interface {
     state_t state() const override {
         return state_t::initial;
     }
