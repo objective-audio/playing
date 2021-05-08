@@ -29,13 +29,13 @@ struct player final : coordinator_player_interface {
 
     static player_ptr make_shared(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &,
                                   workable_ptr const &, player_task_priority const &,
-                                  player_resource_protocol_ptr const &);
+                                  std::shared_ptr<player_resource_interface> const &);
 
    private:
     std::shared_ptr<player_renderer_interface> const _renderer;
     workable_ptr const _worker;
     player_task_priority const _priority;
-    player_resource_protocol_ptr const _resource;
+    std::shared_ptr<player_resource_interface> const _resource;
 
     observing::value::holder_ptr<bool> _is_playing = observing::value::holder<bool>::make_shared(false);
     playing::channel_mapping _ch_mapping;
@@ -43,6 +43,6 @@ struct player final : coordinator_player_interface {
     observing::canceller_pool _pool;
 
     player(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &, workable_ptr const &,
-           player_task_priority const &, player_resource_protocol_ptr const &);
+           player_task_priority const &, std::shared_ptr<player_resource_interface> const &);
 };
 }  // namespace yas::playing
