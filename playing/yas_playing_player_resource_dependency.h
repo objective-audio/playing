@@ -8,7 +8,7 @@
 #include <audio/yas_audio_types.h>
 #include <playing/yas_playing_buffering_resource_types.h>
 #include <playing/yas_playing_channel_mapping.h>
-#include <playing/yas_playing_reading_resource_protocol.h>
+#include <playing/yas_playing_reading_resource_types.h>
 
 namespace yas::playing {
 struct reading_resource_interface {

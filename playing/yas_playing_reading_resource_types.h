@@ -1,5 +1,5 @@
 //
-//  yas_playing_reading_resource_protocol.h
+//  yas_playing_reading_resource_types.h
 //
 
 #pragma once
