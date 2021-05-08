@@ -21,7 +21,7 @@ struct player_resource_interface {
 
     virtual ~player_resource_interface() = default;
 
-    virtual reading_resource_protocol_ptr const &reading() const = 0;
+    virtual std::shared_ptr<reading_resource_interface> const &reading() const = 0;
     virtual std::shared_ptr<buffering_resource_interface> const &buffering() const = 0;
 
     virtual void set_playing_on_main(bool const) = 0;
