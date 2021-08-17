@@ -305,8 +305,8 @@ struct cpp {
     bool result0 = false;
     bool result1 = false;
 
-    std::size_t called_count_0;
-    std::size_t called_count_1;
+    std::size_t called_count_0 = 0;
+    std::size_t called_count_1 = 0;
 
     auto &channels = self->_cpp.channels;
     channels.at(0)->write_elements_handler = [&result0, &called_count_0]() {
