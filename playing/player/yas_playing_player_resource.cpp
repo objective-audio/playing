@@ -12,16 +12,16 @@
 using namespace yas;
 using namespace yas::playing;
 
-player_resource::player_resource(std::shared_ptr<reading_resource_interface> const &reading,
-                                 std::shared_ptr<buffering_resource_interface> const &buffering)
+player_resource::player_resource(std::shared_ptr<reading_resource_for_player_resource> const &reading,
+                                 std::shared_ptr<buffering_resource_for_player_resource> const &buffering)
     : _reading(reading), _buffering(buffering) {
 }
 
-std::shared_ptr<reading_resource_interface> const &player_resource::reading() const {
+std::shared_ptr<reading_resource_for_player_resource> const &player_resource::reading() const {
     return this->_reading;
 }
 
-std::shared_ptr<buffering_resource_interface> const &player_resource::buffering() const {
+std::shared_ptr<buffering_resource_for_player_resource> const &player_resource::buffering() const {
     return this->_buffering;
 }
 
@@ -81,7 +81,8 @@ void player_resource::reset_overwrite_requests_on_render() {
     }
 }
 
-player_resource_ptr player_resource::make_shared(std::shared_ptr<reading_resource_interface> const &reading,
-                                                 std::shared_ptr<buffering_resource_interface> const &buffering) {
+player_resource_ptr player_resource::make_shared(
+    std::shared_ptr<reading_resource_for_player_resource> const &reading,
+    std::shared_ptr<buffering_resource_for_player_resource> const &buffering) {
     return player_resource_ptr{new player_resource{reading, buffering}};
 }

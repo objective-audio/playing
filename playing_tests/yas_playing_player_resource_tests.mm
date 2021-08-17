@@ -9,7 +9,7 @@ using namespace yas;
 using namespace yas::playing;
 
 namespace yas::playing::player_resource_test {
-struct reading_resource : reading_resource_interface {
+struct reading_resource : reading_resource_for_player_resource {
     state_t state() const override {
         return state_t::initial;
     }
@@ -31,7 +31,7 @@ struct reading_resource : reading_resource_interface {
     }
 };
 
-struct buffering_resource : buffering_resource_interface {
+struct buffering_resource : buffering_resource_for_player_resource {
     setup_state_t setup_state() const override {
         return setup_state_t::initial;
     }
@@ -144,9 +144,9 @@ struct cpp {
 - (void)test_overwrite_request {
     auto const resource = self->_cpp.make_resource();
 
-    std::vector<player_resource_interface::overwrite_requests_t> called;
+    std::vector<player_resource_for_player::overwrite_requests_t> called;
 
-    auto requests = [&called](player_resource_interface::overwrite_requests_t const &requests) {
+    auto requests = [&called](player_resource_for_player::overwrite_requests_t const &requests) {
         called.emplace_back(requests);
     };
 

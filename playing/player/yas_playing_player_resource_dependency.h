@@ -11,10 +11,10 @@
 #include <playing/yas_playing_reading_resource_types.h>
 
 namespace yas::playing {
-struct reading_resource_interface {
+struct reading_resource_for_player_resource {
     using state_t = reading_resource_state;
 
-    virtual ~reading_resource_interface() = default;
+    virtual ~reading_resource_for_player_resource() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual audio::pcm_buffer *buffer_on_render() = 0;
@@ -26,11 +26,11 @@ struct reading_resource_interface {
     virtual void create_buffer_on_task() = 0;
 };
 
-struct buffering_resource_interface {
+struct buffering_resource_for_player_resource {
     using setup_state_t = audio_buffering_setup_state;
     using rendering_state_t = audio_buffering_rendering_state;
 
-    virtual ~buffering_resource_interface() = default;
+    virtual ~buffering_resource_for_player_resource() = default;
 
     [[nodiscard]] virtual setup_state_t setup_state() const = 0;
     [[nodiscard]] virtual rendering_state_t rendering_state() const = 0;

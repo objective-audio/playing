@@ -11,9 +11,9 @@
 #include <mutex>
 
 namespace yas::playing {
-struct player_resource final : player_resource_interface {
-    std::shared_ptr<reading_resource_interface> const &reading() const override;
-    std::shared_ptr<buffering_resource_interface> const &buffering() const override;
+struct player_resource final : player_resource_for_player {
+    std::shared_ptr<reading_resource_for_player_resource> const &reading() const override;
+    std::shared_ptr<buffering_resource_for_player_resource> const &buffering() const override;
 
     void set_playing_on_main(bool const) override;
     [[nodiscard]] bool is_playing_on_render() const override;
@@ -28,12 +28,12 @@ struct player_resource final : player_resource_interface {
     void perform_overwrite_requests_on_render(overwrite_requests_f const &) override;
     void reset_overwrite_requests_on_render() override;
 
-    static player_resource_ptr make_shared(std::shared_ptr<reading_resource_interface> const &,
-                                           std::shared_ptr<buffering_resource_interface> const &);
+    static player_resource_ptr make_shared(std::shared_ptr<reading_resource_for_player_resource> const &,
+                                           std::shared_ptr<buffering_resource_for_player_resource> const &);
 
    private:
-    std::shared_ptr<reading_resource_interface> const _reading;
-    std::shared_ptr<buffering_resource_interface> const _buffering;
+    std::shared_ptr<reading_resource_for_player_resource> const _reading;
+    std::shared_ptr<buffering_resource_for_player_resource> const _buffering;
 
     std::atomic<bool> _is_playing{false};
     std::atomic<frame_index_t> _current_frame{0};
@@ -45,7 +45,7 @@ struct player_resource final : player_resource_interface {
     overwrite_requests_t _overwrite_requests;
     bool _is_overwritten = false;
 
-    player_resource(std::shared_ptr<reading_resource_interface> const &,
-                    std::shared_ptr<buffering_resource_interface> const &);
+    player_resource(std::shared_ptr<reading_resource_for_player_resource> const &,
+                    std::shared_ptr<buffering_resource_for_player_resource> const &);
 };
 }  // namespace yas::playing

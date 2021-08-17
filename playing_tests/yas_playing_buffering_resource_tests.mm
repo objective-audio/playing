@@ -29,7 +29,7 @@ static path::channel channel_path(std::string const &identifier, channel_index_t
     return path::channel{buffering_test::timeline_path(identifier), ch_idx};
 }
 
-struct channel : buffering_channel_interface {
+struct channel : buffering_channel_for_buffering_resource {
     std::size_t element_count;
     audio::format format;
     sample_rate_t frag_length;
@@ -305,8 +305,8 @@ struct cpp {
     bool result0 = false;
     bool result1 = false;
 
-    std::size_t called_count_0;
-    std::size_t called_count_1;
+    std::size_t called_count_0 = 0;
+    std::size_t called_count_1 = 0;
 
     auto &channels = self->_cpp.channels;
     channels.at(0)->write_elements_handler = [&result0, &called_count_0]() {

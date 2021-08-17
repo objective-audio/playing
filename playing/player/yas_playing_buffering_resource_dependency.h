@@ -8,8 +8,8 @@
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-struct buffering_channel_interface {
-    virtual ~buffering_channel_interface() = default;
+struct buffering_channel_for_buffering_resource {
+    virtual ~buffering_channel_for_buffering_resource() = default;
 
     virtual void write_all_elements_on_task(path::channel const &, fragment_index_t const top_frag_idx) = 0;
     [[nodiscard]] virtual bool write_elements_if_needed_on_task() = 0;

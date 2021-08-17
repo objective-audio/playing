@@ -25,7 +25,7 @@ static path::channel channel_path() {
     return channel_path(sample_rate);
 }
 
-struct element : buffering_element_interface {
+struct element : buffering_element_for_buffering_channel {
     std::function<state_t(void)> state_handler;
     std::function<frame_index_t(void)> begin_frame_handler;
     std::function<fragment_index_t(void)> fragment_index_handler;
@@ -73,11 +73,13 @@ struct element : buffering_element_interface {
     }
 };
 
-static std::shared_ptr<element> cast_to_test_element(std::shared_ptr<buffering_element_interface> const &protocol) {
+static std::shared_ptr<element> cast_to_test_element(
+    std::shared_ptr<buffering_element_for_buffering_channel> const &protocol) {
     return std::dynamic_pointer_cast<element>(protocol);
 }
 
-static buffering_element_ptr cast_to_buffering_element(std::shared_ptr<buffering_element_interface> const &protocol) {
+static buffering_element_ptr cast_to_buffering_element(
+    std::shared_ptr<buffering_element_for_buffering_channel> const &protocol) {
     return std::dynamic_pointer_cast<buffering_element>(protocol);
 }
 }

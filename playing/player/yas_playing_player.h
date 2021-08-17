@@ -13,7 +13,7 @@
 #include <playing/yas_playing_types.h>
 
 namespace yas::playing {
-struct player final : coordinator_player_interface {
+struct player final : player_for_coordinator {
     void set_identifier(std::string const &) override;
     void set_channel_mapping(playing::channel_mapping const &) override;
     void set_playing(bool const) override;
@@ -27,22 +27,22 @@ struct player final : coordinator_player_interface {
 
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&) override;
 
-    static player_ptr make_shared(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &,
+    static player_ptr make_shared(std::string const &root_path, std::shared_ptr<renderer_for_player> const &,
                                   workable_ptr const &, player_task_priority const &,
-                                  std::shared_ptr<player_resource_interface> const &);
+                                  std::shared_ptr<player_resource_for_player> const &);
 
    private:
-    std::shared_ptr<player_renderer_interface> const _renderer;
+    std::shared_ptr<renderer_for_player> const _renderer;
     workable_ptr const _worker;
     player_task_priority const _priority;
-    std::shared_ptr<player_resource_interface> const _resource;
+    std::shared_ptr<player_resource_for_player> const _resource;
 
     observing::value::holder_ptr<bool> _is_playing = observing::value::holder<bool>::make_shared(false);
     playing::channel_mapping _ch_mapping;
     std::string _identifier;
     observing::canceller_pool _pool;
 
-    player(std::string const &root_path, std::shared_ptr<player_renderer_interface> const &, workable_ptr const &,
-           player_task_priority const &, std::shared_ptr<player_resource_interface> const &);
+    player(std::string const &root_path, std::shared_ptr<renderer_for_player> const &, workable_ptr const &,
+           player_task_priority const &, std::shared_ptr<player_resource_for_player> const &);
 };
 }  // namespace yas::playing

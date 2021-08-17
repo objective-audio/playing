@@ -10,8 +10,8 @@
 #include <playing/yas_playing_renderer_types.h>
 
 namespace yas::playing {
-struct coordinator_renderer_interface {
-    virtual ~coordinator_renderer_interface() = default;
+struct renderer_for_coordinator {
+    virtual ~renderer_for_coordinator() = default;
 
     virtual void set_rendering_sample_rate(sample_rate_t const) = 0;
     virtual void set_rendering_pcm_format(audio::pcm_format const) = 0;
@@ -23,8 +23,8 @@ struct coordinator_renderer_interface {
     [[nodiscard]] virtual observing::syncable observe_format(renderer_format_observing_handler_f &&) = 0;
 };
 
-struct coordinator_player_interface {
-    virtual ~coordinator_player_interface() = default;
+struct player_for_coordinator {
+    virtual ~player_for_coordinator() = default;
 
     virtual void set_identifier(std::string const &) = 0;
     virtual void set_channel_mapping(playing::channel_mapping const &) = 0;
@@ -40,8 +40,8 @@ struct coordinator_player_interface {
     [[nodiscard]] virtual observing::syncable observe_is_playing(std::function<void(bool const &)> &&) = 0;
 };
 
-struct coordinator_exporter_interface {
-    virtual ~coordinator_exporter_interface() = default;
+struct exporter_for_coordinator {
+    virtual ~exporter_for_coordinator() = default;
 
     virtual void set_timeline_container(timeline_container_ptr const &) = 0;
 
