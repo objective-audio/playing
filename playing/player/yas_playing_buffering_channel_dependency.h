@@ -9,10 +9,10 @@
 #include <playing/yas_playing_path.h>
 
 namespace yas::playing {
-struct buffering_element_interface {
+struct buffering_element_for_buffering_channel {
     using state_t = audio_buffering_element_state;
 
-    virtual ~buffering_element_interface() = default;
+    virtual ~buffering_element_for_buffering_channel() = default;
 
     [[nodiscard]] virtual state_t state() const = 0;
     [[nodiscard]] virtual fragment_index_t fragment_index_on_render() const = 0;

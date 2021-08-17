@@ -21,9 +21,9 @@
 using namespace yas;
 using namespace yas::playing;
 
-coordinator::coordinator(workable_ptr const &worker, std::shared_ptr<coordinator_renderer_interface> const &renderer,
-                         std::shared_ptr<coordinator_player_interface> const &player,
-                         std::shared_ptr<coordinator_exporter_interface> const &exporter)
+coordinator::coordinator(workable_ptr const &worker, std::shared_ptr<renderer_for_coordinator> const &renderer,
+                         std::shared_ptr<player_for_coordinator> const &player,
+                         std::shared_ptr<exporter_for_coordinator> const &exporter)
     : _worker(worker), _renderer(renderer), _player(player), _exporter(exporter) {
     this->_exporter
         ->observe_event([this](exporter_event const &event) {
@@ -141,8 +141,8 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::shar
 }
 
 coordinator_ptr coordinator::make_shared(workable_ptr const &worker,
-                                         std::shared_ptr<coordinator_renderer_interface> const &renderer,
-                                         std::shared_ptr<coordinator_player_interface> const &player,
-                                         std::shared_ptr<coordinator_exporter_interface> const &exporter) {
+                                         std::shared_ptr<renderer_for_coordinator> const &renderer,
+                                         std::shared_ptr<player_for_coordinator> const &player,
+                                         std::shared_ptr<exporter_for_coordinator> const &exporter) {
     return coordinator_ptr(new coordinator{worker, renderer, player, exporter});
 }

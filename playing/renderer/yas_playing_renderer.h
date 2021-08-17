@@ -13,7 +13,7 @@
 #include <processing/yas_processing_common_types.h>
 
 namespace yas::playing {
-struct renderer final : coordinator_renderer_interface, player_renderer_interface {
+struct renderer final : renderer_for_coordinator, renderer_for_player {
     audio::graph_ptr const graph;
 
     void set_rendering_sample_rate(sample_rate_t const) override;

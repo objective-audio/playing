@@ -13,7 +13,7 @@
 using namespace yas;
 using namespace yas::playing;
 
-buffering_channel::buffering_channel(std::vector<std::shared_ptr<buffering_element_interface>> &&elements)
+buffering_channel::buffering_channel(std::vector<std::shared_ptr<buffering_element_for_buffering_channel>> &&elements)
     : _elements(std::move(elements)) {
 }
 
@@ -68,18 +68,19 @@ bool buffering_channel::read_into_buffer_on_render(audio::pcm_buffer *out_buffer
     return false;
 }
 
-std::vector<std::shared_ptr<buffering_element_interface>> const &buffering_channel::elements_for_test() const {
+std::vector<std::shared_ptr<buffering_element_for_buffering_channel>> const &buffering_channel::elements_for_test()
+    const {
     return this->_elements;
 }
 
 buffering_channel_ptr buffering_channel::make_shared(
-    std::vector<std::shared_ptr<buffering_element_interface>> &&elements) {
+    std::vector<std::shared_ptr<buffering_element_for_buffering_channel>> &&elements) {
     return buffering_channel_ptr{new buffering_channel{std::move(elements)}};
 }
 
 buffering_channel_ptr playing::make_buffering_channel(std::size_t const element_count, audio::format const &format,
                                                       sample_rate_t const frag_length) {
-    std::vector<std::shared_ptr<buffering_element_interface>> elements;
+    std::vector<std::shared_ptr<buffering_element_for_buffering_channel>> elements;
     elements.reserve(element_count);
 
     auto element_each = make_fast_each(element_count);

@@ -8,21 +8,21 @@
 #include <playing/yas_playing_renderer_types.h>
 
 namespace yas::playing {
-struct player_renderer_interface {
-    virtual ~player_renderer_interface() = default;
+struct renderer_for_player {
+    virtual ~renderer_for_player() = default;
 
     virtual void set_rendering_handler(renderer_rendering_f &&) = 0;
     virtual void set_is_rendering(bool const) = 0;
 };
 
-struct player_resource_interface {
+struct player_resource_for_player {
     using overwrite_requests_t = std::vector<element_address>;
     using overwrite_requests_f = std::function<void(overwrite_requests_t const &)>;
 
-    virtual ~player_resource_interface() = default;
+    virtual ~player_resource_for_player() = default;
 
-    virtual std::shared_ptr<reading_resource_interface> const &reading() const = 0;
-    virtual std::shared_ptr<buffering_resource_interface> const &buffering() const = 0;
+    virtual std::shared_ptr<reading_resource_for_player_resource> const &reading() const = 0;
+    virtual std::shared_ptr<buffering_resource_for_player_resource> const &buffering() const = 0;
 
     virtual void set_playing_on_main(bool const) = 0;
     [[nodiscard]] virtual bool is_playing_on_render() const = 0;

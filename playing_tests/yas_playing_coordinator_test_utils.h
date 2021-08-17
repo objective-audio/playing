@@ -28,7 +28,7 @@ struct worker : workable {
     }
 };
 
-struct renderer : coordinator_renderer_interface {
+struct renderer : renderer_for_coordinator {
     std::function<void(sample_rate_t)> set_rendering_sample_rate_handler;
     std::function<void(audio::pcm_format)> set_rendering_pcm_format_handler;
     std::function<renderer_format const &(void)> format_handler;
@@ -51,7 +51,7 @@ struct renderer : coordinator_renderer_interface {
     }
 };
 
-struct player : coordinator_player_interface {
+struct player : player_for_coordinator {
     std::function<void(std::string)> set_identifier_handler;
     std::function<void(playing::channel_mapping)> set_ch_mapping_handler;
     std::function<void(bool)> set_playing_handler;
@@ -104,7 +104,7 @@ struct player : coordinator_player_interface {
     }
 };
 
-struct exporter : coordinator_exporter_interface {
+struct exporter : exporter_for_coordinator {
     std::function<void(timeline_container_ptr)> set_timeline_container_handler;
     std::function<observing::endable(event_observing_handler_f &&)> observe_event_handler;
 
@@ -112,7 +112,7 @@ struct exporter : coordinator_exporter_interface {
         this->set_timeline_container_handler(container);
     }
 
-    observing::endable observe_event(coordinator_exporter_interface::event_observing_handler_f &&handler) override {
+    observing::endable observe_event(exporter_for_coordinator::event_observing_handler_f &&handler) override {
         return this->observe_event_handler(std::move(handler));
     }
 };
@@ -135,15 +135,14 @@ struct cpp {
 
         this->exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
         this->exporter->observe_event_handler =
-            [notifier =
-                 this->exporter_event_notifier](coordinator_exporter_interface::event_observing_handler_f &&handler) {
+            [notifier = this->exporter_event_notifier](exporter_for_coordinator::event_observing_handler_f &&handler) {
                 return notifier->observe(std::move(handler));
             };
 
         this->configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
         this->renderer->observe_format_handler =
-            [holder = this->configulation_holder](
-                coordinator_renderer_interface::renderer_format_observing_handler_f &&handler) {
+            [holder =
+                 this->configulation_holder](renderer_for_coordinator::renderer_format_observing_handler_f &&handler) {
                 return holder->observe(std::move(handler));
             };
 

@@ -34,18 +34,17 @@ using namespace yas::playing;
 
     auto const exporter_event_notifier = observing::notifier<exporter_event>::make_shared();
     exporter->observe_event_handler = [notifier = exporter_event_notifier, &exporter_event_called](
-                                          coordinator_exporter_interface::event_observing_handler_f &&handler) {
+                                          exporter_for_coordinator::event_observing_handler_f &&handler) {
         exporter_event_called = true;
         return notifier->observe(std::move(handler));
     };
 
     auto const configulation_holder = observing::value::holder<renderer_format>::make_shared(renderer_format{});
-    renderer->observe_format_handler =
-        [holder = configulation_holder,
-         &fomat_called](coordinator_renderer_interface::renderer_format_observing_handler_f &&handler) {
-            fomat_called = true;
-            return holder->observe(std::move(handler));
-        };
+    renderer->observe_format_handler = [holder = configulation_holder, &fomat_called](
+                                           renderer_for_coordinator::renderer_format_observing_handler_f &&handler) {
+        fomat_called = true;
+        return holder->observe(std::move(handler));
+    };
 
     worker->start_handler = [&start_called] { start_called = true; };
 

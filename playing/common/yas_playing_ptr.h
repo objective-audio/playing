@@ -22,14 +22,14 @@ class buffering_element;
 class reading_resource;
 class player_resource;
 
-class coordinator_player_interface;
-class coordinator_renderer_interface;
-class buffering_element_interface;
-class buffering_channel_interface;
-class buffering_resource_interface;
-class reading_resource_interface;
-class player_resource_interface;
-class coordinator_exporter_interface;
+class player_for_coordinator;
+class renderer_for_coordinator;
+class buffering_element_for_buffering_channel;
+class buffering_channel_for_buffering_resource;
+class buffering_resource_for_player_resource;
+class reading_resource_for_player_resource;
+class player_resource_for_player;
+class exporter_for_coordinator;
 
 using exporter_ptr = std::shared_ptr<exporter>;
 using exporter_resource_ptr = std::shared_ptr<exporter_resource>;

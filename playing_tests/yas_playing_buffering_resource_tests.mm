@@ -29,7 +29,7 @@ static path::channel channel_path(std::string const &identifier, channel_index_t
     return path::channel{buffering_test::timeline_path(identifier), ch_idx};
 }
 
-struct channel : buffering_channel_interface {
+struct channel : buffering_channel_for_buffering_resource {
     std::size_t element_count;
     audio::format format;
     sample_rate_t frag_length;

@@ -10,7 +10,7 @@
 #include <playing/yas_playing_player_resource_dependency.h>
 
 namespace yas::playing {
-struct buffering_resource final : buffering_resource_interface {
+struct buffering_resource final : buffering_resource_for_player_resource {
     [[nodiscard]] setup_state_t setup_state() const override;
     [[nodiscard]] rendering_state_t rendering_state() const override;
     [[nodiscard]] std::size_t element_count() const override;
@@ -36,7 +36,7 @@ struct buffering_resource final : buffering_resource_interface {
     [[nodiscard]] bool read_into_buffer_on_render(audio::pcm_buffer *, channel_index_t const,
                                                   frame_index_t const) override;
 
-    using make_channel_f = std::function<std::shared_ptr<buffering_channel_interface>(
+    using make_channel_f = std::function<std::shared_ptr<buffering_channel_for_buffering_resource>(
         std::size_t const, audio::format const &, sample_rate_t const)>;
 
     static buffering_resource_ptr make_shared(std::size_t const element_count, std::string const &root_path,
@@ -64,7 +64,7 @@ struct buffering_resource final : buffering_resource_interface {
     channel_mapping _ch_mapping;
     std::string _identifier = "";
 
-    std::vector<std::shared_ptr<buffering_channel_interface>> _channels;
+    std::vector<std::shared_ptr<buffering_channel_for_buffering_resource>> _channels;
 
     mutable std::mutex _request_mutex;
     std::optional<channel_mapping> _ch_mapping_request = std::nullopt;
