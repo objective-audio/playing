@@ -18,7 +18,7 @@
 #include <playing/yas_playing_reading_resource.h>
 #include <playing/yas_playing_renderer.h>
 #include <playing/yas_playing_signal_file.h>
-#include <playing/yas_playing_timeline_canceling.h>
+#include <playing/yas_playing_timeline_canceller.h>
 #include <playing/yas_playing_timeline_container.h>
 #include <playing/yas_playing_timeline_utils.h>
 #include <playing/yas_playing_types.h>

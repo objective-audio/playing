@@ -5,7 +5,8 @@
 #pragma once
 
 #include <cpp_utils/yas_result.h>
-#include <cpp_utils/yas_task.h>
+#include <cpp_utils/yas_task_queue.h>
+#include <playing/yas_playing_ptr.h>
 #include <processing/yas_processing_timeline.h>
 
 namespace yas::playing {
@@ -34,4 +35,7 @@ struct exporter_task_priority final {
     task_priority_t const timeline;
     task_priority_t const fragment;
 };
+
+using exporter_task = task<timeline_cancel_matcher_ptr>;
+using exporter_task_queue = task_queue<timeline_cancel_matcher_ptr>;
 }  // namespace yas::playing

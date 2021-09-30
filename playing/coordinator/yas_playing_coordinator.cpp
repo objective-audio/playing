@@ -135,7 +135,7 @@ coordinator_ptr coordinator::make_shared(std::string const &root_path, std::shar
                                      buffering_resource::make_shared(3, root_path, playing::make_buffering_channel)));
 
     auto const exporter =
-        exporter::make_shared(root_path, std::make_shared<task_queue>(2), {.timeline = 0, .fragment = 1});
+        exporter::make_shared(root_path, exporter_task_queue::make_shared(2), {.timeline = 0, .fragment = 1});
 
     return make_shared(worker, renderer, player, exporter);
 }
