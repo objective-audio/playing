@@ -15,7 +15,7 @@ using namespace yas::playing;
 namespace yas::playing::exporter_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
+    std::shared_ptr<exporter_task_queue> const queue = exporter_task_queue::make_shared(2);
     exporter::task_priority_t const priority{.timeline = 0, .fragment = 1};
 };
 }
@@ -40,7 +40,7 @@ struct cpp {
 
 - (void)test_initial {
     std::string const &root_path = self->_cpp.root_path;
-    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
+    auto const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
 
     auto exporter = exporter::make_shared(root_path, queue, priority);
@@ -52,7 +52,7 @@ struct cpp {
 
 - (void)test_set_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
+    auto const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
     sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
@@ -153,7 +153,7 @@ struct cpp {
 
 - (void)test_set_sample_rate {
     std::string const &root_path = self->_cpp.root_path;
-    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
+    auto const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
     sample_rate_t const pre_sample_rate = 2;
     sample_rate_t const post_sample_rate = 3;
@@ -252,7 +252,7 @@ struct cpp {
 
 - (void)test_update_timeline {
     std::string const &root_path = self->_cpp.root_path;
-    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
+    auto const &queue = self->_cpp.queue;
     exporter::task_priority_t const &priority = self->_cpp.priority;
     sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";

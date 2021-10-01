@@ -8,7 +8,7 @@
 #include <audio/yas_audio_pcm_buffer.h>
 #include <cpp_utils/yas_fast_each.h>
 #include <cpp_utils/yas_file_manager.h>
-#include <cpp_utils/yas_task.h>
+#include <cpp_utils/yas_task_queue.h>
 #include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_timeline_utils.h>
 #include <processing/yas_processing_umbrella.h>
@@ -17,14 +17,14 @@
 #include "yas_playing_numbers_file.h"
 #include "yas_playing_path.h"
 #include "yas_playing_signal_file.h"
-#include "yas_playing_timeline_canceling.h"
+#include "yas_playing_timeline_canceller.h"
 #include "yas_playing_timeline_utils.h"
 #include "yas_playing_types.h"
 
 using namespace yas;
 using namespace yas::playing;
 
-exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue> const &queue,
+exporter::exporter(std::string const &root_path, std::shared_ptr<task_queue_t> const &queue,
                    task_priority_t const &priority)
     : _queue(queue),
       _priority(priority),
@@ -116,9 +116,9 @@ void exporter::_update_timeline(proc::timeline::track_map_t &&tracks) {
 
     auto const &container = this->_container->value();
 
-    auto task = task::make_shared(
+    auto task = exporter_task::make_shared(
         [resource = this->_resource, tracks = std::move(tracks), identifier = container->identifier(),
-         sample_rate = container->sample_rate()](yas::task const &task) mutable {
+         sample_rate = container->sample_rate()](auto const &task) mutable {
             resource->replace_timeline_on_task(std::move(tracks), identifier, sample_rate, task);
         },
         {.priority = this->_priority.timeline});
@@ -132,10 +132,11 @@ void exporter::_insert_track(proc::timeline_event const &event) {
     auto copied_track = (*event.inserted)->copy();
     std::optional<proc::time::range> const total_range = copied_track->total_range();
 
-    auto const insert_task =
-        task::make_shared([resource = this->_resource, trk_idx = *event.index, track = std::move(copied_track)](
-                              auto const &) mutable { resource->insert_track_on_task(trk_idx, std::move(track)); },
-                          {.priority = this->_priority.timeline});
+    auto const insert_task = exporter_task::make_shared(
+        [resource = this->_resource, trk_idx = *event.index, track = std::move(copied_track)](auto const &) mutable {
+            resource->insert_track_on_task(trk_idx, std::move(track));
+        },
+        {.priority = this->_priority.timeline});
     this->_queue->push_back(insert_task);
 
     if (total_range) {
@@ -148,7 +149,7 @@ void exporter::_erase_track(proc::timeline_event const &event) {
 
     std::optional<proc::time::range> const total_range = (*event.erased)->total_range();
 
-    auto const erase_task = task::make_shared(
+    auto const erase_task = exporter_task::make_shared(
         [resource = this->_resource, trk_idx = *event.index](auto const &) { resource->erase_track_on_task(trk_idx); },
         {.priority = this->_priority.timeline});
     this->_queue->push_back(std::move(erase_task));
@@ -164,7 +165,7 @@ void exporter::_insert_module_set(track_index_t const trk_idx, proc::track_event
     auto const copied_module_set = (*event.inserted)->copy();
     auto const &range = *event.range;
 
-    auto task = task::make_shared(
+    auto task = exporter_task::make_shared(
         [resource = this->_resource, trk_idx, range, module_set = std::move(copied_module_set)](auto const &) mutable {
             resource->insert_module_set_on_task(trk_idx, range, std::move(module_set));
         },
@@ -180,9 +181,9 @@ void exporter::_erase_module_set(track_index_t const trk_idx, proc::track_event 
     auto const copied_module_set = (*event.erased)->copy();
 
     auto const &range = *event.range;
-    auto task = task::make_shared([resource = this->_resource, trk_idx,
-                                   range](auto const &) { resource->erase_module_set_on_task(trk_idx, range); },
-                                  {.priority = this->_priority.timeline});
+    auto task = exporter_task::make_shared([resource = this->_resource, trk_idx, range](
+                                               auto const &) { resource->erase_module_set_on_task(trk_idx, range); },
+                                           {.priority = this->_priority.timeline});
     this->_queue->push_back(std::move(task));
 
     this->_push_export_task(range);
@@ -192,7 +193,7 @@ void exporter::_insert_module(track_index_t const trk_idx, proc::time::range con
                               proc::module_set_event const &event) {
     assert(thread::is_main());
 
-    auto task = task::make_shared(
+    auto task = exporter_task::make_shared(
         [resource = this->_resource, trk_idx, range, module_idx = *event.index, module = (*event.inserted)->copy()](
             auto const &) { resource->insert_module(module, module_idx, trk_idx, range); },
         {.priority = this->_priority.timeline});
@@ -206,9 +207,9 @@ void exporter::_erase_module(track_index_t const trk_idx, proc::time::range cons
                              proc::module_set_event const &event) {
     assert(thread::is_main());
 
-    auto task = task::make_shared([resource = this->_resource, trk_idx, range, module_idx = *event.index](
-                                      auto const &) { resource->erase_module(module_idx, trk_idx, range); },
-                                  {.priority = this->_priority.timeline});
+    auto task = exporter_task::make_shared([resource = this->_resource, trk_idx, range, module_idx = *event.index](
+                                               auto const &) { resource->erase_module(module_idx, trk_idx, range); },
+                                           {.priority = this->_priority.timeline});
 
     this->_queue->push_back(std::move(task));
 
@@ -216,16 +217,16 @@ void exporter::_erase_module(track_index_t const trk_idx, proc::time::range cons
 }
 
 void exporter::_push_export_task(proc::time::range const &range) {
-    this->_queue->cancel_for_id(timeline_range_cancel_request::make_shared(range));
+    this->_queue->cancel([range](timeline_cancel_matcher_ptr const &matcher) { return matcher->is_cancel(range); });
 
-    auto export_task = task::make_shared(
-        [resource = this->_resource, range](task const &task) { resource->export_on_task(range, task); },
-        {.priority = this->_priority.fragment, .cancel_id = timeline_cancel_matcher::make_shared(range)});
+    auto export_task = exporter_task::make_shared(
+        [resource = this->_resource, range](auto const &task) { resource->export_on_task(range, task); },
+        {.priority = this->_priority.fragment, .canceller = timeline_canceller::make_shared(range)});
 
     this->_queue->push_back(std::move(export_task));
 }
 
-exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue> const &task_queue,
+exporter_ptr exporter::make_shared(std::string const &root_path, std::shared_ptr<task_queue_t> const &task_queue,
                                    task_priority_t const &task_priority) {
     return exporter_ptr(new exporter{root_path, task_queue, task_priority});
 }

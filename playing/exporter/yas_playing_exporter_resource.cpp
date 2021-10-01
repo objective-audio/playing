@@ -22,7 +22,7 @@ exporter_resource::exporter_resource(std::string const &root_path) : _root_path(
 }
 
 void exporter_resource::replace_timeline_on_task(proc::timeline::track_map_t &&tracks, std::string const &identifier,
-                                                 sample_rate_t const &sample_rate, yas::task const &task) {
+                                                 sample_rate_t const &sample_rate, task_t const &task) {
     this->_identifier = identifier;
     this->_timeline = proc::timeline::make_shared(std::move(tracks));
     this->_sync_source.emplace(sample_rate, sample_rate);
@@ -94,7 +94,7 @@ void exporter_resource::erase_module(module_index_t const module_idx, track_inde
     track->erase_module_at(module_idx, range);
 }
 
-void exporter_resource::export_on_task(proc::time::range const &range, task const &task) {
+void exporter_resource::export_on_task(proc::time::range const &range, task_t const &task) {
     auto const &sync_source = this->_sync_source.value();
     auto frags_range = timeline_utils::fragments_range(range, sync_source.sample_rate);
 
@@ -107,7 +107,7 @@ void exporter_resource::export_on_task(proc::time::range const &range, task cons
     }
 }
 
-void exporter_resource::_export_fragments_on_task(proc::time::range const &frags_range, task const &task) {
+void exporter_resource::_export_fragments_on_task(proc::time::range const &frags_range, task_t const &task) {
     assert(!thread::is_main());
 
     if (task.is_canceled()) {
@@ -185,7 +185,7 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
 }
 
 std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc::time::range const &frags_range,
-                                                                           task const &task) {
+                                                                           task_t const &task) {
     assert(!thread::is_main());
 
     auto const &sync_source = this->_sync_source.value();

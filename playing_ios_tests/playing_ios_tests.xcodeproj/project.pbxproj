@@ -24,7 +24,7 @@
 		B6DCC490229AB1CD007F88B7 /* yas_playing_signal_file_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC47E229AB1CD007F88B7 /* yas_playing_signal_file_tests.mm */; };
 		B6DCC493229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC482229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm */; };
 		B6DCC494229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */; };
-		B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */; };
+		B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceller_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceller_tests.mm */; };
 		B6DCC496229AB1CE007F88B7 /* yas_playing_path_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC486229AB1CD007F88B7 /* yas_playing_path_tests.mm */; };
 		B6DCC497229AB1CE007F88B7 /* yas_playing_math_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */; };
 		B6DCC498229AB1CE007F88B7 /* yas_playing_exporter_tests.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6DCC488229AB1CD007F88B7 /* yas_playing_exporter_tests.mm */; };
@@ -63,7 +63,7 @@
 		B6DCC481229AB1CD007F88B7 /* yas_playing_test_utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_test_utils.h; sourceTree = "<group>"; };
 		B6DCC482229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_exporter_chain_tests.mm; sourceTree = "<group>"; };
 		B6DCC484229AB1CD007F88B7 /* yas_playing_player_utils_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_player_utils_tests.mm; sourceTree = "<group>"; };
-		B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_canceling_tests.mm; sourceTree = "<group>"; };
+		B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceller_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_timeline_canceller_tests.mm; sourceTree = "<group>"; };
 		B6DCC486229AB1CD007F88B7 /* yas_playing_path_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_path_tests.mm; sourceTree = "<group>"; };
 		B6DCC487229AB1CD007F88B7 /* yas_playing_math_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_math_tests.mm; sourceTree = "<group>"; };
 		B6DCC488229AB1CD007F88B7 /* yas_playing_exporter_tests.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = yas_playing_exporter_tests.mm; sourceTree = "<group>"; };
@@ -155,7 +155,7 @@
 				B6DCC48A229AB1CD007F88B7 /* yas_playing_test_utils_tests.mm */,
 				B6DCC481229AB1CD007F88B7 /* yas_playing_test_utils.h */,
 				B6DCC48D229AB1CD007F88B7 /* yas_playing_test_utils.mm */,
-				B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm */,
+				B6DCC485229AB1CD007F88B7 /* yas_playing_timeline_canceller_tests.mm */,
 				B63910D0259D7673004EFDB3 /* yas_playing_timeline_utils_tests.mm */,
 			);
 			name = playing_tests;
@@ -272,7 +272,7 @@
 				B6DCC496229AB1CE007F88B7 /* yas_playing_path_tests.mm in Sources */,
 				B6B30F9825596C2A0022D37A /* yas_playing_buffering_channel_tests.mm in Sources */,
 				B67E94792598B5960040D431 /* yas_playing_player_rendering_tests.mm in Sources */,
-				B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceling_tests.mm in Sources */,
+				B6DCC495229AB1CD007F88B7 /* yas_playing_timeline_canceller_tests.mm in Sources */,
 				B6DCC48E229AB1CD007F88B7 /* yas_playing_signal_file_info_tests.mm in Sources */,
 				B6873B0E25920D43001AC4CA /* yas_playing_player_tests.mm in Sources */,
 				B6DCC493229AB1CD007F88B7 /* yas_playing_exporter_chain_tests.mm in Sources */,
@@ -367,7 +367,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -437,7 +437,7 @@
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;

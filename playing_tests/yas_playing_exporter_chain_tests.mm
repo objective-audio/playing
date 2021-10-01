@@ -14,7 +14,7 @@ using namespace yas::playing;
 namespace yas::playing::exporter_chain_test {
 struct cpp {
     std::string const root_path = test_utils::root_path();
-    std::shared_ptr<task_queue> queue = std::make_shared<task_queue>(2);
+    std::shared_ptr<exporter_task_queue> const queue = exporter_task_queue::make_shared(2);
     exporter::task_priority_t const priority{.timeline = 0, .fragment = 1};
 };
 }
@@ -35,7 +35,7 @@ struct cpp {
 
 - (void)test_chain {
     std::string const &root_path = self->_cpp.root_path;
-    std::shared_ptr<task_queue> const &queue = self->_cpp.queue;
+    auto const &queue = self->_cpp.queue;
     sample_rate_t const sample_rate = 2;
     std::string const identifier = "0";
 
