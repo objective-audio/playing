@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		B629D76D271466A600EE379A /* yas_playing_buffering_resource_types.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B629D76C271466A600EE379A /* yas_playing_buffering_resource_types.cpp */; };
 		B6A1F8C42600CED700687652 /* observing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6A1F8C32600CED700687652 /* observing.framework */; };
 		B6CF84B726467210001E2C3A /* yas_playing_renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B6CF847A26467210001E2C3A /* yas_playing_renderer.cpp */; };
 		B6CF84B826467210001E2C3A /* yas_playing_renderer.h in Headers */ = {isa = PBXBuildFile; fileRef = B6CF847B26467210001E2C3A /* yas_playing_renderer.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -71,6 +72,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B629D76C271466A600EE379A /* yas_playing_buffering_resource_types.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_buffering_resource_types.cpp; sourceTree = "<group>"; };
 		B6A1F8C32600CED700687652 /* observing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = observing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6CF847A26467210001E2C3A /* yas_playing_renderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = yas_playing_renderer.cpp; sourceTree = "<group>"; };
 		B6CF847B26467210001E2C3A /* yas_playing_renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_renderer.h; sourceTree = "<group>"; };
@@ -199,6 +201,7 @@
 				B6CF849B26467210001E2C3A /* yas_playing_buffering_element.cpp */,
 				B6CF84A026467210001E2C3A /* yas_playing_buffering_element.h */,
 				B6CF849526467210001E2C3A /* yas_playing_buffering_resource_dependency.h */,
+				B629D76C271466A600EE379A /* yas_playing_buffering_resource_types.cpp */,
 				B6CF84A126467210001E2C3A /* yas_playing_buffering_resource_types.h */,
 				B6CF849826467210001E2C3A /* yas_playing_buffering_resource.cpp */,
 				B6CF849726467210001E2C3A /* yas_playing_buffering_resource.h */,
@@ -447,6 +450,7 @@
 				B6CF84E026467210001E2C3A /* yas_playing_signal_file.cpp in Sources */,
 				B6CF84E726467210001E2C3A /* yas_playing_timeline_utils.cpp in Sources */,
 				B6CF84CA26467210001E2C3A /* yas_playing_reading_resource.cpp in Sources */,
+				B629D76D271466A600EE379A /* yas_playing_buffering_resource_types.cpp in Sources */,
 				B6CF84C926467210001E2C3A /* yas_playing_buffering_element_types.cpp in Sources */,
 				B6CF84D826467210001E2C3A /* yas_playing_player_utils.cpp in Sources */,
 				B6CF84BA26467210001E2C3A /* yas_playing_path.cpp in Sources */,

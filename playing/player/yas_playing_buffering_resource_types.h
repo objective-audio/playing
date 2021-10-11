@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <string>
+
 namespace yas::playing {
 enum class audio_buffering_setup_state {
     /// 新規生成後の待機状態
@@ -43,3 +45,8 @@ enum class audio_buffering_rendering_state {
     advancing,
 };
 }  // namespace yas::playing
+
+namespace yas {
+std::string to_string(playing::audio_buffering_setup_state const);
+std::string to_string(playing::audio_buffering_rendering_state const);
+}  // namespace yas
