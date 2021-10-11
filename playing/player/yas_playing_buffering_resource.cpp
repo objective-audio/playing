@@ -49,8 +49,8 @@ sample_rate_t buffering_resource::fragment_length_on_render() const {
 
 void buffering_resource::set_creating_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                                 uint32_t const ch_count) {
-    if (this->_setup_state.load() == setup_state_t::creating) {
-        throw std::runtime_error("state is already creating.");
+    if (auto const state = this->_setup_state.load(); state == setup_state_t::creating) {
+        throw std::runtime_error("state (" + to_string(state) + ") is already creating.");
     }
 
     this->_sample_rate = sample_rate;
@@ -62,8 +62,8 @@ void buffering_resource::set_creating_on_render(sample_rate_t const sample_rate,
 
 bool buffering_resource::needs_create_on_render(sample_rate_t const sample_rate, audio::pcm_format const &pcm_format,
                                                 uint32_t const ch_count) {
-    if (this->_setup_state.load() != setup_state_t::rendering) {
-        throw std::runtime_error("state is not rendering.");
+    if (auto const state = this->_setup_state.load(); state != setup_state_t::rendering) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not rendering.");
     }
 
     if (this->_sample_rate != sample_rate) {
@@ -82,8 +82,8 @@ bool buffering_resource::needs_create_on_render(sample_rate_t const sample_rate,
 }
 
 void buffering_resource::create_buffer_on_task() {
-    if (this->_setup_state.load() != setup_state_t::creating) {
-        throw std::runtime_error("state is not creating.");
+    if (auto const state = this->_setup_state.load(); state != setup_state_t::creating) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not creating.");
     }
 
     this->_format = std::nullopt;
@@ -130,8 +130,8 @@ void buffering_resource::create_buffer_on_task() {
 }
 
 void buffering_resource::set_all_writing_on_render(frame_index_t const frame) {
-    if (this->_rendering_state.load() == rendering_state_t::all_writing) {
-        throw std::runtime_error("state is already all_writing.");
+    if (auto const state = this->_rendering_state.load(); state == rendering_state_t::all_writing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is already all_writing.");
     }
 
     this->_all_writing_frame = frame;
@@ -140,8 +140,8 @@ void buffering_resource::set_all_writing_on_render(frame_index_t const frame) {
 }
 
 void buffering_resource::write_all_elements_on_task() {
-    if (this->_rendering_state.load() != rendering_state_t::all_writing) {
-        throw std::runtime_error("state is not all_writing.");
+    if (auto const state = this->_rendering_state.load(); state != rendering_state_t::all_writing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not all_writing.");
     }
 
     if (auto ch_mapping = this->_pull_ch_mapping_request_on_task(); ch_mapping.has_value()) {
@@ -186,8 +186,8 @@ void buffering_resource::write_all_elements_on_task() {
 }
 
 void buffering_resource::advance_on_render(fragment_index_t const frag_idx) {
-    if (this->_rendering_state.load() != rendering_state_t::advancing) {
-        throw std::runtime_error("state is not advancing.");
+    if (auto const state = this->_rendering_state.load(); state != rendering_state_t::advancing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not advancing.");
     }
 
     for (auto const &channel : this->_channels) {
@@ -196,8 +196,8 @@ void buffering_resource::advance_on_render(fragment_index_t const frag_idx) {
 }
 
 bool buffering_resource::write_elements_if_needed_on_task() {
-    if (this->_rendering_state.load() != rendering_state_t::advancing) {
-        throw std::runtime_error("state is not advancing.");
+    if (auto const state = this->_rendering_state.load(); state != rendering_state_t::advancing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not advancing.");
     }
 
     bool is_loaded = false;
@@ -214,8 +214,8 @@ bool buffering_resource::write_elements_if_needed_on_task() {
 }
 
 void buffering_resource::overwrite_element_on_render(element_address const &address) {
-    if (this->_rendering_state.load() != rendering_state_t::advancing) {
-        throw std::runtime_error("state is not advancing.");
+    if (auto const state = this->_rendering_state.load(); state != rendering_state_t::advancing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not advancing.");
     }
 
     if (address.file_channel_index.has_value()) {
@@ -234,7 +234,7 @@ void buffering_resource::overwrite_element_on_render(element_address const &addr
 bool buffering_resource::needs_all_writing_on_render() const {
     if (auto const state = this->_rendering_state.load(); true) {
         if (state != rendering_state_t::waiting && state != rendering_state_t::advancing) {
-            throw std::runtime_error("state is not waiting or advanding.");
+            throw std::runtime_error("state (" + to_string(state) + ") is not waiting or advanding.");
         }
     }
 
@@ -256,8 +256,8 @@ void buffering_resource::set_identifier_request_on_main(std::string const &ident
 
 bool buffering_resource::read_into_buffer_on_render(audio::pcm_buffer *out_buffer, channel_index_t const ch_idx,
                                                     frame_index_t const frame) {
-    if (this->_rendering_state.load() != rendering_state_t::advancing) {
-        throw std::runtime_error("state is not advancing.");
+    if (auto const state = this->_rendering_state.load(); state != rendering_state_t::advancing) {
+        throw std::runtime_error("state (" + to_string(state) + ") is not advancing.");
     }
 
     if (this->_channels.size() <= ch_idx) {
