@@ -105,6 +105,10 @@ bool coordinator::is_playing() const {
     return this->_player->is_playing();
 }
 
+bool coordinator::is_seeking() const {
+    return this->_player->is_seeking();
+}
+
 frame_index_t coordinator::current_frame() const {
     return this->_player->current_frame();
 }

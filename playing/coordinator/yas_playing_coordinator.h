@@ -28,6 +28,7 @@ struct coordinator final {
     [[nodiscard]] std::optional<proc::timeline_ptr> const &timeline() const;
     [[nodiscard]] channel_mapping channel_mapping() const;
     [[nodiscard]] bool is_playing() const;
+    [[nodiscard]] bool is_seeking() const;
     [[nodiscard]] frame_index_t current_frame() const;
 
     [[nodiscard]] renderer_format const &format() const;

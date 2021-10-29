@@ -280,6 +280,10 @@ bool player::is_playing() const {
     return this->_is_playing->value();
 }
 
+bool player::is_seeking() const {
+    return this->_resource->is_seeking_on_main();
+}
+
 frame_index_t player::current_frame() const {
     return this->_resource->current_frame();
 }

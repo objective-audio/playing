@@ -239,6 +239,20 @@ using namespace yas::playing;
     XCTAssertTrue(coordinator->is_playing());
 }
 
+- (void)test_is_seeking {
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    bool is_seeking = false;
+
+    self->_cpp.player->is_seeking_handler = [&is_seeking] { return is_seeking; };
+
+    XCTAssertFalse(coordinator->is_seeking());
+
+    is_seeking = true;
+
+    XCTAssertTrue(coordinator->is_seeking());
+}
+
 - (void)test_current_frame {
     auto const coordinator = self->_cpp.setup_coordinator();
 

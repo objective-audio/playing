@@ -123,12 +123,21 @@ struct cpp {
     auto const resource = self->_cpp.make_resource();
 
     XCTAssertEqual(resource->pull_seek_frame_on_render(), std::nullopt);
+    XCTAssertFalse(resource->is_seeking_on_main());
 
     resource->seek_on_main(666);
 
+    XCTAssertTrue(resource->is_seeking_on_main());
+
     XCTAssertEqual(resource->pull_seek_frame_on_render(), 666);
 
+    XCTAssertTrue(resource->is_seeking_on_main());
+
     XCTAssertEqual(resource->pull_seek_frame_on_render(), std::nullopt);
+
+    resource->set_current_frame_on_render(666);
+
+    XCTAssertFalse(resource->is_seeking_on_main());
 }
 
 - (void)test_current_frame {

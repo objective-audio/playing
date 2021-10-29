@@ -60,6 +60,7 @@ struct player : player_for_coordinator {
     std::function<std::string const &(void)> identifier_handler;
     std::function<playing::channel_mapping(void)> ch_mapping_handler;
     std::function<bool(void)> is_playing_handler;
+    std::function<bool(void)> is_seeking_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<observing::syncable(std::function<void(bool const &)> &&)> observe_is_playing_handler;
 
@@ -93,6 +94,10 @@ struct player : player_for_coordinator {
 
     bool is_playing() const override {
         return this->is_playing_handler();
+    }
+
+    bool is_seeking() const override {
+        return this->is_seeking_handler();
     }
 
     frame_index_t current_frame() const override {
