@@ -29,6 +29,7 @@ struct player_resource_for_player {
 
     virtual void seek_on_main(frame_index_t const frame) = 0;
     [[nodiscard]] virtual std::optional<frame_index_t> pull_seek_frame_on_render() = 0;
+    [[nodiscard]] virtual bool is_seeking_on_main() const = 0;
 
     virtual void set_current_frame_on_render(frame_index_t const) = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;

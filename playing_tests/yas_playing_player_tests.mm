@@ -139,6 +139,22 @@ using namespace yas::playing;
     XCTAssertEqual(called_seek.at(0), 100);
 }
 
+- (void)test_is_seeking {
+    self->_cpp.setup_initial();
+
+    auto const &player = self->_cpp.player;
+
+    bool is_seeking = false;
+
+    self->_cpp.resource->is_seeking_handler = [&is_seeking] { return is_seeking; };
+
+    XCTAssertFalse(player->is_seeking());
+
+    is_seeking = true;
+
+    XCTAssertTrue(player->is_seeking());
+}
+
 - (void)test_overwrite {
     self->_cpp.setup_initial();
 

@@ -20,6 +20,7 @@ struct player_resource final : player_resource_for_player {
 
     void seek_on_main(frame_index_t const frame) override;
     [[nodiscard]] std::optional<frame_index_t> pull_seek_frame_on_render() override;
+    [[nodiscard]] bool is_seeking_on_main() const override;
 
     void set_current_frame_on_render(frame_index_t const) override;
     [[nodiscard]] frame_index_t current_frame() const override;
@@ -40,6 +41,14 @@ struct player_resource final : player_resource_for_player {
 
     std::mutex _seek_mutex;
     std::optional<frame_index_t> _seek_frame = std::nullopt;
+
+    enum class seek_state {
+        waiting,
+        requested,
+        pulled,
+    };
+
+    std::atomic<seek_state> _seek_state = seek_state::waiting;
 
     std::mutex _overwrite_mutex;
     overwrite_requests_t _overwrite_requests;

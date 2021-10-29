@@ -28,6 +28,7 @@ struct resource : player_resource_for_player {
     std::function<bool(void)> is_playing_handler;
     std::function<void(frame_index_t)> seek_handler;
     std::function<std::optional<frame_index_t>(void)> pull_seek_frame_handler;
+    std::function<bool(void)> is_seeking_handler;
     std::function<void(frame_index_t)> set_current_frame_handler;
     std::function<frame_index_t(void)> current_frame_handler;
     std::function<void(element_address &&)> add_overwrite_request_handler;
@@ -64,6 +65,10 @@ struct resource : player_resource_for_player {
 
     std::optional<frame_index_t> pull_seek_frame_on_render() override {
         return this->pull_seek_frame_handler();
+    }
+
+    bool is_seeking_on_main() const override {
+        return this->is_seeking_handler();
     }
 
     void set_current_frame_on_render(frame_index_t const frame) override {

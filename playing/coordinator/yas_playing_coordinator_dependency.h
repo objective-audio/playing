@@ -35,6 +35,7 @@ struct player_for_coordinator {
     [[nodiscard]] virtual std::string const &identifier() const = 0;
     [[nodiscard]] virtual playing::channel_mapping channel_mapping() const = 0;
     [[nodiscard]] virtual bool is_playing() const = 0;
+    [[nodiscard]] virtual bool is_seeking() const = 0;
     [[nodiscard]] virtual frame_index_t current_frame() const = 0;
 
     [[nodiscard]] virtual observing::syncable observe_is_playing(std::function<void(bool const &)> &&) = 0;

@@ -36,6 +36,7 @@ bool player_resource::is_playing_on_render() const {
 void player_resource::seek_on_main(frame_index_t const frame) {
     std::lock_guard<std::mutex> lock(this->_seek_mutex);
     this->_seek_frame = frame;
+    this->_seek_state = seek_state::requested;
 }
 
 std::optional<frame_index_t> player_resource::pull_seek_frame_on_render() {
@@ -43,13 +44,23 @@ std::optional<frame_index_t> player_resource::pull_seek_frame_on_render() {
         if (this->_seek_frame.has_value()) {
             auto frame = this->_seek_frame;
             this->_seek_frame = std::nullopt;
+            this->_seek_state = seek_state::pulled;
             return frame;
         }
     }
     return std::nullopt;
 }
 
+bool player_resource::is_seeking_on_main() const {
+    return this->_seek_state.load() != seek_state::waiting;
+}
+
 void player_resource::set_current_frame_on_render(frame_index_t const frame) {
+    if (auto lock = std::unique_lock<std::mutex>(this->_seek_mutex, std::try_to_lock); lock.owns_lock()) {
+        if (this->_seek_state == seek_state::pulled) {
+            this->_seek_state = seek_state::waiting;
+        }
+    }
     this->_current_frame.store(frame);
 }
 

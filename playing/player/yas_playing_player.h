@@ -23,6 +23,7 @@ struct player final : player_for_coordinator {
     [[nodiscard]] std::string const &identifier() const override;
     [[nodiscard]] playing::channel_mapping channel_mapping() const override;
     [[nodiscard]] bool is_playing() const override;
+    [[nodiscard]] bool is_seeking() const override;
     [[nodiscard]] frame_index_t current_frame() const override;
 
     [[nodiscard]] observing::syncable observe_is_playing(std::function<void(bool const &)> &&) override;
