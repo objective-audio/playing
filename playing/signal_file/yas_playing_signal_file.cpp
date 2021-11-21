@@ -107,3 +107,13 @@ std::string yas::to_string(signal_file::read_error const &error) {
             return "close_stream_failed";
     }
 }
+
+std::ostream &operator<<(std::ostream &os, yas::playing::signal_file::write_error const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::signal_file::read_error const &value) {
+    os << to_string(value);
+    return os;
+}

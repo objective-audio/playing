@@ -41,3 +41,6 @@ namespace yas {
 std::string to_string(playing::signal_file::write_error const &);
 std::string to_string(playing::signal_file::read_error const &);
 }  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::playing::signal_file::write_error const &);
+std::ostream &operator<<(std::ostream &, yas::playing::signal_file::read_error const &);

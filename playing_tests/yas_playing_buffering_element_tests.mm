@@ -391,4 +391,15 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
     XCTAssertEqual(to_string(audio_buffering_element_state::readable), "readable");
 }
 
+- (void)test_state_ostream {
+    auto const values = {audio_buffering_element_state::initial, audio_buffering_element_state::writable,
+                         audio_buffering_element_state::readable};
+
+    for (auto const &value : values) {
+        std::ostringstream stream;
+        stream << value;
+        XCTAssertEqual(stream.str(), to_string(value));
+    }
+}
+
 @end
