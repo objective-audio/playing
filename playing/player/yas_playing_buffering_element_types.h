@@ -20,3 +20,5 @@ enum class audio_buffering_element_state {
 namespace yas {
 std::string to_string(playing::audio_buffering_element_state const &);
 }
+
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffering_element_state const &);

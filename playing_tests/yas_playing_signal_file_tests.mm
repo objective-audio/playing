@@ -97,4 +97,28 @@ using namespace yas::playing;
     XCTAssertEqual(to_string(signal_file::read_error::close_stream_failed), "close_stream_failed");
 }
 
+- (void)test_write_error_ostream {
+    auto const values = {signal_file::write_error::open_stream_failed, signal_file::write_error::write_to_stream_failed,
+                         signal_file::write_error::close_stream_failed};
+
+    for (auto const &value : values) {
+        std::ostringstream stream;
+        stream << value;
+        XCTAssertEqual(stream.str(), to_string(value));
+    }
+}
+
+- (void)test_read_error_ostream {
+    auto const values = {
+        signal_file::read_error::invalid_sample_type,  signal_file::read_error::out_of_range,
+        signal_file::read_error::open_stream_failed,   signal_file::read_error::read_from_stream_failed,
+        signal_file::read_error::read_count_not_match, signal_file::read_error::close_stream_failed};
+
+    for (auto const &value : values) {
+        std::ostringstream stream;
+        stream << value;
+        XCTAssertEqual(stream.str(), to_string(value));
+    }
+}
+
 @end

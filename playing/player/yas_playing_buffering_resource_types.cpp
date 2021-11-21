@@ -4,6 +4,9 @@
 
 #include "yas_playing_buffering_resource_types.h"
 
+using namespace yas;
+using namespace yas::playing;
+
 std::string yas::to_string(playing::audio_buffering_setup_state const state) {
     switch (state) {
         case playing::audio_buffering_setup_state::initial:
@@ -24,4 +27,14 @@ std::string yas::to_string(playing::audio_buffering_rendering_state const state)
         case playing::audio_buffering_rendering_state::advancing:
             return "advancing";
     }
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffering_setup_state const &value) {
+    os << to_string(value);
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, yas::playing::audio_buffering_rendering_state const &value) {
+    os << to_string(value);
+    return os;
 }

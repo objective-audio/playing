@@ -607,4 +607,38 @@ struct cpp {
     XCTAssertEqual(buffering->element_count(), buffering_test::element_count);
 }
 
+- (void)test_setup_state_to_string {
+    XCTAssertEqual(to_string(audio_buffering_setup_state::initial), "initial");
+    XCTAssertEqual(to_string(audio_buffering_setup_state::creating), "creating");
+    XCTAssertEqual(to_string(audio_buffering_setup_state::rendering), "rendering");
+}
+
+- (void)test_rendering_state_to_string {
+    XCTAssertEqual(to_string(audio_buffering_rendering_state::waiting), "waiting");
+    XCTAssertEqual(to_string(audio_buffering_rendering_state::all_writing), "all_writing");
+    XCTAssertEqual(to_string(audio_buffering_rendering_state::advancing), "advancing");
+}
+
+- (void)test_setup_state_ostream {
+    auto const values = {audio_buffering_setup_state::initial, audio_buffering_setup_state::creating,
+                         audio_buffering_setup_state::rendering};
+
+    for (auto const &value : values) {
+        std::ostringstream stream;
+        stream << value;
+        XCTAssertEqual(stream.str(), to_string(value));
+    }
+}
+
+- (void)test_rendering_state_ostream {
+    auto const values = {audio_buffering_rendering_state::waiting, audio_buffering_rendering_state::all_writing,
+                         audio_buffering_rendering_state::advancing};
+
+    for (auto const &value : values) {
+        std::ostringstream stream;
+        stream << value;
+        XCTAssertEqual(stream.str(), to_string(value));
+    }
+}
+
 @end

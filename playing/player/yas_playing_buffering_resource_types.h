@@ -50,3 +50,6 @@ namespace yas {
 std::string to_string(playing::audio_buffering_setup_state const);
 std::string to_string(playing::audio_buffering_rendering_state const);
 }  // namespace yas
+
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffering_setup_state const &);
+std::ostream &operator<<(std::ostream &, yas::playing::audio_buffering_rendering_state const &);
