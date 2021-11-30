@@ -12,7 +12,6 @@ struct renderer_for_player {
     virtual ~renderer_for_player() = default;
 
     virtual void set_rendering_handler(renderer_rendering_f &&) = 0;
-    virtual void set_is_rendering(bool const) = 0;
 };
 
 struct player_resource_for_player {

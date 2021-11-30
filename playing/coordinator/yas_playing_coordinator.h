@@ -20,6 +20,7 @@ struct coordinator final {
     void reset_timeline();
     void set_timeline_format(sample_rate_t const, audio::pcm_format const);
     void set_channel_mapping(channel_mapping const &);
+    void set_rendering(bool const);
     void set_playing(bool const);
     void seek(frame_index_t const);
     void overwrite(proc::time::range const &);

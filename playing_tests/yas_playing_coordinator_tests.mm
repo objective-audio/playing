@@ -116,22 +116,49 @@ using namespace yas::playing;
     XCTAssertEqual(called.at(0), ch_mapping);
 }
 
-- (void)test_set_playing {
+- (void)test_set_rendering {
     auto const coordinator = self->_cpp.setup_coordinator();
 
     std::vector<bool> called;
 
-    self->_cpp.player->set_playing_handler = [&called](bool is_playing) { called.emplace_back(is_playing); };
+    self->_cpp.renderer->set_is_rendering_handler = [&called](bool is_rendering) { called.emplace_back(is_rendering); };
 
-    coordinator->set_playing(true);
+    coordinator->set_rendering(true);
 
     XCTAssertEqual(called.size(), 1);
     XCTAssertTrue(called.at(0));
 
-    coordinator->set_playing(false);
+    coordinator->set_rendering(false);
 
     XCTAssertEqual(called.size(), 2);
     XCTAssertFalse(called.at(1));
+}
+
+- (void)test_set_playing {
+    auto const coordinator = self->_cpp.setup_coordinator();
+
+    std::vector<bool> called_playing;
+    std::vector<bool> called_rendering;
+
+    self->_cpp.player->set_playing_handler = [&called_playing](bool is_playing) {
+        called_playing.emplace_back(is_playing);
+    };
+    self->_cpp.renderer->set_is_rendering_handler = [&called_rendering](bool is_rendering) {
+        called_rendering.emplace_back(is_rendering);
+    };
+
+    coordinator->set_playing(true);
+
+    XCTAssertEqual(called_playing.size(), 1);
+    XCTAssertTrue(called_playing.at(0));
+    XCTAssertEqual(called_rendering.size(), 1);
+    XCTAssertTrue(called_rendering.at(0));
+
+    coordinator->set_playing(false);
+
+    XCTAssertEqual(called_playing.size(), 2);
+    XCTAssertFalse(called_playing.at(1));
+    XCTAssertEqual(called_rendering.size(), 1);
 }
 
 - (void)test_seek {

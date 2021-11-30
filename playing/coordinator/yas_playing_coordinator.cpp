@@ -68,7 +68,14 @@ void coordinator::set_channel_mapping(playing::channel_mapping const &ch_mapping
     this->_player->set_channel_mapping(ch_mapping);
 }
 
+void coordinator::set_rendering(bool const is_rendering) {
+    this->_renderer->set_is_rendering(is_rendering);
+}
+
 void coordinator::set_playing(bool const is_playing) {
+    if (is_playing) {
+        this->_renderer->set_is_rendering(true);
+    }
     this->_player->set_playing(is_playing);
 }
 

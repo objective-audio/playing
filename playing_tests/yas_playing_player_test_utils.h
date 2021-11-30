@@ -12,14 +12,9 @@
 namespace yas::playing::player_test {
 struct renderer : renderer_for_player {
     std::function<void(renderer_rendering_f &&)> set_rendering_handler_handler;
-    std::function<void(bool)> set_is_rendering_handler;
 
     void set_rendering_handler(renderer_rendering_f &&handler) override {
         this->set_rendering_handler_handler(std::move(handler));
-    }
-
-    void set_is_rendering(bool const is_rendering) override {
-        this->set_is_rendering_handler(is_rendering);
     }
 };
 
@@ -252,7 +247,6 @@ struct cpp {
         this->renderer->set_rendering_handler_handler = [this](renderer_rendering_f &&handler) {
             this->rendering_handler = std::move(handler);
         };
-        this->renderer->set_is_rendering_handler = [](bool is_rendering) {};
         this->buffering->set_identifier_request_handler = [](std::string) {};
         this->buffering->set_ch_mapping_request_handler = [](channel_mapping) {};
 
