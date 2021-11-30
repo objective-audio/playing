@@ -15,6 +15,7 @@ struct renderer_for_coordinator {
 
     virtual void set_rendering_sample_rate(sample_rate_t const) = 0;
     virtual void set_rendering_pcm_format(audio::pcm_format const) = 0;
+    virtual void set_is_rendering(bool const) = 0;
 
     [[nodiscard]] virtual renderer_format const &format() const = 0;
 

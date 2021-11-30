@@ -240,10 +240,6 @@ player::player(std::string const &root_path, std::shared_ptr<renderer_for_player
     this->_is_playing->observe([this](bool const &is_playing) { this->_resource->set_playing_on_main(is_playing); })
         .sync()
         ->add_to(this->_pool);
-
-    // begin rendering
-
-    this->_renderer->set_is_rendering(true);
 }
 
 void player::set_identifier(std::string const &identifier) {

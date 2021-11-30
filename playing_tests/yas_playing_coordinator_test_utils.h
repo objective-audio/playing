@@ -31,6 +31,7 @@ struct worker : workable {
 struct renderer : renderer_for_coordinator {
     std::function<void(sample_rate_t)> set_rendering_sample_rate_handler;
     std::function<void(audio::pcm_format)> set_rendering_pcm_format_handler;
+    std::function<void(bool)> set_is_rendering_handler;
     std::function<renderer_format const &(void)> format_handler;
     std::function<observing::syncable(renderer_format_observing_handler_f &&)> observe_format_handler;
 
@@ -40,6 +41,10 @@ struct renderer : renderer_for_coordinator {
 
     void set_rendering_pcm_format(audio::pcm_format const pcm_format) override {
         this->set_rendering_pcm_format_handler(pcm_format);
+    }
+
+    void set_is_rendering(bool const is_rendering) override {
+        this->set_is_rendering_handler(is_rendering);
     }
 
     renderer_format const &format() const override {
