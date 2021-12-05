@@ -6,6 +6,7 @@
 
 #include <cpp_utils/yas_fast_each.h>
 
+#include <iostream>
 #include <thread>
 
 #include "yas_playing_buffering_channel.h"
@@ -75,6 +76,7 @@ void coordinator::set_rendering(bool const is_rendering) {
 void coordinator::set_playing(bool const is_playing) {
     if (is_playing) {
         this->_renderer->set_is_rendering(true);
+        std::cout << "playing::coordinator rendering started because player was played." << std::endl;
     }
     this->_player->set_playing(is_playing);
 }
