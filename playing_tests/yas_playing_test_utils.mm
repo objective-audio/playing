@@ -9,9 +9,9 @@
 using namespace yas;
 using namespace yas::playing;
 
-std::string test_utils::root_path() {
-    auto path = system_path_utils::directory_path(system_path_utils::dir::temporary);
-    return file_path{path}.appending("yas_playing_test_root").string();
+std::filesystem::path test_utils::root_path() {
+    auto path = system_path_utils::directory_fs_path(system_path_utils::dir::temporary);
+    return path.append("yas_playing_test_root");
 }
 
 proc::timeline_ptr test_utils::test_timeline(int64_t const offset, uint32_t const ch_count) {

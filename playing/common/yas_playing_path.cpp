@@ -15,8 +15,9 @@ using namespace yas::playing::path;
 
 #pragma mark - path::timeline
 
-std::string timeline::string() const {
-    return file_path{this->root_path}.appending(timeline_name(this->identifier, this->sample_rate)).string();
+std::filesystem::path timeline::value() const {
+    auto path = this->root_path;
+    return path.append(timeline_name(this->identifier, this->sample_rate));
 }
 
 bool timeline::operator==(timeline const &rhs) const {
@@ -30,8 +31,8 @@ bool timeline::operator!=(timeline const &rhs) const {
 
 #pragma mark - path::channel
 
-std::string channel::string() const {
-    return file_path{this->timeline_path.string()}.appending(channel_name(this->channel_index)).string();
+std::filesystem::path channel::value() const {
+    return this->timeline_path.value().append(channel_name(this->channel_index));
 }
 
 bool channel::operator==(channel const &rhs) const {
@@ -44,8 +45,8 @@ bool channel::operator!=(channel const &rhs) const {
 
 #pragma mark - path::fragment
 
-std::string fragment::string() const {
-    return file_path{this->channel_path.string()}.appending(fragment_name(this->fragment_index)).string();
+std::filesystem::path fragment::value() const {
+    return this->channel_path.value().append(fragment_name(this->fragment_index));
 }
 
 bool fragment::operator==(fragment const &rhs) const {
@@ -58,10 +59,8 @@ bool fragment::operator!=(fragment const &rhs) const {
 
 #pragma mark - path::signal_event
 
-std::string signal_event::string() const {
-    return file_path{this->fragment_path.string()}
-        .appending(to_signal_file_name(this->range, this->sample_type))
-        .string();
+std::filesystem::path signal_event::value() const {
+    return this->fragment_path.value().append(to_signal_file_name(this->range, this->sample_type));
 }
 
 bool signal_event::operator==(signal_event const &rhs) const {
@@ -74,8 +73,8 @@ bool signal_event::operator!=(signal_event const &rhs) const {
 
 #pragma mark - path::number_events
 
-std::string number_events::string() const {
-    return file_path{this->fragment_path.string()}.appending("numbers").string();
+std::filesystem::path number_events::value() const {
+    return this->fragment_path.value().append("numbers");
 }
 
 bool number_events::operator==(number_events const &rhs) const {

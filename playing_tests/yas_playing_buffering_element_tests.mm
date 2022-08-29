@@ -41,11 +41,11 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
                                          .range = proc::time::range{frame, write_event->size()},
                                          .sample_type = write_event->sample_type()};
 
-    if (!file_manager::create_directory_if_not_exists(frag_path.string())) {
+    if (!file_manager::create_directory_if_not_exists(frag_path.value())) {
         return false;
     }
 
-    if (!signal_file::write(signal_path.string(), *write_event)) {
+    if (!signal_file::write(signal_path.value(), *write_event)) {
         return false;
     }
 
@@ -150,7 +150,7 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
     audio::format const format{{.sample_rate = buffering_element_test::sample_rate, .channel_count = 1}};
 
     path::fragment const frag_path{.channel_path = ch_path, .fragment_index = 1000};
-    auto const create_result = file_manager::create_directory_if_not_exists(frag_path.string());
+    auto const create_result = file_manager::create_directory_if_not_exists(frag_path.value());
     XCTAssertTrue(create_result);
 
     auto const signal_event = proc::signal_event::make_shared<float>(2);
@@ -159,9 +159,9 @@ static bool write_signal_to_file(proc::signal_event_ptr const &write_event, frag
     data[1] = 0.5f;
 
     proc::time::range const range{2000, 2};
-    auto const signal_path_str = path::signal_event{frag_path, range, signal_event->sample_type()}.string();
+    auto const signal_path_value = path::signal_event{frag_path, range, signal_event->sample_type()}.value();
 
-    auto const write_result = signal_file::write(signal_path_str, *signal_event);
+    auto const write_result = signal_file::write(signal_path_value, *signal_event);
     XCTAssertTrue(write_result);
 
     element->force_write_on_task(ch_path, 1000);

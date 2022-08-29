@@ -115,7 +115,7 @@ bool buffering_element::_write_on_task(path::channel const &ch_path) {
     auto const frag_idx = this->_frag_idx;
 
     auto const frag_path = path::fragment{ch_path, frag_idx};
-    auto const paths_result = file_manager::content_paths_in_directory(frag_path.string());
+    auto const paths_result = file_manager::content_paths_in_directory(frag_path.value());
     if (!paths_result) {
         if (paths_result.error() == file_manager::content_paths_error::directory_not_found) {
             return true;
