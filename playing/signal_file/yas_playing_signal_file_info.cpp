@@ -28,9 +28,9 @@ std::string playing::to_signal_file_name(proc::time::range const &range, std::ty
 }
 
 std::string playing::to_sample_type_name(std::type_info const &type_info) {
-    if (type_info == typeid(Float64)) {
+    if (type_info == typeid(double)) {
         return "f64";
-    } else if (type_info == typeid(Float32)) {
+    } else if (type_info == typeid(float)) {
         return "f32";
     } else if (type_info == typeid(int64_t)) {
         return "i64";
@@ -57,9 +57,9 @@ std::string playing::to_sample_type_name(std::type_info const &type_info) {
 
 std::type_info const &playing::to_sample_type(std::string const &name) {
     if (name == "f64") {
-        return typeid(Float64);
+        return typeid(double);
     } else if (name == "f32") {
-        return typeid(Float32);
+        return typeid(float);
     } else if (name == "i64") {
         return typeid(int64_t);
     } else if (name == "u64") {
