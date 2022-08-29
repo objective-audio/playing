@@ -1,21 +1,22 @@
 //
-//  yas_playing_url.h
+//  yas_playing_path.h
 //
 
 #pragma once
 
 #include <cpp_utils/yas_file_path.h>
-#include <cpp_utils/yas_url.h>
 #include <playing/yas_playing_types.h>
 #include <processing/yas_processing_time.h>
 
+#include <filesystem>
+
 namespace yas::playing::path {
 struct [[nodiscard]] timeline final {
-    std::string root_path;
+    std::filesystem::path root_path;
     std::string identifier;
     sample_rate_t sample_rate;
 
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::filesystem::path value() const;
 
     bool operator==(timeline const &rhs) const;
     bool operator!=(timeline const &rhs) const;
@@ -25,7 +26,7 @@ struct [[nodiscard]] channel final {
     timeline timeline_path;
     channel_index_t channel_index;
 
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::filesystem::path value() const;
 
     bool operator==(channel const &rhs) const;
     bool operator!=(channel const &rhs) const;
@@ -35,7 +36,7 @@ struct [[nodiscard]] fragment final {
     channel channel_path;
     fragment_index_t fragment_index;
 
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::filesystem::path value() const;
 
     bool operator==(fragment const &rhs) const;
     bool operator!=(fragment const &rhs) const;
@@ -46,7 +47,7 @@ struct [[nodiscard]] signal_event final {
     proc::time::range range;
     std::type_info const &sample_type;
 
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::filesystem::path value() const;
 
     bool operator==(signal_event const &rhs) const;
     bool operator!=(signal_event const &rhs) const;
@@ -55,7 +56,7 @@ struct [[nodiscard]] signal_event final {
 struct [[nodiscard]] number_events final {
     fragment fragment_path;
 
-    [[nodiscard]] std::string string() const;
+    [[nodiscard]] std::filesystem::path value() const;
 
     bool operator==(number_events const &rhs) const;
     bool operator!=(number_events const &rhs) const;

@@ -145,9 +145,9 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
 
         path::channel const ch_path{tl_path, ch_idx};
         auto const frag_path = path::fragment{ch_path, frag_idx};
-        std::string const frag_path_str = frag_path.string();
+        auto const frag_path_value = frag_path.value();
 
-        auto remove_result = file_manager::remove_content(frag_path_str);
+        auto remove_result = file_manager::remove_content(frag_path_value);
         if (!remove_result) {
             return exporter_error::remove_fragment_failed;
         }
@@ -156,7 +156,7 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
             return std::nullopt;
         }
 
-        auto const create_result = file_manager::create_directory_if_not_exists(frag_path_str);
+        auto const create_result = file_manager::create_directory_if_not_exists(frag_path_value);
         if (!create_result) {
             return exporter_error::create_directory_failed;
         }
@@ -165,17 +165,17 @@ void exporter_resource::_export_fragments_on_task(proc::time::range const &frags
             proc::time::range const &range = event_pair.first;
             proc::signal_event_ptr const &event = event_pair.second;
 
-            auto const signal_path_str = path::signal_event{frag_path, range, event->sample_type()}.string();
+            auto const signal_path_value = path::signal_event{frag_path, range, event->sample_type()}.value();
 
-            if (auto const result = signal_file::write(signal_path_str, *event); !result) {
+            if (auto const result = signal_file::write(signal_path_value, *event); !result) {
                 return exporter_error::write_signal_failed;
             }
         }
 
         if (auto const number_events = channel.filtered_events<proc::number_event>(); number_events.size() > 0) {
-            auto const number_path_str = path::number_events{frag_path}.string();
+            auto const number_path_value = path::number_events{frag_path}.value();
 
-            if (auto const result = numbers_file::write(number_path_str, number_events); !result) {
+            if (auto const result = numbers_file::write(number_path_value, number_events); !result) {
                 return exporter_error::write_numbers_failed;
             }
         }
@@ -192,7 +192,7 @@ std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc:
     auto const &sample_rate = sync_source.sample_rate;
     path::timeline const tl_path{this->_root_path, this->_identifier, sample_rate};
 
-    auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.string());
+    auto ch_paths_result = file_manager::content_paths_in_directory(tl_path.value());
     if (!ch_paths_result) {
         if (ch_paths_result.error() == file_manager::content_paths_error::directory_not_found) {
             return std::nullopt;
@@ -202,7 +202,7 @@ std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc:
     }
 
     auto const ch_names = to_vector<std::string>(ch_paths_result.value(),
-                                                 [](auto const &path) { return url{path}.last_path_component(); });
+                                                 [](std::filesystem::path const &path) { return path.filename(); });
 
     auto const begin_frag_idx = frags_range.frame / sample_rate;
     auto const end_frag_idx = frags_range.next_frame() / sample_rate;
@@ -218,8 +218,8 @@ std::optional<exporter_error> exporter_resource::_remove_fragments_on_task(proc:
         auto each = make_fast_each(begin_frag_idx, end_frag_idx);
         while (yas_each_next(each)) {
             auto const &frag_idx = yas_each_index(each);
-            auto const frag_path_str = path::fragment{ch_path, frag_idx}.string();
-            auto const remove_result = file_manager::remove_content(frag_path_str);
+            auto const frag_path_value = path::fragment{ch_path, frag_idx}.value();
+            auto const remove_result = file_manager::remove_content(frag_path_value);
             if (!remove_result) {
                 return exporter_error::remove_fragment_failed;
             }
