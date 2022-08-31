@@ -10,7 +10,7 @@ using namespace yas;
 using namespace yas::playing;
 
 std::filesystem::path test_utils::root_path() {
-    auto path = system_path_utils::directory_fs_path(system_path_utils::dir::temporary);
+    auto path = system_path_utils::directory_path(system_path_utils::dir::temporary);
     return path.append("yas_playing_test_root");
 }
 
