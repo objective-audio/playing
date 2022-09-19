@@ -83,8 +83,8 @@ std::type_info const &playing::to_sample_type(std::string const &name) {
     }
 }
 
-std::optional<signal_file_info> playing::to_signal_file_info(std::string const &path) {
-    std::string const file_name = file_path{path}.last_component();
+std::optional<signal_file_info> playing::to_signal_file_info(std::filesystem::path const &path) {
+    std::string const file_name = path.filename();
 
     std::vector<std::string> splited = split(file_name, '_');
     if (splited.size() != 4) {
