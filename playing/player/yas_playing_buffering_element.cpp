@@ -137,7 +137,7 @@ bool buffering_element::_write_on_task(path::channel const &ch_path) {
     }
 
     std::vector<signal_file_info> infos;
-    for (std::string const &path : paths) {
+    for (std::filesystem::path const &path : paths) {
         if (auto info = to_signal_file_info(path); info->sample_type == sample_type) {
             infos.emplace_back(std::move(*info));
         }
