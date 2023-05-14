@@ -11,7 +11,8 @@
 #include <cpp_utils/yas_task_queue.h>
 #include <cpp_utils/yas_thread.h>
 #include <processing/yas_processing_timeline_utils.h>
-#include <processing/yas_processing_umbrella.h>
+
+#include <processing/yas_processing_umbrella.hpp>
 
 #include "yas_playing_math.h"
 #include "yas_playing_numbers_file.h"

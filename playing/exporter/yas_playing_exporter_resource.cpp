@@ -8,7 +8,8 @@
 #include <cpp_utils/yas_thread.h>
 #include <cpp_utils/yas_to_integer.h>
 #include <dispatch/dispatch.h>
-#include <processing/yas_processing_umbrella.h>
+
+#include <processing/yas_processing_umbrella.hpp>
 
 #include "yas_playing_numbers_file.h"
 #include "yas_playing_path.h"

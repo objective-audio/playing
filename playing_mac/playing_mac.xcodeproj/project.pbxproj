@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 53;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -68,7 +68,7 @@
 		B6FB00C7229B6A10000C22F5 /* cpp_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C6229B6A10000C22F5 /* cpp_utils.framework */; };
 		B6FB00C9229B6A10000C22F5 /* objc_utils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00C8229B6A10000C22F5 /* objc_utils.framework */; };
 		B6FB00CB229B6A10000C22F5 /* processing.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B6FB00CA229B6A10000C22F5 /* processing.framework */; };
-		B6FB0106229B6A1A000C22F5 /* yas_playing_umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		B6FB0106229B6A1A000C22F5 /* yas_playing_umbrella.hpp in Headers */ = {isa = PBXBuildFile; fileRef = B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.hpp */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -136,7 +136,7 @@
 		B6FB00C6229B6A10000C22F5 /* cpp_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = cpp_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6FB00C8229B6A10000C22F5 /* objc_utils.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = objc_utils.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6FB00CA229B6A10000C22F5 /* processing.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = processing.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = yas_playing_umbrella.h; sourceTree = "<group>"; };
+		B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = yas_playing_umbrella.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -317,7 +317,7 @@
 				B6CF847926467210001E2C3A /* renderer */,
 				B6CF84A526467210001E2C3A /* signal_file */,
 				B6CF84AA26467210001E2C3A /* timeline */,
-				B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.h */,
+				B6FB00E3229B6A19000C22F5 /* yas_playing_umbrella.hpp */,
 			);
 			name = playing;
 			path = ../../playing;
@@ -364,7 +364,7 @@
 				B6CF84E626467210001E2C3A /* yas_playing_timeline_canceller.h in Headers */,
 				B6CF84B826467210001E2C3A /* yas_playing_renderer.h in Headers */,
 				B6FB00BD229B69D5000C22F5 /* playing.h in Headers */,
-				B6FB0106229B6A1A000C22F5 /* yas_playing_umbrella.h in Headers */,
+				B6FB0106229B6A1A000C22F5 /* yas_playing_umbrella.hpp in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -395,7 +395,8 @@
 		B6FB00AD229B69C7000C22F5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1210;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					B6FB00B7229B69D4000C22F5 = {
 						CreatedOnToolsVersion = 10.2.1;
@@ -484,6 +485,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -518,6 +520,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -565,6 +568,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -595,6 +599,8 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -644,6 +650,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "";
@@ -668,6 +675,8 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "jp.objective-audio.playing";

@@ -5,7 +5,8 @@
 #pragma once
 
 #include <cpp_utils/yas_fast_each.h>
-#include <playing/yas_playing_umbrella.h>
+
+#include <playing/yas_playing_umbrella.hpp>
 
 #include "yas_playing_test_utils.h"
 

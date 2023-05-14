@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include <audio/yas_audio_umbrella.h>
-#include <cpp_utils/yas_cpp_utils_umbrella.h>
-#include <playing/yas_playing_umbrella.h>
-#include <processing/yas_processing_umbrella.h>
+#include <audio/yas_audio_umbrella.hpp>
+#include <cpp_utils/yas_cpp_utils_umbrella.hpp>
+#include <observing/yas_observing_umbrella.hpp>
+#include <playing/yas_playing_umbrella.hpp>
+#include <processing/yas_processing_umbrella.hpp>
 
 namespace yas::playing::sample {
 struct controller {

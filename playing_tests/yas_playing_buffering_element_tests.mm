@@ -4,9 +4,9 @@
 
 #import <XCTest/XCTest.h>
 #import <cpp_utils/yas_file_manager.h>
-#import <playing/playing.h>
 #import <processing/processing.h>
 #import <future>
+#import <playing/yas_playing_umbrella.hpp>
 #import <thread>
 #import "yas_playing_test_utils.h"
 
