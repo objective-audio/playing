@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <playing/playing.h>
 #import <future>
+#import <playing/yas_playing_umbrella.hpp>
 #import <thread>
 
 using namespace yas;

@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp_utils/cpp_utils.h>
-#import <playing/playing.h>
+#import <cpp_utils/yas_cpp_utils_umbrella.hpp>
+#import <playing/yas_playing_umbrella.hpp>
 
 using namespace yas;
 using namespace yas::playing;

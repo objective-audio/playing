@@ -3,9 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp_utils/cpp_utils.h>
-#import <playing/playing.h>
 #import <processing/processing.h>
+#import <cpp_utils/yas_cpp_utils_umbrella.hpp>
+#import <playing/yas_playing_umbrella.hpp>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;

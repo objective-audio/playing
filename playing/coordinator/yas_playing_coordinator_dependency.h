@@ -4,10 +4,11 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.h>
 #include <playing/yas_playing_channel_mapping.h>
 #include <playing/yas_playing_exporter_types.h>
 #include <playing/yas_playing_renderer_types.h>
+
+#include <observing/yas_observing_umbrella.hpp>
 
 namespace yas::playing {
 struct renderer_for_coordinator {

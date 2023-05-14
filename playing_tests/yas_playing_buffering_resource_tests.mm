@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <playing/playing.h>
+#import <playing/yas_playing_umbrella.hpp>
 #import <thread>
 #import "yas_playing_test_utils.h"
 

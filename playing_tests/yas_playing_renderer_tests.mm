@@ -3,8 +3,8 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <audio/audio.h>
-#import <playing/playing.h>
+#import <audio/yas_audio_umbrella.h>
+#import <playing/yas_playing_umbrella.hpp>
 
 using namespace yas;
 using namespace yas::playing;

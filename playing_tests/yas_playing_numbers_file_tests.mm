@@ -7,7 +7,7 @@
 #import <cpp_utils/yas_file_manager.h>
 #import <cpp_utils/yas_file_path.h>
 #import <cpp_utils/yas_system_path_utils.h>
-#import <playing/playing.h>
+#import <playing/yas_playing_umbrella.hpp>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;
