@@ -206,7 +206,8 @@
 		B6FB0114229B6AD2000C22F5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1400;
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					B6FB011D229B6ADE000C22F5 = {
 						CreatedOnToolsVersion = 10.2.1;
