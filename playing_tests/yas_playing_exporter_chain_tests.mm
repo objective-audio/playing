@@ -50,10 +50,12 @@ struct cpp {
 
         auto expectation = [self expectationWithDescription:@"set timeline"];
 
-        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         exporter->set_timeline_container(timeline_container::make_shared(identifier, sample_rate, timeline));
 
@@ -61,6 +63,8 @@ struct cpp {
 
         XCTAssertEqual(received.size(), 1);
         XCTAssertEqual(received.at(0).result.value(), exporter::method_t::reset);
+
+        canceller->cancel();
     }
 
     auto track = proc::track::make_shared();
@@ -71,10 +75,12 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert track"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         auto module = proc::make_number_module<int64_t>(100);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -89,6 +95,8 @@ struct cpp {
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
         XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
+
+        canceller->cancel();
     }
 
     {
@@ -97,10 +105,12 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module same range"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         auto module = proc::make_number_module<int64_t>(200);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 0);
@@ -114,6 +124,8 @@ struct cpp {
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
         XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
+
+        canceller->cancel();
     }
 
     {
@@ -122,10 +134,12 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"insert module diff range"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         auto module = proc::make_number_module<Float64>(1.0);
         module->connect_output(proc::to_connector_index(proc::constant::output::value), 1);
@@ -141,6 +155,8 @@ struct cpp {
         XCTAssertEqual(received.at(1).range, (proc::time::range{2, 2}));
         XCTAssertEqual(received.at(2).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(2).range, (proc::time::range{4, 2}));
+
+        canceller->cancel();
     }
 
     {
@@ -149,10 +165,12 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase module"];
         expectation.expectedFulfillmentCount = 2;
 
-        auto canceller = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         track->erase_modules_for_range({0, 1});
 
@@ -164,6 +182,8 @@ struct cpp {
         XCTAssertEqual(received.at(0).range, (proc::time::range{0, 2}));
         XCTAssertEqual(received.at(1).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(1).range, (proc::time::range{0, 2}));
+
+        canceller->cancel();
     }
 
     {
@@ -172,10 +192,12 @@ struct cpp {
         auto expectation = [self expectationWithDescription:@"erase track"];
         expectation.expectedFulfillmentCount = 3;
 
-        auto observer = exporter->observe_event([&received, &expectation](auto const &event) {
-            received.push_back(event);
-            [expectation fulfill];
-        });
+        auto canceller = exporter
+                             ->observe_event([&received, &expectation](auto const &event) {
+                                 received.push_back(event);
+                                 [expectation fulfill];
+                             })
+                             .end();
 
         timeline->erase_track(0);
 
@@ -189,6 +211,8 @@ struct cpp {
         XCTAssertEqual(received.at(1).range, (proc::time::range{2, 2}));
         XCTAssertEqual(received.at(2).result.value(), exporter::method_t::export_ended);
         XCTAssertEqual(received.at(2).range, (proc::time::range{4, 2}));
+
+        canceller->cancel();
     }
 }
 
