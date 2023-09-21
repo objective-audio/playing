@@ -197,7 +197,8 @@ void buffering_resource::advance_on_render(fragment_index_t const frag_idx) {
 
 bool buffering_resource::write_elements_if_needed_on_task() {
     if (auto const state = this->_rendering_state.load(); state != rendering_state_t::advancing) {
-        throw std::runtime_error("state (" + to_string(state) + ") is not advancing.");
+        // メソッドが呼ばれるまでにrenderスレッドでrendering_stateが変更される可能性があるので単に中断する
+        return false;
     }
 
     bool is_loaded = false;
