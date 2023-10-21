@@ -25,10 +25,12 @@ jobs:
         submodules: true
 
     # Runs a set of commands using the runners shell
-    - name: Run iOS tests
+    - name: Select Xcode
       run:
-        xcodebuild -workspace playing_ios.xcworkspace -scheme playing_ios_tests -configuration Debug OBJROOT=build -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14' clean test
-
+        sudo xcode-select -s '/Applications/Xcode_15.0.app/Contents/Developer'
     - name: Run macOS tests
       run:
         xcodebuild -workspace playing_mac.xcworkspace -scheme playing_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
+    - name: Run iOS tests
+      run:
+        xcodebuild -workspace playing_ios.xcworkspace -scheme playing_ios_tests -configuration Debug OBJROOT=build -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15' clean test
