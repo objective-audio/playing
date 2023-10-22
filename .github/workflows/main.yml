@@ -33,4 +33,4 @@ jobs:
         xcodebuild -workspace playing_mac.xcworkspace -scheme playing_mac_tests -configuration Debug OBJROOT=build -sdk macosx clean test
     - name: Run iOS tests
       run:
-        xcodebuild -workspace playing_ios.xcworkspace -scheme playing_ios_tests -configuration Debug OBJROOT=build -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15' clean test
+        xcodebuild -workspace playing_ios.xcworkspace -scheme playing_ios_tests -configuration Debug OBJROOT=build -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 15 Pro Max,OS=17.0' clean test

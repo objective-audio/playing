@@ -8,6 +8,7 @@
 #include <playing/yas_playing_types.h>
 #include <processing/yas_processing_number_event.h>
 
+#include <ostream>
 #include <string>
 
 namespace yas::playing::numbers_file {

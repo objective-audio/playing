@@ -11,6 +11,7 @@
 #include <processing/yas_processing_signal_event.h>
 #include <processing/yas_processing_time.h>
 
+#include <ostream>
 #include <string>
 
 namespace yas::playing::signal_file {
