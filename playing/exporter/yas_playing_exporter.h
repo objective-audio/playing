@@ -8,6 +8,8 @@
 #include <playing/yas_playing_exporter_resource.h>
 #include <playing/yas_playing_timeline_container.h>
 
+#include <ostream>
+
 namespace yas::playing {
 struct exporter final : exporter_for_coordinator {
     using method_t = exporter_method;
