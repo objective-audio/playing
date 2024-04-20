@@ -1,0 +1,26 @@
+//
+//  yas_playing_timeline_utils.h
+//
+
+#pragma once
+
+#include <audio/common/yas_audio_types.h>
+#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
+#include <cpp-utils/yas_result.h>
+#include <playing/common/yas_playing_types.h>
+#include <processing/event/yas_processing_number_event.h>
+#include <processing/event/yas_processing_signal_event.h>
+#include <processing/time/yas_processing_time.h>
+
+namespace yas::playing::timeline_utils {
+[[nodiscard]] proc::time::range fragments_range(proc::time::range const &, sample_rate_t const);
+
+[[nodiscard]] char const *char_data(proc::signal_event const &);
+[[nodiscard]] char const *char_data(proc::time::frame::type const &);
+[[nodiscard]] char const *char_data(sample_store_type const &);
+[[nodiscard]] char const *char_data(proc::number_event const &);
+[[nodiscard]] char *char_data(audio::pcm_buffer &);
+
+[[nodiscard]] sample_store_type to_sample_store_type(std::type_info const &);
+[[nodiscard]] std::type_info const &to_sample_type(sample_store_type const &);
+}  // namespace yas::playing::timeline_utils
