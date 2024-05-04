@@ -6,7 +6,7 @@
       "location" : "https://github.com/objective-audio/audio_engine.git",
       "state" : {
         "branch" : "master",
-        "revision" : "c184397984cdfb1211ae16658056cb8bb5f8d6c4"
+        "revision" : "d153af82f6f521d81f65ecdf9ac81625f77058c4"
       }
     },
     {
@@ -15,25 +15,7 @@
       "location" : "https://github.com/objective-audio/cpp_utils.git",
       "state" : {
         "branch" : "master",
-        "revision" : "8a6023f4f1c3cd3e523acaed94b3dfdcb810db18"
-      }
-    },
-    {
-      "identity" : "objc_utils",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/objective-audio/objc_utils.git",
-      "state" : {
-        "branch" : "master",
-        "revision" : "30709b7e941daa9fffec83c36513ad44a4c13dac"
-      }
-    },
-    {
-      "identity" : "observing",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/objective-audio/observing.git",
-      "state" : {
-        "branch" : "main",
-        "revision" : "40d0411be6b50abb5f7d1f2712951c561955e704"
+        "revision" : "40ce93a63bddb54d7523fb1b87b80c112997478e"
       }
     },
     {
@@ -42,7 +24,7 @@
       "location" : "https://github.com/objective-audio/processing.git",
       "state" : {
         "branch" : "master",
-        "revision" : "bb16a676f9efe33d0b271c572fea607ab72726b5"
+        "revision" : "12e7aff1311c367520aaaaab3fb08bc68561206e"
       }
     }
   ],
