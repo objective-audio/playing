@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <audio/common/yas_audio_types.h>
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#include <cpp-utils/yas_result.h>
+#include <audio-engine/common/types.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
+#include <cpp-utils/result.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/event/yas_processing_number_event.h>
-#include <processing/event/yas_processing_signal_event.h>
-#include <processing/time/yas_processing_time.h>
+#include <audio-processing/event/number_event.h>
+#include <audio-processing/event/signal_event.h>
+#include <audio-processing/time/time.h>
 
 namespace yas::playing::timeline_utils {
 [[nodiscard]] proc::time::range fragments_range(proc::time::range const &, sample_rate_t const);

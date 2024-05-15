@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include <audio/common/yas_audio_types.h>
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
+#include <audio-engine/common/types.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
 #include <playing/common/yas_playing_channel_mapping.h>
 #include <playing/player/yas_playing_buffering_resource_types.h>
 #include <playing/player/yas_playing_reading_resource_types.h>

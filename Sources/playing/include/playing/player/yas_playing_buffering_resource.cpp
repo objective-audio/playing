@@ -4,10 +4,10 @@
 
 #include "yas_playing_buffering_resource.h"
 
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#include <cpp-utils/yas_fast_each.h>
-#include <cpp-utils/yas_file_manager.h>
-#include <cpp-utils/yas_result.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
+#include <cpp-utils/fast_each.h>
+#include <cpp-utils/file_manager.h>
+#include <cpp-utils/result.h>
 #include <playing/common/yas_playing_channel_mapping.h>
 #include <playing/player/yas_playing_buffering_channel.h>
 #include <playing/player/yas_playing_buffering_element.h>

@@ -6,7 +6,7 @@
 
 #include <playing/common/yas_playing_ptr.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/timeline/yas_processing_timeline.h>
+#include <audio-processing/timeline/timeline.h>
 
 namespace yas::playing {
 struct timeline_container final {

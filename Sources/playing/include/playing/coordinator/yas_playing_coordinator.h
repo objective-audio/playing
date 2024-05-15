@@ -4,15 +4,15 @@
 
 #pragma once
 
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#include <cpp-utils/yas_worker.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
+#include <cpp-utils/worker.h>
 #include <playing/common/yas_playing_ptr.h>
 #include <playing/common/yas_playing_types.h>
 #include <playing/player/yas_playing_player.h>
 #include <playing/renderer/yas_playing_renderer.h>
 #include <playing/renderer/yas_playing_renderer_types.h>
-#include <processing/time/yas_processing_time.h>
-#include <processing/timeline/yas_processing_timeline.h>
+#include <audio-processing/time/time.h>
+#include <audio-processing/timeline/timeline.h>
 
 namespace yas::playing {
 struct coordinator final {

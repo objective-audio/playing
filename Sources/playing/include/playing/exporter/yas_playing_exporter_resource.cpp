@@ -4,16 +4,16 @@
 
 #include "yas_playing_exporter_resource.h"
 
-#include <cpp-utils/yas_file_manager.h>
-#include <cpp-utils/yas_thread.h>
-#include <cpp-utils/yas_to_integer.h>
+#include <cpp-utils/file_manager.h>
+#include <cpp-utils/thread.h>
+#include <cpp-utils/to_integer.h>
 #include <dispatch/dispatch.h>
 #include <playing/common/yas_playing_path.h>
 #include <playing/numbers_file/yas_playing_numbers_file.h>
 #include <playing/signal_file/yas_playing_signal_file.h>
 #include <playing/timeline/yas_playing_timeline_utils.h>
 
-#include <processing/yas_processing_umbrella.hpp>
+#include <audio-processing/umbrella.hpp>
 
 using namespace yas;
 using namespace yas::playing;

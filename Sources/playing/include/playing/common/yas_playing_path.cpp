@@ -4,7 +4,7 @@
 
 #include "yas_playing_path.h"
 
-#include <cpp-utils/yas_boolean.h>
+#include <cpp-utils/boolean.h>
 #include <playing/common/yas_playing_math.h>
 #include <playing/signal_file/yas_playing_signal_file_info.h>
 

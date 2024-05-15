@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
 #include <playing/common/yas_playing_path.h>
 #include <playing/player/yas_playing_buffering_element_types.h>
 

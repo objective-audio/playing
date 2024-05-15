@@ -3,10 +3,10 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_boolean.h>
-#import <cpp-utils/yas_file_manager.h>
-#import <cpp-utils/yas_file_path.h>
-#import <cpp-utils/yas_system_path_utils.h>
+#import <cpp-utils/boolean.h>
+#import <cpp-utils/file_manager.h>
+#import <cpp-utils/file_path.h>
+#import <cpp-utils/system_path_utils.h>
 #import <playing/yas_playing_umbrella.hpp>
 #import "yas_playing_test_utils.h"
 

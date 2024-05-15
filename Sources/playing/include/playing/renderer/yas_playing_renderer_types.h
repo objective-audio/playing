@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <audio/common/yas_audio_ptr.h>
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
+#include <audio-engine/common/ptr.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/common/yas_processing_common_types.h>
+#include <audio-processing/common/common_types.h>
 
 namespace yas::playing {
 using renderer_rendering_f = std::function<void(audio::pcm_buffer *const)>;

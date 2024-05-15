@@ -3,7 +3,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <audio/yas_audio_umbrella.h>
+#import <audio-engine/umbrella.h>
 #import <playing/yas_playing_umbrella.hpp>
 
 using namespace yas;

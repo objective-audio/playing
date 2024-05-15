@@ -6,8 +6,8 @@
 
 #include <playing/common/yas_playing_ptr.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/sync_source/yas_processing_sync_source.h>
-#include <processing/timeline/yas_processing_timeline.h>
+#include <audio-processing/sync_source/sync_source.h>
+#include <audio-processing/timeline/timeline.h>
 
 #include "yas_playing_exporter_types.h"
 

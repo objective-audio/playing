@@ -4,7 +4,7 @@
 
 #include "yas_playing_player.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <playing/common/yas_playing_channel_mapping.h>
 #include <playing/common/yas_playing_path.h>
 #include <playing/common/yas_playing_ptr.h>

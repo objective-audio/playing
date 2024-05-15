@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 #include <playing/yas_playing_umbrella.hpp>
 
 namespace yas::playing::coordinator_test {

@@ -8,7 +8,7 @@
 #include <playing/exporter/yas_playing_exporter_types.h>
 #include <playing/renderer/yas_playing_renderer_types.h>
 
-#include <observing/yas_observing_umbrella.hpp>
+#include <observing/umbrella.hpp>
 
 namespace yas::playing {
 struct renderer_for_coordinator {

@@ -4,7 +4,7 @@
 
 #include "yas_playing_buffering_channel.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <playing/player/yas_playing_buffering_element.h>
 
 #include <thread>

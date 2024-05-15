@@ -3,13 +3,13 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <audio/format/yas_audio_format.h>
-#import <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#import <cpp-utils/yas_file_manager.h>
-#import <cpp-utils/yas_file_path.h>
-#import <cpp-utils/yas_system_path_utils.h>
+#import <audio-engine/format/format.h>
+#import <audio-engine/pcm_buffer/pcm_buffer.h>
+#import <cpp-utils/file_manager.h>
+#import <cpp-utils/file_path.h>
+#import <cpp-utils/system_path_utils.h>
 #import <playing/yas_playing_umbrella.hpp>
-#import <processing/yas_processing_umbrella.hpp>
+#import <audio-processing/umbrella.hpp>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;

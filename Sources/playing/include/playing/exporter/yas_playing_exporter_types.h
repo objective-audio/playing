@@ -4,10 +4,10 @@
 
 #pragma once
 
-#include <cpp-utils/yas_result.h>
-#include <cpp-utils/yas_task_queue.h>
+#include <cpp-utils/result.h>
+#include <cpp-utils/task_queue.h>
 #include <playing/common/yas_playing_ptr.h>
-#include <processing/timeline/yas_processing_timeline.h>
+#include <audio-processing/timeline/timeline.h>
 
 namespace yas::playing {
 enum class exporter_method {

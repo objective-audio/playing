@@ -4,7 +4,7 @@
 
 #include "yas_playing_player_utils.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <playing/common/yas_playing_math.h>
 
 using namespace yas;

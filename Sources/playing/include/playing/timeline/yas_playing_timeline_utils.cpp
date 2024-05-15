@@ -4,8 +4,8 @@
 
 #include "yas_playing_timeline_utils.h"
 
-#include <audio/format/yas_audio_format.h>
-#include <cpp-utils/yas_boolean.h>
+#include <audio-engine/format/format.h>
+#include <cpp-utils/boolean.h>
 #include <playing/common/yas_playing_math.h>
 
 #include <fstream>

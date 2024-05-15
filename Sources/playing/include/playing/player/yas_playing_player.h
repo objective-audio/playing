@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <cpp-utils/yas_worker.h>
+#include <cpp-utils/worker.h>
 #include <playing/common/yas_playing_channel_mapping.h>
 #include <playing/common/yas_playing_ptr.h>
 #include <playing/common/yas_playing_types.h>

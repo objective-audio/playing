@@ -3,7 +3,7 @@
 //
 
 #include "yas_playing_test_utils.h"
-#include <cpp-utils/yas_cpp_utils_umbrella.hpp>
+#include <cpp-utils/cpp_utils_umbrella.hpp>
 #include <playing/yas_playing_umbrella.hpp>
 
 using namespace yas;

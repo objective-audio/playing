@@ -5,7 +5,7 @@ import PackageDescription
 
 let package = Package(
     name: "playing",
-    platforms: [.macOS(.v10_15), .iOS(.v13), .macCatalyst(.v13)],
+    platforms: [.macOS(.v14), .iOS(.v17), .macCatalyst(.v17)],
     products: [
         .library(
             name: "playing",
@@ -13,13 +13,13 @@ let package = Package(
         ),
     ],
     dependencies: [
-        .package(url: "https://github.com/objective-audio/processing.git", branch: "master"),
+        .package(url: "https://github.com/objective-audio/processing.git", branch: "master")
     ],
     targets: [
         .target(
             name: "playing",
             dependencies: [
-                .product(name: "processing", package: "processing")
+                .product(name: "audio-processing", package: "processing")
             ],
             cSettings: [
                 .unsafeFlags(["-fmodules"]),

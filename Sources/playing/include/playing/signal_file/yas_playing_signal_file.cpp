@@ -4,8 +4,8 @@
 
 #include "yas_playing_signal_file.h"
 
-#include <audio/common/yas_audio_types.h>
-#include <audio/format/yas_audio_format.h>
+#include <audio-engine/common/types.h>
+#include <audio-engine/format/format.h>
 #include <playing/timeline/yas_playing_timeline_utils.h>
 
 #include <fstream>

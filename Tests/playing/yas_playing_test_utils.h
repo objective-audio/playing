@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <processing/yas_processing_umbrella.hpp>
+#include <audio-processing/umbrella.hpp>
 
 namespace yas::playing::test_utils {
 std::filesystem::path root_path();

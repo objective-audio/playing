@@ -6,7 +6,7 @@
 
 #include <playing/common/yas_playing_ptr.h>
 
-#include <processing/yas_processing_umbrella.hpp>
+#include <audio-processing/umbrella.hpp>
 
 namespace yas::playing {
 struct timeline_canceller final {

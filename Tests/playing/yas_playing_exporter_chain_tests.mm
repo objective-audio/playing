@@ -3,9 +3,9 @@
 //
 
 #import <XCTest/XCTest.h>
-#import <cpp-utils/yas_cpp_utils_umbrella.hpp>
+#import <cpp-utils/cpp_utils_umbrella.hpp>
 #import <playing/yas_playing_umbrella.hpp>
-#import <processing/yas_processing_umbrella.hpp>
+#import <audio-processing/umbrella.hpp>
 #import "yas_playing_test_utils.h"
 
 using namespace yas;

@@ -4,7 +4,7 @@
 
 #include "yas_playing_numbers_file.h"
 
-#include <cpp-utils/yas_boolean.h>
+#include <cpp-utils/boolean.h>
 #include <playing/timeline/yas_playing_timeline_utils.h>
 
 #include <fstream>

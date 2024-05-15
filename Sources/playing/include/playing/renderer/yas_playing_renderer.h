@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <audio/graph/yas_audio_graph.h>
-#include <audio/graph/yas_audio_graph_avf_au.h>
-#include <audio/graph/yas_audio_graph_tap.h>
+#include <audio-engine/graph/graph.h>
+#include <audio-engine/graph/graph_avf_au.h>
+#include <audio-engine/graph/graph_tap.h>
 #include <playing/common/yas_playing_ptr.h>
 #include <playing/coordinator/yas_playing_coordinator_dependency.h>
 #include <playing/player/yas_playing_player_dependency.h>
-#include <processing/common/yas_processing_common_types.h>
+#include <audio-processing/common/common_types.h>
 
 namespace yas::playing {
 struct renderer final : renderer_for_coordinator, renderer_for_player {

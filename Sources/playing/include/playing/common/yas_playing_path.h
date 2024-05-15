@@ -1,12 +1,12 @@
 //
-//  yas_playing_path.h
+//  playing_path.h
 //
 
 #pragma once
 
-#include <cpp-utils/yas_file_path.h>
+#include <cpp-utils/file_path.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/time/yas_processing_time.h>
+#include <audio-processing/time/time.h>
 
 #include <filesystem>
 

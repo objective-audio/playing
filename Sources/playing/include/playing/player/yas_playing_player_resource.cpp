@@ -4,7 +4,7 @@
 
 #include "yas_playing_player_resource.h"
 
-#include <cpp-utils/yas_fast_each.h>
+#include <cpp-utils/fast_each.h>
 #include <playing/player/yas_playing_buffering_resource.h>
 #include <playing/player/yas_playing_reading_resource.h>
 

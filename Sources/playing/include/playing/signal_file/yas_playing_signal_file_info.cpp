@@ -4,9 +4,9 @@
 
 #include "yas_playing_signal_file_info.h"
 
-#include <cpp-utils/yas_boolean.h>
-#include <cpp-utils/yas_stl_utils.h>
-#include <cpp-utils/yas_to_integer.h>
+#include <cpp-utils/boolean.h>
+#include <cpp-utils/stl_utils.h>
+#include <cpp-utils/to_integer.h>
 #include <playing/common/yas_playing_path.h>
 
 using namespace yas;

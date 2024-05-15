@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <processing/time/yas_processing_time.h>
+#include <audio-processing/time/time.h>
 
 #include <filesystem>
 #include <optional>

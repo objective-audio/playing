@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#include <cpp-utils/yas_result.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
+#include <cpp-utils/result.h>
 #include <playing/common/yas_playing_types.h>
 #include <playing/signal_file/yas_playing_signal_file_info.h>
-#include <processing/event/yas_processing_signal_event.h>
-#include <processing/time/yas_processing_time.h>
+#include <audio-processing/event/signal_event.h>
+#include <audio-processing/time/time.h>
 
 #include <ostream>
 #include <string>

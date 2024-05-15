@@ -4,9 +4,9 @@
 
 #pragma once
 
-#include <cpp-utils/yas_result.h>
+#include <cpp-utils/result.h>
 #include <playing/common/yas_playing_types.h>
-#include <processing/event/yas_processing_number_event.h>
+#include <audio-processing/event/number_event.h>
 
 #include <ostream>
 #include <string>

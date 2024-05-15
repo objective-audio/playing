@@ -4,8 +4,8 @@
 
 #include "yas_playing_renderer.h"
 
-#include <audio/graph/yas_audio_graph_io.h>
-#include <audio/io/yas_audio_io.h>
+#include <audio-engine/graph/graph_io.h>
+#include <audio-engine/io/io.h>
 #include <playing/common/yas_playing_types.h>
 
 using namespace yas;

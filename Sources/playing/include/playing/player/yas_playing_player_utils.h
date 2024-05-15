@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <audio/format/yas_audio_format.h>
+#include <audio-engine/format/format.h>
 #include <playing/common/yas_playing_types.h>
 
 namespace yas::playing::player_utils {

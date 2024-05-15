@@ -4,12 +4,12 @@
 
 #include "yas_playing_exporter.h"
 
-#include <audio/file/yas_audio_file.h>
-#include <audio/pcm_buffer/yas_audio_pcm_buffer.h>
-#include <cpp-utils/yas_fast_each.h>
-#include <cpp-utils/yas_file_manager.h>
-#include <cpp-utils/yas_task_queue.h>
-#include <cpp-utils/yas_thread.h>
+#include <audio-engine/file/file.h>
+#include <audio-engine/pcm_buffer/pcm_buffer.h>
+#include <cpp-utils/fast_each.h>
+#include <cpp-utils/file_manager.h>
+#include <cpp-utils/task_queue.h>
+#include <cpp-utils/thread.h>
 #include <playing/common/yas_playing_math.h>
 #include <playing/common/yas_playing_path.h>
 #include <playing/common/yas_playing_types.h>
@@ -17,9 +17,9 @@
 #include <playing/signal_file/yas_playing_signal_file.h>
 #include <playing/timeline/yas_playing_timeline_canceller.h>
 #include <playing/timeline/yas_playing_timeline_utils.h>
-#include <processing/timeline/yas_processing_timeline_utils.h>
+#include <audio-processing/timeline/timeline_utils.h>
 
-#include <processing/yas_processing_umbrella.hpp>
+#include <audio-processing/umbrella.hpp>
 
 using namespace yas;
 using namespace yas::playing;
