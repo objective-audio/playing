@@ -5,9 +5,9 @@
 #pragma once
 
 #include <audio-engine/umbrella.hpp>
-#include <cpp-utils/cpp_utils_umbrella.hpp>
+#include <cpp-utils/umbrella.hpp>
 #include <observing/umbrella.hpp>
-#include <playing/yas_playing_umbrella.hpp>
+#include <playing/umbrella.hpp>
 #include <audio-processing/umbrella.hpp>
 
 namespace yas::playing::sample {
