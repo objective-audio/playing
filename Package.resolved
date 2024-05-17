@@ -6,7 +6,7 @@
       "location" : "https://github.com/objective-audio/audio_engine.git",
       "state" : {
         "branch" : "master",
-        "revision" : "d153af82f6f521d81f65ecdf9ac81625f77058c4"
+        "revision" : "17828b016fb74142daf8beed141eb37e7f091652"
       }
     },
     {
@@ -15,7 +15,7 @@
       "location" : "https://github.com/objective-audio/cpp_utils.git",
       "state" : {
         "branch" : "master",
-        "revision" : "40ce93a63bddb54d7523fb1b87b80c112997478e"
+        "revision" : "919df4b021cc053e22d2a0770e46162cc464e40a"
       }
     },
     {
@@ -24,7 +24,7 @@
       "location" : "https://github.com/objective-audio/processing.git",
       "state" : {
         "branch" : "master",
-        "revision" : "12e7aff1311c367520aaaaab3fb08bc68561206e"
+        "revision" : "2968150fa9c499d822633c0050d81b10cdd276c0"
       }
     }
   ],

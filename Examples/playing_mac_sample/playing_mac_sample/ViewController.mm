@@ -3,7 +3,7 @@
 //
 
 #import "ViewController.h"
-#import <cpp-utils/yas_objc_ptr.h>
+#import <cpp-utils/objc_ptr.h>
 #import <objc-utils/yas_objc_unowned.h>
 
 using namespace yas;
