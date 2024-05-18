@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B65C36682BCEA91700D6AE71 /* playing in Frameworks */ = {isa = PBXBuildFile; productRef = B65C36672BCEA91700D6AE71 /* playing */; };
+		B6CE3E0C2BF850FB0056FBDD /* audio-playing in Frameworks */ = {isa = PBXBuildFile; productRef = B6CE3E0B2BF850FB0056FBDD /* audio-playing */; };
 		B6FB017622A0B6D2000C22F5 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB017522A0B6D2000C22F5 /* AppDelegate.mm */; };
 		B6FB017922A0B6D2000C22F5 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6FB017822A0B6D2000C22F5 /* ViewController.mm */; };
 		B6FB017C22A0B6D2000C22F5 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B6FB017A22A0B6D2000C22F5 /* Main.storyboard */; };
@@ -50,7 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B65C36682BCEA91700D6AE71 /* playing in Frameworks */,
+				B6CE3E0C2BF850FB0056FBDD /* audio-playing in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -117,7 +117,7 @@
 			);
 			name = playing_ios_sample;
 			packageProductDependencies = (
-				B65C36672BCEA91700D6AE71 /* playing */,
+				B6CE3E0B2BF850FB0056FBDD /* audio-playing */,
 			);
 			productName = playing_ios_sample;
 			productReference = B6FB017122A0B6D2000C22F5 /* playing_ios_sample.app */;
@@ -379,9 +379,9 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B65C36672BCEA91700D6AE71 /* playing */ = {
+		B6CE3E0B2BF850FB0056FBDD /* audio-playing */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = playing;
+			productName = "audio-playing";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

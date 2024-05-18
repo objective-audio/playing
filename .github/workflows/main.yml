@@ -31,14 +31,14 @@ jobs:
     - name: Run mac tests
       run:
         xcodebuild
-          -scheme playing
+          -scheme audio-playing
           -configuration debug
           -destination 'platform=macOS'
           clean test
     - name: Run iOS tests
       run:
         xcodebuild
-          -scheme playing
+          -scheme audio-playing
           -configuration debug
           -destination 'platform=iOS Simulator,name=iPhone 15'
           clean build

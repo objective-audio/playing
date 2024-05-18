@@ -4,12 +4,12 @@
 import PackageDescription
 
 let package = Package(
-    name: "playing",
+    name: "audio-playing",
     platforms: [.macOS(.v14), .iOS(.v17), .macCatalyst(.v17)],
     products: [
         .library(
-            name: "playing",
-            targets: ["playing"]
+            name: "audio-playing",
+            targets: ["audio-playing"]
         ),
     ],
     dependencies: [
@@ -17,7 +17,7 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "playing",
+            name: "audio-playing",
             dependencies: [
                 .product(name: "audio-processing", package: "processing")
             ],
@@ -28,7 +28,7 @@ let package = Package(
         .testTarget(
             name: "playing-tests",
             dependencies: [
-                "playing",
+                "audio-playing",
             ],
             cxxSettings: [
                 .unsafeFlags(["-fcxx-modules"]),
