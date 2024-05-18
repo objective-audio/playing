@@ -5,10 +5,10 @@
 #pragma once
 
 #include <audio-engine/umbrella.hpp>
+#include <audio-playing/umbrella.hpp>
+#include <audio-processing/umbrella.hpp>
 #include <cpp-utils/umbrella.hpp>
 #include <observing/umbrella.hpp>
-#include <playing/umbrella.hpp>
-#include <audio-processing/umbrella.hpp>
 
 namespace yas::playing::sample {
 struct controller {
