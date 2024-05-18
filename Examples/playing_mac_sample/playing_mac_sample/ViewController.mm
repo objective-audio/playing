@@ -4,7 +4,7 @@
 
 #import "ViewController.h"
 #import <cpp-utils/objc_ptr.h>
-#import <objc-utils/yas_objc_unowned.h>
+#import <objc-utils/unowned.h>
 
 using namespace yas;
 using namespace yas::playing;

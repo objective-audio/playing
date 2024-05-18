@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B65C36652BCEA8E100D6AE71 /* playing in Frameworks */ = {isa = PBXBuildFile; productRef = B65C36642BCEA8E100D6AE71 /* playing */; };
+		B60AC2732BF640EA00522A91 /* playing in Frameworks */ = {isa = PBXBuildFile; productRef = B60AC2722BF640EA00522A91 /* playing */; };
 		B6CA6DA2259E01DE0034B069 /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6CA6DA1259E01DE0034B069 /* AppDelegate.mm */; };
 		B6CA6DA5259E01DE0034B069 /* ViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = B6CA6DA4259E01DE0034B069 /* ViewController.mm */; };
 		B6CA6DA7259E01DF0034B069 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B6CA6DA6259E01DF0034B069 /* Assets.xcassets */; };
@@ -36,18 +36,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B65C36652BCEA8E100D6AE71 /* playing in Frameworks */,
+				B60AC2732BF640EA00522A91 /* playing in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		B60AC2712BF640EA00522A91 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		B6CA6D94259E01DE0034B069 = {
 			isa = PBXGroup;
 			children = (
 				B6CA6D9F259E01DE0034B069 /* playing_mac_sample */,
 				B6CA6D9E259E01DE0034B069 /* Products */,
+				B60AC2712BF640EA00522A91 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -94,7 +102,7 @@
 			);
 			name = playing_mac_sample;
 			packageProductDependencies = (
-				B65C36642BCEA8E100D6AE71 /* playing */,
+				B60AC2722BF640EA00522A91 /* playing */,
 			);
 			productName = playing_mac_sample;
 			productReference = B6CA6D9D259E01DE0034B069 /* playing_mac_sample.app */;
@@ -353,7 +361,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B65C36642BCEA8E100D6AE71 /* playing */ = {
+		B60AC2722BF640EA00522A91 /* playing */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = playing;
 		};
